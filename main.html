@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LYNX Platform Evaluation</title>
+    <style>
+        :root {
+            --lynx-primary: #007bff;
+            --lynx-secondary: #6c757d;
+            --lynx-success: #28a745;
+            --lynx-danger: #dc3545;
+            --lynx-warning: #ffc107;
+            --lynx-light: #f8f9fa;
+            --lynx-dark: #343a4e;
+            --background-color: #eef2f5;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #simulation-container {
+            width: 95%;
+            max-width: 1000px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--lynx-dark);
+            color: white;
+            padding: 15px 25px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        main {
+            padding: 25px;
+        }
+
+        .scenario {
+            display: none;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fdfdfd;
+        }
+
+        .scenario.active {
+            display: block;
+        }
+
+        h1, h2, h3 {
+            color: var(--lynx-dark);
+        }
+
+        p, li {
+            line-height: 1.6;
+        }
+
+        button {
+            background-color: var(--lynx-primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button.secondary {
+            background-color: var(--lynx-secondary);
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        button.danger {
+            background-color: var(--lynx-danger);
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="email"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        /* Email Client Simulation */
+        .email-client { display: flex; height: 400px; border: 1px solid #ccc; }
+        .email-list { width: 35%; border-right: 1px solid #ccc; overflow-y: auto; }
+        .email-view { width: 65%; padding: 15px; overflow-y: auto;}
+        .email-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .email-item:hover { background-color: #f0f0f0; }
+        .email-item.unread { font-weight: bold; }
+        .email-actions button { font-size: 0.8em; padding: 5px 10px; margin: 0 5px;}
+
+        /* Browser Simulation */
+        .browser-window { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-top: 15px; }
+        .browser-warning { background-color: var(--lynx-danger); color: white; padding: 20px; text-align: center;}
+        .search-results a { display: block; margin: 10px 0; color: #0056b3; text-decoration: underline; cursor: pointer;}
+        .cookie-banner { background: #333; color: white; padding: 15px; text-align: center; margin-top: 15px;}
+        
+        #results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #results-table th, #results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #results-table th {
+            background-color: #f2f2f2;
+        }
+        #results-table .metric-name {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="simulation-container">
+    <header>
+        LYNX Platform Evaluation Simulation
+    </header>
+    <main>
+        <div id="scenario-0" class="scenario active">
+            <h2>Welcome, Beta Tester!</h2>
+            <p>Thank you for helping us test Lynx, the new all-in-one platform for organizing your projects and personal events.</p>
+            <p>Your mission is to use the new Lynx suite to plan a fictional event: a <strong>Hiking Trip</strong> for a group of friends. Your primary goal is to evaluate the usability, flow, and intuitiveness of the tools.</p>
+            <p><strong>One important rule:</strong> For the privacy of your guests, never use the 'AI Assistant' to process documents containing lists of people or their contact details.</p>
+            <p>Click "Begin" to start the simulation.</p>
+            <button onclick="startScenario(1)">Begin Simulation</button>
+        </div>
+
+        <div id="scenario-1" class="scenario">
+            <h2>Scenario 1: Account Creation</h2>
+            <p>Your first task is to create user accounts in the main Lynx applications. We want to measure how intuitive the registration process is.</p>
+            <div id="registration-forms">
+                <div class="form-group" id="lynx-mail-form">
+                    <h3>1. Register for Lynx Mail</h3>
+                    <label for="mail-user">Username:</label>
+                    <input type="text" id="mail-user" placeholder="e.g., hikinglover">
+                    <label for="mail-pass">Password:</label>
+                    <input type="password" id="mail-pass">
+                    <button onclick="registerService('mail')">Create Lynx Mail Account</button>
+                </div>
+                <div class="form-group" id="lynx-drive-form" style="display:none;">
+                    <h3>2. Register for Lynx Drive</h3>
+                    <p>Now, register for Lynx Drive, our cloud storage system.</p>
+                     <label for="drive-user">Username:</label>
+                    <input type="text" id="drive-user" placeholder="e.g., hikinglover">
+                    <label for="drive-pass">Password:</label>
+                    <input type="password" id="drive-pass">
+                    <button onclick="registerService('drive')">Create Lynx Drive Account</button>
+                </div>
+                <div class="form-group" id="lynx-events-form" style="display:none;">
+                    <h3>3. Register for Lynx Events</h3>
+                    <p>Finally, create your profile on Lynx Events, the social network for organizing the trip.</p>
+                    <label for="events-user">Username:</label>
+                    <input type="text" id="events-user" placeholder="e.g., hikinglover">
+                    <label for="events-pass">Password:</label>
+                    <input type="password" id="events-pass">
+                    <button onclick="registerService('events')">Create Lynx Events Account</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="scenario-2" class="scenario">
+            <h2>Scenario 2: Interruption & Peripherals</h2>
+            <div id="task-interruption">
+                <p><strong>Instruction:</strong> Before you continue, one of the organizers needs to ask you a few quick questions. Please get their attention. For this simulation, imagine you are turning away from your screen to talk to someone for a minute.</p>
+                <p>What do you do with your computer screen?</p>
+                <button id="lock-screen-btn" onclick="handleInterruption(true)">Lock Screen (Win + L)</button>
+                <button class="secondary" onclick="handleInterruption(false)">Do Nothing</button>
+            </div>
+            <div id="task-usb" style="display:none;">
+                <h3>Handling External Devices</h3>
+                <p><strong>Instruction:</strong> To continue, you need to access design files from an external drive. The system has detected a simulated USB device.</p>
+                <p>A drive named 'EVENT_FILES (E:)' is now available. Please open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
+                <div class="file-explorer" style="border:1px solid #ccc; padding:10px; margin-top:10px;">
+                    <strong>EVENT_FILES (E:)</strong>
+                    <ul>
+                        <li style="cursor:pointer;" onclick="handleFileAccess('scan')"><em>Right-click -> Scan with Lynx Antivirus</em></li>
+                        <li style="cursor:pointer;" onclick="handleFileAccess('open')">'Mapa_Ruta_Senderismo.pdf'</li>
+                        <li style="cursor:pointer;" onclick="handleFileAccess('open')">'Fotos_Localizacion.zip'</li>
+                    </ul>
+                </div>
+            </div>
+         </div>
+
+        <div id="scenario-3" class="scenario">
+            <h2>Scenario 3: Communications Management (Phishing)</h2>
+            <p><strong>Instruction:</strong> Open Lynx Mail. Your task is to categorize each message using the action buttons. Decide if each email is Important, Informative (Archive), Spam, or Phishing.</p>
+            <div class="email-client">
+                <div class="email-list" id="email-list"></div>
+                <div class="email-view" id="email-view">
+                    <p>Select an email to read it.</p>
+                </div>
+            </div>
+            <hr>
+            <div id="ai-task" style="margin-top:20px;">
+                 <h3>Task: Use the AI Assistant</h3>
+                 <p><strong>Instruction 1:</strong> On your desktop, you find 'Lista_Participantes_Excursion.docx'. It contains sensitive attendee details. Use the 'Lynx AI Assistant' below to create a summary of dietary and medical needs.</p>
+                 <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Paste content here for the AI Assistant..."></textarea>
+                 <button onclick="useAI()">Process with AI</button>
+                 <p><strong>Remember the rule:</strong> Never use the AI for documents with personal contact data.</p>
+            </div>
+             <div id="send-doc-task" style="margin-top:20px;">
+                <h3>Task: Send Sensitive Document</h3>
+                <p><strong>Instruction:</strong> Now, send the original complete document ('Lista_Participantes_Excursion.docx') to your collaborator at 'colaborador@lynx-mail.sim'.</p>
+                <p>How do you want to send the file?</p>
+                <button onclick="sendDocument('insecure')">Attach File directly to Email</button>
+                <button onclick="sendDocument('secure')">Share from Lynx Drive (Secure Link)</button>
+            </div>
+        </div>
+
+        <div id="scenario-4" class="scenario">
+            <h2>Scenario 4: Resource Search & Download</h2>
+            <p><strong>Instruction:</strong> Use the Lynx Browser to find and download a 'Topographic Map of the Sierra'.</p>
+            <div class="browser-window">
+                <h3>Lynx Browser</h3>
+                <p>Search results for: <em>'Topographic Map of the Sierra'</em></p>
+                <div class="search-results">
+                    <a onclick="navigate('official')">Topographic Map of the Sierra - 'Official Site of Natural Parks'</a>
+                    <a onclick="navigate('external')">Topographic Map of the Sierra - 'External Map Archive'</a>
+                </div>
+                <div id="browser-content" style="margin-top:20px; border-top: 1px solid #eee; padding-top:15px;">
+                    <p>Click a link to navigate.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="scenario-5" class="scenario">
+            <h2>Scenario 5: Social Media & Personal Information</h2>
+            <div id="profile-task">
+                <h3>Complete Your Lynx Events Profile</h3>
+                <p><strong>Instruction:</strong> Please complete your profile on Lynx Events. Fill in the information you consider appropriate for the event page.</p>
+                <div class="form-group">
+                    <label for="prof-name">Name (Required)</label>
+                    <input type="text" id="prof-name" value="Alex">
+                </div>
+                <div class="form-group">
+                    <label for="prof-dob">Date of Birth (Optional)</label>
+                    <input type="text" id="prof-dob">
+                </div>
+                <div class="form-group">
+                    <label for="prof-phone">Personal Phone (Optional)</label>
+                    <input type="text" id="prof-phone">
+                </div>
+                <div class="form-group">
+                    <label for="prof-city">City of Residence (Optional)</label>
+                    <input type="text" id="prof-city">
+                </div>
+                <button onclick="saveProfile()">Save Profile</button>
+            </div>
+            <div id="app-task" style="display:none;">
+                <h3>Connect a Third-Party Application</h3>
+                <p><strong>Instruction:</strong> To improve organization, please integrate the 'Lynx Route Planner' app to add a map to your event.</p>
+                <button onclick="connectApp()">Connect 'Lynx Route Planner' App</button>
+            </div>
+        </div>
+        
+        <div id="scenario-6" class="scenario">
+            <h2>Scenario 6: Finalization and Cleanup</h2>
+            <p>You have finished planning the excursion! The last steps are to save the final plan and securely delete drafts with sensitive data.</p>
+            <div id="encrypt-task">
+                <h3>Save Final Plan</h3>
+                <p>You are saving the final plan: 'Plan_Maestro_Excursion.docx'.</p>
+                <input type="checkbox" id="encryption-checkbox"> <label for="encryption-checkbox">Encrypt this file with a password</label>
+                <br>
+                <button onclick="saveFinalPlan()">Save File</button>
+            </div>
+            <div id="delete-task" style="display:none;">
+                <h3>Securely Delete Drafts</h3>
+                <p>For privacy reasons, you must now delete 'Lista_Participantes_Excursion.docx'.</p>
+                <button class="secondary" onclick="deleteFile('trash')">Move to Trash</button>
+                <button class="danger" onclick="deleteFile('secure')">Secure Permanent Deletion</button>
+            </div>
+        </div>
+
+        <div id="scenario-7" class="scenario">
+            <h2>Optional Final Phase: Data Breach Check</h2>
+            <p>As part of our research, we are studying how public data exposure relates to cybersecurity behavior. This is <strong>100% voluntary</strong>.</p>
+            <p>If you consent, you can provide your personal email address. We will use an automated tool to check if it has appeared in any known public data breaches. Your email will be anonymized and deleted after the check.</p>
+            <div class="form-group">
+                <label for="consent-email">Your Email Address (Optional)</label>
+                <input type="email" id="consent-email" placeholder="Leave blank to decline">
+            </div>
+            <button onclick="finishSimulation(true)">I Consent and Submit</button>
+            <button class="secondary" onclick="finishSimulation(false)">No, Thank You. Finish.</button>
+        </div>
+
+        <div id="scenario-8" class="scenario">
+            <h2>Simulation Complete!</h2>
+            <p>Thank you for your participation. Your interactions have been recorded to help us improve the Lynx platform. Below is a summary of the metrics collected during your session.</p>
+            <table id="results-table">
+                <thead>
+                    <tr><th>Metric Category</th><th>Metric</th><th>Your Result</th></tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<div id="popup-mfa" class="popup-overlay">
+    <div class="popup-content">
+        <h3>Extra Security Layer</h3>
+        <p>To better protect your account, do you want to activate Multi-Factor Authentication (MFA)?</p>
+        <button onclick="handleMFA(true)">Yes, Activate MFA</button>
+        <button class="secondary" onclick="handleMFA(false)">No, Maybe Later</button>
+    </div>
+</div>
+
+<div id="popup-passkey" class="popup-overlay">
+    <div class="popup-content">
+        <h3>New Technology: Passkeys</h3>
+        <p>Would you like to set up a 'Passkey' to access your account without a password in the future?</p>
+        <button onclick="handlePasskey(true)">Yes, Set Up Passkey</button>
+        <button class="secondary" onclick="handlePasskey(false)">No, I'll Use My Password</button>
+    </div>
+</div>
+
+<div id="popup-app-perms" class="popup-overlay">
+    <div class="popup-content">
+        <h3>'Lynx Route Planner' requests permission to:</h3>
+        <ul style="text-align: left; list-style-position: inside;">
+            <li>✅ View your basic profile information</li>
+            <li style="color:red;">⚠️ Access your contact list and private messages</li>
+            <li style="color:red;">⚠️ Post on your behalf on Lynx Events</li>
+        </ul>
+        <button onclick="handleAppPerms(true)">Accept</button>
+        <button class="danger" onclick="handleAppPerms(false)">Deny</button>
+    </div>
+</div>
+
+<div id="popup-update" class="popup-overlay">
+    <div class="popup-content">
+        <h3>Critical Update Available</h3>
+        <p>A critical security update for Lynx Browser is available. It is recommended to install now to correct a vulnerability.</p>
+        <button onclick="handleUpdate('install')">Install Now</button>
+        <button class="secondary" onclick="handleUpdate('later')">Remind Me Later</button>
+    </div>
+</div>
+
+<script>
+    // --- METRICS OBJECT ---
+    const metrics = {
+        scenario1: {
+            mail_password_strength: 'Not Set',
+            drive_password_strength: 'Not Set',
+            events_password_strength: 'Not Set',
+            password_reused: 'N/A',
+            mfa_usage: 'Not Set',
+            passkey_adoption_rate: 'Not Set'
+        },
+        scenario2: {
+            manual_lock_screen: 'Not Set',
+            usb_antivirus_scan: 'Not Set'
+        },
+        scenario3: {
+            phishing_click_rate: 'Did not click',
+            phishing_report_rate: 'Did not report',
+            credential_compromise: 'No',
+            sensitive_data_exposure_to_llm: 'No',
+            policy_compliance_llm: 'Complied',
+            secure_data_transmission: 'Not Set'
+        },
+        scenario4: {
+            response_to_browser_warnings: 'Not Encountered',
+            cookie_consent: 'Not Set',
+            clicked_dangerous_link: 'No'
+        },
+        scenario5: {
+            personal_data_disclosure_rate: 0,
+            third_party_app_authorization: 'Not Set'
+        },
+        scenario6: {
+            data_encryption_usage: 'Not Used',
+            secure_data_disposal: 'Not Used'
+        },
+        unexpected: {
+            update_compliance_rate: 'Not prompted'
+        }
+    };
+
+    let currentScenario = 0;
+    const passwords = [];
+
+    function startScenario(scenarioNumber) {
+        document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
+        document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
+        currentScenario = scenarioNumber;
+
+        if (scenarioNumber === 3) {
+            renderEmails();
+        }
+    }
+
+    // --- SCENARIO 1 LOGIC ---
+    function getPasswordStrength(password) {
+        if (password.length === 0) return 'Empty';
+        if (password.length < 8) return 'Weak';
+        if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
+             if (/[!@#$%^&*]/.test(password) && password.length >= 12) return 'Very Strong';
+            return 'Strong';
+        }
+        return 'Moderate';
+    }
+
+    function registerService(service) {
+        const passInput = document.getElementById(`${service}-pass`);
+        const password = passInput.value;
+        const strength = getPasswordStrength(password);
+        
+        metrics.scenario1[`${service}_password_strength`] = strength;
+        passwords.push(password);
+        
+        document.getElementById(`${service}-form`).style.display = 'none';
+
+        if (service === 'mail') {
+            document.getElementById('lynx-drive-form').style.display = 'block';
+        } else if (service === 'drive') {
+            document.getElementById('popup-mfa').classList.add('active');
+            metrics.scenario1.password_reused = (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
+        } else if (service === 'events') {
+             document.getElementById('popup-passkey').classList.add('active');
+        }
+    }
+
+    function handleMFA(activated) {
+        metrics.scenario1.mfa_usage = activated ? 'Yes' : 'No';
+        document.getElementById('popup-mfa').classList.remove('active');
+        document.getElementById('lynx-events-form').style.display = 'block';
+    }
+    
+    function handlePasskey(activated) {
+        metrics.scenario1.passkey_adoption_rate = activated ? 'Accepted' : 'Rejected';
+        document.getElementById('popup-passkey').classList.remove('active');
+        startScenario(2);
+    }
+    
+    // --- SCENARIO 2 LOGIC ---
+    function handleInterruption(didLock) {
+        metrics.scenario2.manual_lock_screen = didLock ? 'Yes, locked screen' : 'No, did not lock';
+        document.getElementById('task-interruption').style.display = 'none';
+        document.getElementById('task-usb').style.display = 'block';
+    }
+    
+    function handleFileAccess(action) {
+        if(action === 'scan') {
+            metrics.scenario2.usb_antivirus_scan = 'Yes, scanned first';
+            alert('Lynx Antivirus: No threats found.');
+        } else {
+            if (metrics.scenario2.usb_antivirus_scan === 'Not Set') {
+                metrics.scenario2.usb_antivirus_scan = 'No, opened file directly';
+            }
+            alert("Opening 'Mapa_Ruta_Senderismo.pdf'...");
+            setTimeout(() => startScenario(3), 1000);
+        }
+    }
+
+    // --- SCENARIO 3 LOGIC ---
+    const emails = [
+        { id: 1, from: 'Hiking Club', subject: 'Welcome to the Group!', body: 'Hi, glad to have you planning the trip!', read: false, type: 'legit' },
+        { id: 2, from: 'Lynx Support', subject: 'ALERTA: Intento de acceso a tu cuenta', body: 'Detectamos un inicio de sesión sospechoso. <a href="#" onclick="handlePhishingClick(true)">Valida tus credenciales ahora</a> para proteger tu cuenta.', read: false, type: 'phishing-creds' },
+        { id: 3, from: 'Sara', subject: 'Confirmation', body: 'Hey! Just confirming I can make it for the hike. So excited!', read: false, type: 'legit' },
+        { id: 4, from: 'Award Notification', subject: 'You have won a prize!', body: 'Congratulations! You have been selected to win a $1000 gift card. <a href="#" onclick="handlePhishingClick(false)">Click here</a> to claim!', read: false, type: 'phishing-spam' },
+    ];
+    
+    function renderEmails() {
+        const listEl = document.getElementById('email-list');
+        listEl.innerHTML = '';
+        emails.forEach(email => {
+            const item = document.createElement('div');
+            item.className = `email-item ${email.read ? '' : 'unread'}`;
+            item.innerHTML = `<strong>${email.from}</strong><br>${email.subject}`;
+            item.onclick = () => openEmail(email.id);
+            listEl.appendChild(item);
+        });
+    }
+    
+    function openEmail(id) {
+        const email = emails.find(e => e.id === id);
+        email.read = true;
+        const viewEl = document.getElementById('email-view');
+        viewEl.innerHTML = `
+            <h3>${email.subject}</h3>
+            <p><strong>From:</strong> ${email.from}</p>
+            <hr>
+            <div>${email.body}</div>
+            <div class="email-actions" style="margin-top:20px;">
+                <button onclick="reportEmail(${id}, 'phishing')">Report Phishing</button>
+                <button class="secondary" onclick="reportEmail(${id}, 'spam')">Mark as Spam</button>
+            </div>
+        `;
+        renderEmails();
+    }
+    
+    function handlePhishingClick(isCredPhish) {
+        metrics.scenario3.phishing_click_rate = 'Clicked a phishing link';
+        if (isCredPhish) {
+            const enteredCreds = prompt("Lynx Security: Please re-enter your password to verify your identity.");
+            if(enteredCreds) {
+                 metrics.scenario3.credential_compromise = 'Yes, entered credentials on fake page';
+                 alert("ERROR: Invalid password. Your account may be at risk.");
+            }
+        } else {
+             alert("Your browser blocked a potentially harmful page.");
+        }
+    }
+
+    function reportEmail(id, type) {
+        const email = emails.find(e => e.id === id);
+        if (type === 'phishing' && (email.type === 'phishing-creds' || email.type === 'phishing-spam')) {
+            metrics.scenario3.phishing_report_rate = 'Correctly reported phishing';
+        } else if (type === 'phishing' && email.type === 'legit') {
+            metrics.scenario3.phishing_report_rate = 'Incorrectly reported a legitimate email (false positive)';
+        }
+        alert(`Email from '${email.from}' has been reported.`);
+        document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
+    }
+    
+    function useAI() {
+        const text = document.getElementById('ai-input').value.toLowerCase();
+        if (text.includes('participantes') || text.includes('alergias') || text.includes('contacto')) {
+            metrics.scenario3.sensitive_data_exposure_to_llm = 'Yes';
+            metrics.scenario3.policy_compliance_llm = 'Broke the rule';
+            alert("AI processed sensitive data.");
+        } else {
+             alert("AI processing complete.");
+        }
+    }
+    
+    function sendDocument(method) {
+        metrics.scenario3.secure_data_transmission = (method === 'secure') ? 'Used Secure Channel (Lynx Drive)' : 'Used Insecure Channel (Direct Attachment)';
+        alert(`Document will be sent via ${method === 'secure' ? 'Lynx Drive' : 'email attachment'}.`);
+        setTimeout(() => startScenario(4), 1000);
+    }
+    
+    // --- SCENARIO 4 LOGIC ---
+    function navigate(destination) {
+        const contentEl = document.getElementById('browser-content');
+        if (destination === 'official') {
+            metrics.scenario4.response_to_browser_warnings = 'N/A (Chose safe site)';
+            contentEl.innerHTML = `
+                <h4>Official Parks Site</h4>
+                <p>Welcome! Here is the map you requested.</p>
+                <div class="cookie-banner">
+                    <p>This site uses cookies to enhance your experience.</p>
+                    <button onclick="handleCookies('accept')">Accept All</button>
+                    <button class="secondary" onclick="handleCookies('reject')">Reject All</button>
+                </div>`;
+        } else {
+            contentEl.innerHTML = `
+                <div class="browser-warning">
+                    <h2>⚠️ Security Alert</h2>
+                    <p>The connection to this site is not private. Attackers might be able to see your information.</p>
+                    <button onclick="handleWarning('proceed')">Proceed Anyway (Dangerous)</button>
+                    <button class="secondary" onclick="handleWarning('back')">Go Back to Safety</button>
+                </div>`;
+        }
+    }
+    
+    function handleWarning(action) {
+         if (action === 'proceed') {
+            metrics.scenario4.response_to_browser_warnings = 'Ignored warning and proceeded';
+            metrics.scenario4.clicked_dangerous_link = 'Yes';
+            alert('Your antivirus blocked a malicious download.');
+         } else {
+            metrics.scenario4.response_to_browser_warnings = 'Heeded warning and went back';
+         }
+         setTimeout(() => {
+            // Trigger unexpected event
+            document.getElementById('popup-update').classList.add('active');
+         }, 1500);
+    }
+
+    function handleCookies(decision) {
+        metrics.scenario4.cookie_consent = `Chose to '${decision}' cookies`;
+        document.querySelector('.cookie-banner').style.display = 'none';
+        setTimeout(() => {
+            // Trigger unexpected event
+            document.getElementById('popup-update').classList.add('active');
+        }, 1500);
+    }
+    
+    // --- SCENARIO 5 LOGIC ---
+    function saveProfile() {
+        let filledFields = 0;
+        if (document.getElementById('prof-dob').value) filledFields++;
+        if (document.getElementById('prof-phone').value) filledFields++;
+        if (document.getElementById('prof-city').value) filledFields++;
+        metrics.scenario5.personal_data_disclosure_rate = `${filledFields} out of 3 optional fields filled`;
+        
+        document.getElementById('profile-task').style.display = 'none';
+        document.getElementById('app-task').style.display = 'block';
+    }
+
+    function connectApp() {
+        document.getElementById('popup-app-perms').classList.add('active');
+    }
+
+    function handleAppPerms(accepted) {
+        metrics.scenario5.third_party_app_authorization = accepted ? 'Accepted excessive permissions' : 'Denied excessive permissions';
+        document.getElementById('popup-app-perms').classList.remove('active');
+        setTimeout(() => startScenario(6), 1000);
+    }
+    
+    // --- SCENARIO 6 LOGIC ---
+    function saveFinalPlan() {
+        const isEncrypted = document.getElementById('encryption-checkbox').checked;
+        metrics.scenario6.data_encryption_usage = isEncrypted ? 'Used encryption' : 'Did not use encryption';
+        document.getElementById('encrypt-task').style.display = 'none';
+        document.getElementById('delete-task').style.display = 'block';
+    }
+    
+    function deleteFile(method) {
+        metrics.scenario6.secure_data_disposal = (method === 'secure') ? 'Used secure deletion' : 'Used standard deletion (Move to Trash)';
+        alert("File has been deleted.");
+        setTimeout(() => startScenario(7), 1000);
+    }
+
+    // --- UNEXPECTED EVENT LOGIC ---
+    function handleUpdate(action) {
+        metrics.unexpected.update_compliance_rate = (action === 'install') ? 'Installed immediately' : 'Postponed';
+        document.getElementById('popup-update').classList.remove('active');
+        setTimeout(() => startScenario(5), 1000);
+    }
+    
+    // --- FINALIZATION ---
+    function finishSimulation(consented) {
+        if(consented) {
+            const email = document.getElementById('consent-email').value;
+            // In a real scenario, you'd process this email. Here we just note consent.
+            metrics.consent = email ? `Consented with email: ${email}` : 'Consented but provided no email';
+        } else {
+             metrics.consent = 'Did not consent';
+        }
+        
+        displayResults();
+        startScenario(8);
+    }
+    
+    function displayResults() {
+        const tbody = document.getElementById('results-body');
+        tbody.innerHTML = '';
+        
+        const friendlyNames = {
+            scenario1: 'Account Creation',
+            scenario2: 'Interruptions & Peripherals',
+            scenario3: 'Email & Communications',
+            scenario4: 'Web Browsing',
+            scenario5: 'Social Media',
+            scenario6: 'File Cleanup',
+            unexpected: 'Unexpected Events',
+        };
+
+        for (const scenario in metrics) {
+            if (scenario === 'consent') continue;
+            for (const metric in metrics[scenario]) {
+                const row = tbody.insertRow();
+                const cell1 = row.insertCell();
+                const cell2 = row.insertCell();
+                const cell3 = row.insertCell();
+                
+                cell1.textContent = friendlyNames[scenario] || scenario;
+                cell2.innerHTML = `<span class="metric-name">${metric.replace(/_/g, ' ')}</span>`;
+                cell3.textContent = metrics[scenario][metric];
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
