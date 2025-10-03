@@ -1,0 +1,37 @@
+.email-client {
+    display: flex;
+    height: 400px;
+    border: 1px solid #ccc;
+}
+
+.email-list {
+    width: 35%;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+.email-view {
+    width: 65%;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.email-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.email-item:hover {
+    background-color: #f0f0f0;
+}
+
+.email-item.unread {
+    font-weight: bold;
+}
+
+.email-actions button {
+    font-size: 0.8em;
+    padding: 5px 10px;
+    margin: 0 5px;
+}

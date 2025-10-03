@@ -1,0 +1,11 @@
+:root {
+    --lynx-primary: #007bff;
+    --lynx-secondary: #6c757d;
+    --lynx-success: #28a745;
+    --lynx-danger: #dc3545;
+    --lynx-warning: #ffc107;
+    --lynx-light: #f8f9fa;
+    --lynx-dark: #343a4e;
+    --background-color: #eef2f5;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

@@ -1,0 +1,29 @@
+.browser-window {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.browser-warning {
+    background-color: var(--lynx-danger);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.search-results a {
+    display: block;
+    margin: 10px 0;
+    color: #0056b3;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cookie-banner {
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    margin-top: 15px;
+}

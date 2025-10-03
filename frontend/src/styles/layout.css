@@ -1,0 +1,51 @@
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#simulation-container {
+    width: 95%;
+    max-width: 1000px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+header {
+    background-color: var(--lynx-dark);
+    color: white;
+    padding: 15px 25px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+main {
+    padding: 25px;
+}
+
+.scenario {
+    display: none;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background: #fdfdfd;
+}
+
+.scenario.active {
+    display: block;
+}
+
+h1, h2, h3 {
+    color: var(--lynx-dark);
+}
+
+p, li {
+    line-height: 1.6;
+}
