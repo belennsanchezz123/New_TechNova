@@ -479,7 +479,7 @@
         metrics.scenario1[`${service}_password_strength`] = strength;
         passwords.push(password);
         
-        document.getElementById(`${service}-form`).style.display = 'none';
+        document.getElementById(`lynx-${service}-form`).style.display = 'none';
 
         if (service === 'mail') {
             document.getElementById('lynx-drive-form').style.display = 'block';
