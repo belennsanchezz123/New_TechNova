@@ -9,8 +9,10 @@ import { navigate, handleWarning, handleCookies, handleUpdate } from './handlers
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
+import { startSession } from './services/api.js';
 
 let currentScenario = 0;
+let sessionId = null;
 
 function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
@@ -22,7 +24,15 @@ function startScenario(scenarioNumber) {
     }
 }
 
-function initApp() {
+async function initApp() {
+    const userIdentifier = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionResult = await startSession(userIdentifier);
+
+    if (sessionResult.success) {
+        sessionId = sessionResult.session.id;
+        console.log('Session started:', sessionId);
+    }
+
     const app = document.getElementById('app');
 
     let scenariosHTML = '<div id="simulation-container"><header>LYNX Platform Evaluation Simulation</header><main>';
@@ -35,6 +45,10 @@ function initApp() {
     scenariosHTML += getPopupsHTML();
 
     app.innerHTML = scenariosHTML;
+}
+
+export function getSessionId() {
+    return sessionId;
 }
 
 window.startScenario = startScenario;

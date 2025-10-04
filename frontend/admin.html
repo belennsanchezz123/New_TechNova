@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LYNX Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --dark: #343a4e;
+            --light: #f8f9fa;
+            --background: #eef2f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--secondary);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .sessions-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .sessions-container h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--light);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .view-btn:hover {
+            background: #0056b3;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-active {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .close-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .metrics-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 200px 200px 1fr;
+            gap: 15px;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 4px;
+        }
+
+        .metric-row:nth-child(even) {
+            background: white;
+        }
+
+        .metric-category {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .metric-name {
+            color: var(--secondary);
+        }
+
+        .metric-value {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦁 LYNX Admin Dashboard</h1>
+            <p>Visualización de sesiones y métricas de usuarios</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Sesiones</h3>
+                <div class="value" id="total-sessions">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Sesiones Completadas</h3>
+                <div class="value" id="completed-sessions">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Sesiones Activas</h3>
+                <div class="value" id="active-sessions">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Consentimientos</h3>
+                <div class="value" id="consent-count">0</div>
+            </div>
+        </div>
+
+        <div class="sessions-container">
+            <h2>Sesiones Registradas</h2>
+            <div id="sessions-list">
+                <div class="loading">Cargando sesiones...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="metrics-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles de Sesión</h2>
+                <button class="close-btn" onclick="closeModal()">Cerrar</button>
+            </div>
+            <div id="session-details"></div>
+            <div id="metrics-details"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        const API_URL = 'http://localhost:3000/api';
+
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_URL}/sessions/all`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displaySessions(data.sessions);
+                    updateStats(data.sessions);
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                document.getElementById('sessions-list').innerHTML =
+                    '<div class="loading">Error al cargar sesiones</div>';
+            }
+        }
+
+        function updateStats(sessions) {
+            const total = sessions.length;
+            const completed = sessions.filter(s => s.completed_at).length;
+            const active = total - completed;
+            const consent = sessions.filter(s => s.consent_email).length;
+
+            document.getElementById('total-sessions').textContent = total;
+            document.getElementById('completed-sessions').textContent = completed;
+            document.getElementById('active-sessions').textContent = active;
+            document.getElementById('consent-count').textContent = consent;
+        }
+
+        function displaySessions(sessions) {
+            if (sessions.length === 0) {
+                document.getElementById('sessions-list').innerHTML =
+                    '<div class="loading">No hay sesiones registradas</div>';
+                return;
+            }
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Inicio</th>
+                            <th>Completada</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sessions.map(session => `
+                            <tr>
+                                <td>${session.user_identifier}</td>
+                                <td>${new Date(session.started_at).toLocaleString()}</td>
+                                <td>${session.completed_at ? new Date(session.completed_at).toLocaleString() : '-'}</td>
+                                <td>
+                                    <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
+                                        ${session.completed_at ? 'Completada' : 'Activa'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="view-btn" onclick="window.viewMetrics('${session.id}')">
+                                        Ver Métricas
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('sessions-list').innerHTML = table;
+        }
+
+        async function viewMetrics(sessionId) {
+            try {
+                const response = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayMetricsModal(data.session, data.metrics);
+                }
+            } catch (error) {
+                console.error('Error loading metrics:', error);
+            }
+        }
+
+        function displayMetricsModal(session, metrics) {
+            const sessionDetails = `
+                <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
+                    <p><strong>Usuario:</strong> ${session.user_identifier}</p>
+                    <p><strong>Inicio:</strong> ${new Date(session.started_at).toLocaleString()}</p>
+                    <p><strong>Completada:</strong> ${session.completed_at ? new Date(session.completed_at).toLocaleString() : 'En progreso'}</p>
+                    ${session.consent_email ? `<p><strong>Email:</strong> ${session.consent_email}</p>` : ''}
+                </div>
+            `;
+
+            const metricsHTML = `
+                <h3>Métricas Registradas</h3>
+                <div class="metrics-grid">
+                    ${metrics.map(m => `
+                        <div class="metric-row">
+                            <div class="metric-category">${formatScenarioName(m.scenario)}</div>
+                            <div class="metric-name">${formatMetricName(m.metric_name)}</div>
+                            <div class="metric-value">${m.metric_value}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('session-details').innerHTML = sessionDetails;
+            document.getElementById('metrics-details').innerHTML = metricsHTML;
+            document.getElementById('metrics-modal').classList.add('active');
+        }
+
+        function formatScenarioName(scenario) {
+            const names = {
+                'scenario1': 'Creación de Cuenta',
+                'scenario2': 'Interrupciones & Periféricos',
+                'scenario3': 'Email & Comunicaciones',
+                'scenario4': 'Navegación Web',
+                'scenario5': 'Redes Sociales',
+                'scenario6': 'Limpieza de Archivos',
+                'unexpected': 'Eventos Inesperados'
+            };
+            return names[scenario] || scenario;
+        }
+
+        function formatMetricName(name) {
+            return name.replace(/_/g, ' ');
+        }
+
+        function closeModal() {
+            document.getElementById('metrics-modal').classList.remove('active');
+        }
+
+        window.viewMetrics = viewMetrics;
+        window.closeModal = closeModal;
+
+        loadSessions();
+        setInterval(loadSessions, 30000);
+    </script>
+</body>
+</html>
