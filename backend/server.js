@@ -17,6 +17,7 @@ const supabase = createClient(
 );
 
 app.use(cors());
+// Mas seguro usar esto en un futuro app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 // Ruta de prueba para ver si el .env funciona
