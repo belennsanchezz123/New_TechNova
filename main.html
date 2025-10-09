@@ -734,6 +734,37 @@
         }
     }
 </script>
+<script>
+    //Calcula una fortaleza muy básica (puedes mejorarla)
+    function getPasswordStrength(password){
+        if (password.length >10 ) return 'strong';
+        if (password.length <10) return 'medium';
+        return 'weak';
+    }
+    // Envia los datos al backend (superbase es actualiza automaticamente)
+    async function registerService(service) {
+        const username = document.getElementById(`${service}-user`).value;
+        const password = document.getElementById(`${service}-pass`).value;
+        const strength = getPasswordStrength(password);
 
+        console.log(`Registrando ${service} →`, username, strength);
+        try {
+            const response = await fetch('http://localhost:3001/api/collect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: username,
+                    service: service,              // 🔹 'mail', 'drive', 'events'
+                    password_strength: strength,
+                    mfaEnabled: false              // luego cambiaremos esto si activa MFA
+                })
+            });
+            const data= await response.json();
+            console.log('Respuesta del backend:', data);
+        } catch (err) {
+            console.error('Error enviando datos al backend:', err);
+        }
+    }
+</script>
 </body>
 </html>

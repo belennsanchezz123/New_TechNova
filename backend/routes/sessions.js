@@ -3,15 +3,40 @@ import express from 'express';
 const router = express.Router();
 
 export function setupSessionRoutes(supabase) {
+    /**
+   * POST /api/sessions/start
+   * Crea una "sesión" dentro de la tabla registrations.
+   * - Mapea userIdentifier -> username
+   * - Usa service="session" por defecto
+   */
     router.post('/start', async (req, res) => {
         try {
             const { userIdentifier } = req.body;
+            const username = (userIdentifier && String(userIdentifier).trim()) || `user_${Date.now()}`;
+            const service = 'lynx_mail'; // campo requerido NOT NULL
+            if (!username) {
+                return res.status(400).json({ success: false, error: 'username requerido' });
+            }
+            
+            // ¿ya existe?
+            const { data: existing } = await supabase
+                .from('registrations')
+                .select('id, username, service, password_strength, mfa_enabled, created_at')
+                .eq('username', username)
+                .eq('service', service)
+                .maybeSingle();
+
+            if (existing) {
+                return res.json({ success: true, session: existing, created: false });
+            }
 
             const { data, error } = await supabase
-                .from('user_sessions')
+                .from('registrations')
                 .insert({
-                    user_identifier: userIdentifier || `user_${Date.now()}`,
-                    started_at: new Date().toISOString()
+                    username,
+                    service,
+                    password_strength: null,
+                    mfa_enabled: false        // por defecto
                 })
                 .select()
                 .single();
@@ -24,17 +49,28 @@ export function setupSessionRoutes(supabase) {
             res.status(500).json({ success: false, error: error.message });
         }
     });
+    /**
+   * POST /api/sessions/complete
+   * Actualiza una fila existente en registrations (por id).
+   * Puedes usarlo para marcar cosas del mail:
+   * - consentEmail -> lo guardo en password_strength como tag de texto simple (no hay columna específica).
+   * - También dejo posibilidad de actualizar mfa_enabled.
+   */
 
     router.post('/complete', async (req, res) => {
         try {
-            const { sessionId, consentEmail } = req.body;
+            const { sessionId, consentEmail, mfaEnabled } = req.body;
+
+            const updates = {};
+            if (typeof mfaEnabled === 'boolean') updates.mfa_enabled = mfaEnabled;
+            if (consentEmail) {
+                // No existe columna consent_email: lo guardamos como texto informativo
+                updates.password_strength = `consent:${consentEmail}`;
+            }
 
             const { data, error } = await supabase
-                .from('user_sessions')
-                .update({
-                    completed_at: new Date().toISOString(),
-                    consent_email: consentEmail || null
-                })
+                .from('registrations')
+                .update(updates)
                 .eq('id', sessionId)
                 .select()
                 .single();
@@ -42,12 +78,14 @@ export function setupSessionRoutes(supabase) {
             if (error) throw error;
 
             res.json({ success: true, session: data });
-        } catch (error) {
+        }   catch (error) {
             console.error('Error completing session:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });
 
+    
+    /**
     router.post('/metrics', async (req, res) => {
         try {
             const { sessionId, metrics } = req.body;
@@ -78,29 +116,35 @@ export function setupSessionRoutes(supabase) {
             res.status(500).json({ success: false, error: error.message });
         }
     });
-
+**/
+    /**
+    * GET /api/sessions/all
+    * Devuelve todas las filas de 'registrations'
+    */
     router.get('/all', async (req, res) => {
         try {
-            const { data: sessions, error: sessionsError } = await supabase
-                .from('user_sessions')
+            const { data, error } = await supabase
+                .from('registrations')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (sessionsError) throw sessionsError;
+            if (error) throw error;
 
-            res.json({ success: true, sessions });
+            res.json({ success: true, sessions: data });
         } catch (error) {
-            console.error('Error fetching sessions:', error);
-            res.status(500).json({ success: false, error: error.message });
+        console.error('Error fetching sessions:', error);
+        res.status(500).json({ success: false, error: error.message });
         }
     });
-
+    return router;
+}
+/**
     router.get('/:sessionId/metrics', async (req, res) => {
         try {
             const { sessionId } = req.params;
 
             const { data: session, error: sessionError } = await supabase
-                .from('user_sessions')
+                .from('registrations')
                 .select('*')
                 .eq('id', sessionId)
                 .single();
@@ -124,3 +168,4 @@ export function setupSessionRoutes(supabase) {
 
     return router;
 }
+ */
