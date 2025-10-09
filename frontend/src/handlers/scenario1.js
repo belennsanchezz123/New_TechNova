@@ -1,6 +1,6 @@
 import { metrics } from '../utils/metrics.js';
 import { getPasswordStrength } from '../utils/validation.js';
-import { saveRegistration } from '../services/supabase.js';
+import { saveRegistration, checkUserExists } from '../services/supabase.js';
 
 const passwords = [];
 const registrations = {};
@@ -8,8 +8,27 @@ const registrations = {};
 export async function registerService(service) {
     const userInput = document.getElementById(`${service}-user`);
     const passInput = document.getElementById(`${service}-pass`);
-    const username = userInput.value;
+    const username = userInput.value.trim();
     const password = passInput.value;
+
+    if (!username) {
+        alert('Por favor ingresa un nombre de usuario');
+        return;
+    }
+
+    if (!password) {
+        alert('Por favor ingresa una contraseña');
+        return;
+    }
+
+    const serviceName = `lynx_${service}`;
+    const checkResult = await checkUserExists(username, serviceName);
+
+    if (checkResult.success && checkResult.exists) {
+        alert(`El usuario "${username}" ya está registrado en ${serviceName.replace('lynx_', 'Lynx ').replace('_', ' ')}`);
+        return;
+    }
+
     const strength = getPasswordStrength(password);
 
     metrics.scenario1[`${service}_password_strength`] = strength;
@@ -17,12 +36,17 @@ export async function registerService(service) {
 
     registrations[service] = {
         username: username,
-        service: `lynx_${service}`,
+        service: serviceName,
         password_strength: strength,
         mfa_enabled: false
     };
 
-    await saveRegistration(username, `lynx_${service}`, strength, false);
+    const result = await saveRegistration(username, serviceName, strength, false);
+
+    if (!result.success) {
+        alert('Error al crear la cuenta. Por favor intenta de nuevo.');
+        return;
+    }
 
     document.getElementById(`${service}-form`).style.display = 'none';
 
@@ -32,7 +56,7 @@ export async function registerService(service) {
         document.getElementById('popup-mfa').classList.add('active');
         metrics.scenario1.password_reused = (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
     } else if (service === 'events') {
-         document.getElementById('popup-passkey').classList.add('active');
+        document.getElementById('popup-passkey').classList.add('active');
     }
 }
 
