@@ -12,7 +12,7 @@ export function setupSessionRoutes(supabase) {
     router.post('/start', async (req, res) => {
         try {
             const { userIdentifier } = req.body;
-            const username = (userIdentifier && String(userIdentifier).trim()) || `user_${Date.now()}`;
+            const username = String(userIdentifier ?? '').trim();
             const service = 'lynx_mail'; // campo requerido NOT NULL
             if (!username) {
                 return res.status(400).json({ success: false, error: 'username requerido' });
@@ -25,11 +25,14 @@ export function setupSessionRoutes(supabase) {
                 .eq('username', username)
                 .eq('service', service)
                 .maybeSingle();
+            
+            if (selErr) throw selErr;
 
             if (existing) {
                 return res.json({ success: true, session: existing, created: false });
             }
 
+            // crear usuario nuevo
             const { data, error } = await supabase
                 .from('registrations')
                 .insert({
@@ -46,7 +49,7 @@ export function setupSessionRoutes(supabase) {
             res.json({ success: true, session: data });
         } catch (error) {
             console.error('Error starting session:', error);
-            res.status(500).json({ success: false, error: error.message });
+            return res.status(500).json({ success: false, error: error.message });
         }
     });
     /**

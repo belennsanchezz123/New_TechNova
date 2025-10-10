@@ -5,6 +5,20 @@ import { saveRegistration, checkUserExists } from '../services/supabase.js';
 const passwords = [];
 const registrations = {};
 
+function goNext(service) {
+    document.getElementById(`${service}-form`).style.display = 'none';
+
+    if (service === 'mail') {
+        document.getElementById('lynx-drive-form').style.display = 'block';
+    } else if (service === 'drive') {
+        document.getElementById('popup-mfa').classList.add('active');
+        metrics.scenario1.password_reused =
+            (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
+        } else if (service === 'events') {
+            document.getElementById('popup-passkey').classList.add('active');
+        }
+    }
+
 export async function registerService(service) {
     const userInput = document.getElementById(`${service}-user`);
     const passInput = document.getElementById(`${service}-pass`);
@@ -22,13 +36,15 @@ export async function registerService(service) {
     }
 
     const serviceName = `lynx_${service}`;
+    //si ya existe, no se inserta y se avanza
+
     const checkResult = await checkUserExists(username, serviceName);
 
     if (checkResult.success && checkResult.exists) {
         alert(`El usuario "${username}" ya está registrado en ${serviceName.replace('lynx_', 'Lynx ').replace('_', ' ')}`);
         return;
     }
-
+    //insertar funcion de fortaleza de contraseña
     const strength = getPasswordStrength(password);
 
     metrics.scenario1[`${service}_password_strength`] = strength;
@@ -48,16 +64,7 @@ export async function registerService(service) {
         return;
     }
 
-    document.getElementById(`${service}-form`).style.display = 'none';
-
-    if (service === 'mail') {
-        document.getElementById('lynx-drive-form').style.display = 'block';
-    } else if (service === 'drive') {
-        document.getElementById('popup-mfa').classList.add('active');
-        metrics.scenario1.password_reused = (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
-    } else if (service === 'events') {
-        document.getElementById('popup-passkey').classList.add('active');
-    }
+    goNext(service);
 }
 
 export async function handleMFA(activated) {
