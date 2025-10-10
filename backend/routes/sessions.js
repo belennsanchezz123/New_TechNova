@@ -19,13 +19,13 @@ export function setupSessionRoutes(supabase) {
             }
             
             // ¿ya existe?
-            const { data: existing } = await supabase
+            const { data: existing, error: selErr } = await supabase
                 .from('registrations')
                 .select('id, username, service, password_strength, mfa_enabled, created_at')
                 .eq('username', username)
                 .eq('service', service)
                 .maybeSingle();
-            
+
             if (selErr) throw selErr;
 
             if (existing) {
