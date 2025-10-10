@@ -6,7 +6,7 @@ const passwords = [];
 const registrations = {};
 
 function goNext(service) {
-    document.getElementById(`${service}-form`).style.display = 'none';
+    document.getElementById(`lynx-${service}-form`).style.display = 'none';
 
     if (service === 'mail') {
         document.getElementById('lynx-drive-form').style.display = 'block';
@@ -14,10 +14,10 @@ function goNext(service) {
         document.getElementById('popup-mfa').classList.add('active');
         metrics.scenario1.password_reused =
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
-        } else if (service === 'events') {
-            document.getElementById('popup-passkey').classList.add('active');
-        }
+    } else if (service === 'events') {
+        document.getElementById('popup-passkey').classList.add('active');
     }
+}
 
 export async function registerService(service) {
     const userInput = document.getElementById(`${service}-user`);
