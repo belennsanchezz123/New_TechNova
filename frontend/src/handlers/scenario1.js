@@ -1,4 +1,5 @@
-import { createRegistration } from '../services/api.js';
+// 🔴 LÍNEA A CORREGIR
+import { createRegistration, completeRegistration } from '../services/api.js';
 import { getPasswordStrength } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
 //import { saveRegistration, checkUserExists } from '../services/supabase.js';
@@ -7,7 +8,7 @@ const passwords = [];
 const registrations = {};
 
 function goNext(service) {
-    document.getElementById(`${service}-form`).style.display = 'none';
+    document.getElementById(`lynx-${service}-form`).style.display = 'none';
 
     if (service === 'mail') {
         // Mostrar el formulario de Drive
