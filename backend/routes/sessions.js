@@ -16,25 +16,15 @@ export function setupSessionRoutes(supabase) {
             if (!username) {
                 return res.status(400).json({ success: false, error: 'username requerido' });
             }
-            // 1) Si viene participantId, primero comprobamos por (participant_id, service)
-            if (participantId) {
-                const { data: byPid, error: byPidErr } = await supabase
-                    .from('registrations')
-                    .select('id, username, service, password_strength, mfa_enabled, participant_id, created_at')
-                    .eq('participant_id', participantId)
-                    .eq('service', service)
-                    .maybeSingle();
-                if (byPidErr) throw byPidErr;
-                if (byPid) return res.json({ success:true, session: byPid, created:false, via:'participant_id' });
-            }
-
-            // 2) Compatibilidad: buscar por (username, service)
-            const { data: existing, error: selErr } = await supabase
+            
+            // ¿ya existe?
+            const { data: existing } = await supabase
                 .from('registrations')
                 .select('id, username, service, password_strength, mfa_enabled, participant_id, created_at')
                 .eq('username', username)
                 .eq('service', service)
                 .maybeSingle();
+            
             if (selErr) throw selErr;
 
             if (existing) {
