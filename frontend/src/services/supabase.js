@@ -5,6 +5,10 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+/**
+ * Comprueba si existe un registro para (username, service).
+ * Útil para UX: mostrar “ya existes” y avanzar sin reinsertar.
+ */
 export async function checkUserExists(username, service) {
     try {
         const { data, error } = await supabase
@@ -25,7 +29,7 @@ export async function checkUserExists(username, service) {
         return { success: false, error: err };
     }
 }
-
+/* Lo siguiente ya lo hago en el backend
 export async function saveRegistration(username, service, passwordStrength, mfaEnabled = false) {
     try {
         const { data, error } = await supabase
@@ -69,3 +73,4 @@ export async function getAllRegistrations() {
         return { success: false, error: err };
     }
 }
+*/

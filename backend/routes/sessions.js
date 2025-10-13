@@ -11,25 +11,40 @@ export function setupSessionRoutes(supabase) {
    */
     router.post('/start', async (req, res) => {
         try {
-            const { userIdentifier } = req.body;
+            const { userIdentifier, service = 'mail', participantId } = req.body;
             const username = String(userIdentifier ?? '').trim();
-            const service = 'lynx_mail'; // campo requerido NOT NULL
             if (!username) {
                 return res.status(400).json({ success: false, error: 'username requerido' });
             }
-            
-            // ¿ya existe?
-            const { data: existing } = await supabase
+            // 1) Si viene participantId, primero comprobamos por (participant_id, service)
+            if (participantId) {
+                const { data: byPid, error: byPidErr } = await supabase
+                    .from('registrations')
+                    .select('id, username, service, password_strength, mfa_enabled, participant_id, created_at')
+                    .eq('participant_id', participantId)
+                    .eq('service', service)
+                    .maybeSingle();
+                if (byPidErr) throw byPidErr;
+                if (byPid) return res.json({ success:true, session: byPid, created:false, via:'participant_id' });
+            }
+
+            // 2) Compatibilidad: buscar por (username, service)
+            const { data: existing, error: selErr } = await supabase
                 .from('registrations')
-                .select('id, username, service, password_strength, mfa_enabled, created_at')
+                .select('id, username, service, password_strength, mfa_enabled, participant_id, created_at')
                 .eq('username', username)
                 .eq('service', service)
                 .maybeSingle();
-            
             if (selErr) throw selErr;
 
             if (existing) {
-                return res.json({ success: true, session: existing, created: false });
+                if (participantId && !existing.participant_id) {
+                    await supabase.from('registrations')
+                        .update({ participant_id: participantId })
+                        .eq('id', existing.id);
+                    existing.participant_id = participantId;
+                }
+                return res.json({ success:true, session: existing, created:false, via:'username' });
             }
 
             // crear usuario nuevo
@@ -39,14 +54,15 @@ export function setupSessionRoutes(supabase) {
                     username,
                     service,
                     password_strength: null,
-                    mfa_enabled: false        // por defecto
+                    mfa_enabled: false,
+                    participant_id: participantId || null
                 })
                 .select()
                 .single();
 
             if (error) throw error;
 
-            res.json({ success: true, session: data });
+            return res.json({ success: true, session: data });
         } catch (error) {
             console.error('Error starting session:', error);
             return res.status(500).json({ success: false, error: error.message });
