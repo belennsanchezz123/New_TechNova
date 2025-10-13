@@ -65,23 +65,19 @@ export async function registerService(service) {
     goNext(service);
 }
 
-/*
+
 export async function handleMFA(activated) {
     metrics.scenario1.mfa_usage = activated ? 'Yes' : 'No';
 
+    // Si el usuario activa MFA y ya tenemos un registro para 'drive'
     if (activated && registrations['drive']) {
-        registrations['drive'].mfa_enabled = true;
-
-        await saveRegistration(
-            registrations['drive'].username,
-            registrations['drive'].service,
-            registrations['drive'].password_strength,
-            true
-        );
-
-        console.log('MFA activado para Lynx Drive');
+        const sessionId = registrations['drive'].id;
+        // Llama a la API para actualizar el registro y marcar mfa_enabled = true
+        await completeRegistration(sessionId, { mfaEnabled: true });
+        console.log('MFA state updated for Lynx Drive via API.');
     }
 
+    // Oculta el popup y muestra el siguiente formulario
     document.getElementById('popup-mfa').classList.remove('active');
     document.getElementById('lynx-events-form').style.display = 'block';
 }
@@ -89,7 +85,6 @@ export async function handleMFA(activated) {
 export function handlePasskey(activated) {
     metrics.scenario1.passkey_adoption_rate = activated ? 'Accepted' : 'Rejected';
     document.getElementById('popup-passkey').classList.remove('active');
+    // Avanza al siguiente escenario
     window.startScenario(2);
 }
-//Modificarlo para que funcione con lo de participante id
-*/

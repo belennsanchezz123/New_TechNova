@@ -43,7 +43,7 @@ export async function getAllRegistrations() {
 }
 
 //Borrador funciones que no uso
-/*
+
 export async function startSession(userIdentifier) {
     try {
         const response = await fetch(`${API_URL}/sessions/start`, {
@@ -59,9 +59,9 @@ export async function startSession(userIdentifier) {
         return { success: false, error: error.message };
     }
 }
-*/
 
-/* Funcion comentada en el backed
+
+//Funcion comentada en el backed
 export async function saveMetrics(sessionId, metrics) {
     try {
         const response = await fetch(`${API_URL}/sessions/metrics`, {
@@ -74,9 +74,9 @@ export async function saveMetrics(sessionId, metrics) {
         console.error('Error saving metrics:', error);
         return { success: false, error: error.message };
     }
-}*/
+}
 
-/*
+
 // Registra el alta de un servicio (mail / drive / events) con fuerza de contraseña
 export async function registerServiceMetrics(sessionId, { service, username, password_strength }) {
     return saveMetrics(sessionId, {
@@ -87,8 +87,8 @@ export async function registerServiceMetrics(sessionId, { service, username, pas
         ts: Date.now()
     });
 }
-*/
-/*
+
+
 export async function completeSession(sessionId, consentEmail) {
     try {
         const response = await fetch(`${API_URL}/sessions/complete`, {
@@ -102,4 +102,4 @@ export async function completeSession(sessionId, consentEmail) {
         return { success: false, error: error.message };
     }
 }
-*/
+

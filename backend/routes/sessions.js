@@ -18,7 +18,7 @@ export function setupSessionRoutes(supabase) {
             }
             
             // ¿ya existe?
-            const { data: existing } = await supabase
+            const { data: existing, error: selErr } = await supabase
                 .from('registrations')
                 .select('id, username, service, password_strength, mfa_enabled, participant_id, created_at')
                 .eq('username', username)
