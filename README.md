@@ -98,7 +98,7 @@ El dashboard muestra:
 - **Detalles por sesión**: Click en "Ver Métricas" para ver todas las métricas de un usuario específico
 
 ### Base de Datos (Supabase)
-
+Ejecutar el comando npx supabase db pull cada vez que creemos/modifiquemos una tabla en la app. 
 Las métricas se almacenan en dos tablas:
 
 - `user_sessions`: Información general de cada sesión (ID, usuario, fechas, email de consentimiento)
