@@ -43,7 +43,7 @@ export function setupSessionRoutes(supabase) {
                 .insert({
                     username,
                     service,
-                    password_strength: null,
+                    password_strength: passwordStrength || null,
                     mfa_enabled: false,
                     participant_id: participantId || null
                 })

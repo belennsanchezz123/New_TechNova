@@ -1,4 +1,3 @@
-// 🔴 LÍNEA A CORREGIR
 import { createRegistration, completeRegistration } from '../services/api.js';
 import { getPasswordStrength } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
@@ -46,9 +45,7 @@ export async function registerService(service) {
 
     metrics.scenario1[`${service}_password_strength`] = strength;
     passwords.push(password);
-
-    // Crea o recupera el registro (idempotente) — participant_id se envía desde api.js
-    const { success, session, created, error } = await createRegistration(username, serviceName);
+    const { success, session, error } = await createRegistration(username, serviceName, strength);
     if (!success || !session) {
         console.error('createRegistration error:', error);
         alert('Error al crear la cuenta. Por favor, intenta de nuevo.');

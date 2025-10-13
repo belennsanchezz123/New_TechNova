@@ -7,7 +7,7 @@ import { getParticipantId } from '../utils/participant.js';
  * Crea/recupera un registro (idempotente) para un servicio y usuario,
  * enviando participantId para trazabilidad.
  */
-export async function createRegistration(username, serviceName) {
+export async function createRegistration(username, serviceName, passwordStrength) {
     const participantId = getParticipantId();
     const res = await fetch(`${API_URL}/sessions/start`, {
         method: 'POST',
@@ -15,7 +15,8 @@ export async function createRegistration(username, serviceName) {
         body: JSON.stringify({
             userIdentifier: username,
             service: serviceName,  // 'lynx_mail' | 'lynx_drive' | 'lynx_events'
-            participantId
+            participantId,
+            passwordStrength 
         })
     });
     return res.json();
