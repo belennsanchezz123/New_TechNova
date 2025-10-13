@@ -25,14 +25,6 @@ function startScenario(scenarioNumber) {
 }
 
 async function initApp() {
-    const userIdentifier = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionResult = await startSession(userIdentifier);
-
-    if (sessionResult.success) {
-        sessionId = sessionResult.session.id;
-        console.log('Session started:', sessionId);
-    }
-
     const app = document.getElementById('app');
 
     let scenariosHTML = '<div id="simulation-container"><header>LYNX Platform Evaluation Simulation</header><main>';
