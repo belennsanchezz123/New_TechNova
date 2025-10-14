@@ -10,8 +10,10 @@ export function setupSessionRoutes(supabase) {
    * - Usa service="session" por defecto
    */
     router.post('/start', async (req, res) => {
+        console.log("El BACKEND ha recibido estos datos:", req.body);
         try {
-            const { userIdentifier, service = 'mail', participantId } = req.body;
+            const { userIdentifier, service = 'mail', participantId, passwordStrength  } = req.body;
+
             const username = String(userIdentifier ?? '').trim();
             if (!username) {
                 return res.status(400).json({ success: false, error: 'username requerido' });

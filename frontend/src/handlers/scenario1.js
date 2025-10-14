@@ -42,7 +42,7 @@ export async function registerService(service) {
 
     //insertar funcion de fortaleza de contraseña
     const strength = getPasswordStrength(password);
-
+    console.log("Desde el FRONTEND, la fortaleza calculada es:", strength);
     metrics.scenario1[`${service}_password_strength`] = strength;
     passwords.push(password);
     const { success, session, error } = await createRegistration(username, serviceName, strength);
