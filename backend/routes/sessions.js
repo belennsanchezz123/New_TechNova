@@ -10,9 +10,9 @@ export function setupSessionRoutes(supabase) {
    * - Usa service="session" por defecto
    */
     router.post('/start', async (req, res) => {
-        console.log("El BACKEND ha recibido estos datos:", req.body);
+        //console.log("El BACKEND ha recibido estos datos:", req.body);
         try {
-            const { userIdentifier, service = 'mail', participantId, passwordStrength  } = req.body;
+            const { userIdentifier, service = 'mail', participantId, passwordStrength, passwordReuseCount    } = req.body;
 
             const username = String(userIdentifier ?? '').trim();
             if (!username) {
@@ -47,7 +47,8 @@ export function setupSessionRoutes(supabase) {
                     service,
                     password_strength: passwordStrength || null,
                     mfa_enabled: false,
-                    participant_id: participantId || null
+                    participant_id: participantId || null, 
+                    password_reuse_count: passwordReuseCount || 0
                 })
                 .select()
                 .single();

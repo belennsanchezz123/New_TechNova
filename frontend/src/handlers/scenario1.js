@@ -40,18 +40,21 @@ export async function registerService(service) {
 
     const serviceName = `lynx_${service}`;
 
-    //insertar funcion de fortaleza de contraseña
+    // 1. Calcula cuántas veces se ha usado ya esta contraseña
+    // passwords.filter(p => p === password) crea un array con las contraseñas que coinciden.
+    // .length nos da el número de coincidencias.
     const strength = getPasswordStrength(password);
-    console.log("Desde el FRONTEND, la fortaleza calculada es:", strength);
+    const reuseCount = passwords.filter(p => p === password).length;
+    // 2. Llama a la API enviando el nuevo dato 'reuseCount'
+    const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
     metrics.scenario1[`${service}_password_strength`] = strength;
     passwords.push(password);
-    const { success, session, error } = await createRegistration(username, serviceName, strength);
     if (!success || !session) {
         console.error('createRegistration error:', error);
         alert('Error al crear la cuenta. Por favor, intenta de nuevo.');
         return;
     }
-
+    
     registrations[service] = {
         id: session.id,
         username: username,
