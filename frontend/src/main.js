@@ -13,6 +13,7 @@ import { startSession } from './services/api.js';
 
 let currentScenario = 0;
 let sessionId = null;
+const TOTAL_SCENARIOS = 8;
 
 function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
@@ -21,6 +22,30 @@ function startScenario(scenarioNumber) {
 
     if (scenarioNumber === 3) {
         renderEmails();
+    }
+
+    updateNavigationButtons();
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prev-scenario-btn');
+    const nextBtn = document.getElementById('next-scenario-btn');
+
+    if (prevBtn && nextBtn) {
+        prevBtn.disabled = currentScenario <= 0;
+        nextBtn.disabled = currentScenario >= TOTAL_SCENARIOS;
+    }
+}
+
+function previousScenario() {
+    if (currentScenario > 0) {
+        startScenario(currentScenario - 1);
+    }
+}
+
+function nextScenario() {
+    if (currentScenario < TOTAL_SCENARIOS) {
+        startScenario(currentScenario + 1);
     }
 }
 
@@ -33,10 +58,18 @@ async function initApp() {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
     }
 
+    scenariosHTML += `
+        <div id="navigation-controls">
+            <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
+            <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
+        </div>
+    `;
+
     scenariosHTML += '</main></div>';
     scenariosHTML += getPopupsHTML();
 
     app.innerHTML = scenariosHTML;
+    updateNavigationButtons();
 }
 
 export function getSessionId() {
@@ -44,6 +77,8 @@ export function getSessionId() {
 }
 
 window.startScenario = startScenario;
+window.previousScenario = previousScenario;
+window.nextScenario = nextScenario;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
 window.handlePasskey = handlePasskey;
