@@ -30,10 +30,15 @@ function startScenario(scenarioNumber) {
 function updateNavigationButtons() {
     const prevBtn = document.getElementById('prev-scenario-btn');
     const nextBtn = document.getElementById('next-scenario-btn');
+    const currentNum = document.getElementById('current-num');
 
     if (prevBtn && nextBtn) {
         prevBtn.disabled = currentScenario <= 0;
         nextBtn.disabled = currentScenario >= TOTAL_SCENARIOS;
+    }
+
+    if (currentNum) {
+        currentNum.textContent = currentScenario;
     }
 }
 
@@ -59,10 +64,13 @@ async function initApp() {
     }
 
     scenariosHTML += `
+        </main>
         <div id="navigation-controls">
             <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
+            <span id="scenario-counter">Escenario <span id="current-num">0</span> de 8</span>
             <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
         </div>
+        <main style="display:none;">
     `;
 
     scenariosHTML += '</main></div>';

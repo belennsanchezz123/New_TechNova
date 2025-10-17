@@ -53,10 +53,18 @@ p, li {
 #navigation-controls {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 10px;
-    margin-top: 30px;
-    padding-top: 20px;
+    padding: 20px 25px;
+    background-color: #f8f9fa;
     border-top: 2px solid #e0e0e0;
+}
+
+#scenario-counter {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--lynx-dark);
+    text-align: center;
 }
 
 #navigation-controls button {
