@@ -55,6 +55,7 @@ function nextScenario() {
 }
 
 async function initApp() {
+    console.log('🟢 INICIANDO APP');
     const app = document.getElementById('app');
 
     let scenariosHTML = '<div id="simulation-container"><header>LYNX Platform Evaluation Simulation</header><main>';
@@ -63,20 +64,29 @@ async function initApp() {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
     }
 
+    scenariosHTML += '</main>';
+
+    console.log('🟢 AGREGANDO NAVIGATION CONTROLS');
     scenariosHTML += `
-        </main>
         <div id="navigation-controls">
             <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
             <span id="scenario-counter">Escenario <span id="current-num">0</span> de 8</span>
             <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
         </div>
-        <main style="display:none;">
     `;
 
-    scenariosHTML += '</main></div>';
+    scenariosHTML += '</div>';
     scenariosHTML += getPopupsHTML();
 
+    console.log('🟢 INYECTANDO HTML');
     app.innerHTML = scenariosHTML;
+
+    console.log('🟢 VERIFICANDO BOTONES EN DOM:', {
+        prevBtn: document.getElementById('prev-scenario-btn'),
+        nextBtn: document.getElementById('next-scenario-btn'),
+        counter: document.getElementById('scenario-counter')
+    });
+
     updateNavigationButtons();
 }
 
