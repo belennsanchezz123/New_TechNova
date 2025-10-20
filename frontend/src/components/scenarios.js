@@ -50,35 +50,63 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
             <div id="task-usb" style="display:none;">
                 <h3>Handling External Devices</h3>
-                <p><strong>Instruction:</strong> To continue, you need to access design files from an external drive.</p>
+                <p><strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
     
-                <div id="usb-drive-container">
-                    <p>Un dispositivo llamado 'EVENT_FILES (E:)' está disponible.</p>
-                    <div id="usb-drive-icon" title="Doble clic para abrir, clic derecho para más opciones">
-                        🖴
-                        <span>EVENT_FILES (E:)</span>
-                </div>
-                <div id="usb-notification" class="usb-notification"></div>
-            </div>
+                <div class="file-explorer-window">
+                    <div class="fe-header">
+                        <div class="fe-arrows">← → ↻</div>
+                        <div class="fe-path">Este equipo</div>
+                    </div>
+                    <div class="fe-body">
+                        <div class="fe-sidebar">
+                            <ul>
+                                <li>▷ Documentos</li>
+                                <li>▷ Imágenes</li>
+                                <li class="active">▶ Este equipo</li>
+                                <li style="padding-left: 20px;">▷ Disco local (C:)</li>
+                                <li>▷ Red</li>
+                            </ul>
+                        </div>
+                        <div class="fe-main">
+                            <div id="this-pc-view">
+                                <p class="fe-group-title">Dispositivos y unidades (2)</p>
+                                <div class="fe-item" id="drive-c">
+                                    <div class="fe-icon">💻</div>
+                                    <div class="fe-item-details">
+                                        <span>Disco local (C:)</span>
+                                        <div class="progress-bar"><div style="width: 55%;"></div></div>
+                                </div>
+                            </div>
+                            <div class="fe-item" id="usb-drive">
+                                <div class="fe-icon">💾</div>
+                                <div class="fe-item-details">
+                                    <span>EVENT_FILES (E:)</span>
+                                    <div class="progress-bar"><div style="width: 25%;"></div></div>
+                                </div>
+                            </div>
+                        </div>
 
-            <div id="file-explorer-content" style="display:none;">
-                <strong>EVENT_FILES (E:)</strong>
-                <div class="file-item" data-filename="Mapa_Ruta_Senderismo.pdf">
-                    📄 Mapa_Ruta_Senderismo.pdf
-                </div>
-                <div class="file-item" data-filename="Fotos_Localizacion.zip">
-                    🗂️ Fotos_Localizacion.zip
+                        <div id="usb-content-view" style="display:none;">
+                            <div class="fe-item" id="file-mapa">
+                                <div class="fe-icon">📄</div>
+                                <div class="fe-item-details"><span>Mapa_Ruta_Senderismo.pdf</span></div>
+                            </div>
+                        <div class="fe-item" id="file-fotos">
+                            <div class="fe-icon">📦</div>
+                            <div class="fe-item-details"><span>Fotos_Localizacion.zip</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div id="usb-context-menu" class="context-menu">
-                <ul>
-                    <li id="usb-context-open">Abrir</li>
-                    <li id="usb-context-scan">Analizar con Antivirus Lynx</li>
-                </ul>
-            </div>
-    
-            </div>
+        <div id="usb-context-menu" class="context-menu">
+            <ul>
+                <li id="usb-context-open">Abrir</li>
+                <li id="usb-context-scan">Analizar con Antivirus Lynx</li>
+            </ul>
+        </div>
+        </div>
         `,
         3: `
             <h2>Scenario 3: Communications Management (Phishing)</h2>
