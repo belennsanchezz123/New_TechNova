@@ -49,3 +49,46 @@ h1, h2, h3 {
 p, li {
     line-height: 1.6;
 }
+
+#navigation-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 25px;
+    background-color: #f8f9fa;
+    border-top: 2px solid #e0e0e0;
+}
+
+#scenario-counter {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--lynx-dark);
+    text-align: center;
+}
+
+#navigation-controls button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--lynx-blue);
+    color: white;
+    min-width: 140px;
+}
+
+#navigation-controls button:hover:not(:disabled) {
+    background-color: var(--lynx-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#navigation-controls button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}

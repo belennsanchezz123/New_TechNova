@@ -13,6 +13,7 @@ import { startSession } from './services/api.js';
 
 let currentScenario = 0;
 let sessionId = null;
+const TOTAL_SCENARIOS = 8;
 
 function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
@@ -22,9 +23,39 @@ function startScenario(scenarioNumber) {
     if (scenarioNumber === 3) {
         renderEmails();
     }
+
+    updateNavigationButtons();
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prev-scenario-btn');
+    const nextBtn = document.getElementById('next-scenario-btn');
+    const currentNum = document.getElementById('current-num');
+
+    if (prevBtn && nextBtn) {
+        prevBtn.disabled = currentScenario <= 0;
+        nextBtn.disabled = currentScenario >= TOTAL_SCENARIOS;
+    }
+
+    if (currentNum) {
+        currentNum.textContent = currentScenario;
+    }
+}
+
+function previousScenario() {
+    if (currentScenario > 0) {
+        startScenario(currentScenario - 1);
+    }
+}
+
+function nextScenario() {
+    if (currentScenario < TOTAL_SCENARIOS) {
+        startScenario(currentScenario + 1);
+    }
 }
 
 async function initApp() {
+    console.log('🟢 INICIANDO APP');
     const app = document.getElementById('app');
 
     let scenariosHTML = '<div id="simulation-container"><header>LYNX Platform Evaluation Simulation</header><main>';
@@ -33,10 +64,30 @@ async function initApp() {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
     }
 
-    scenariosHTML += '</main></div>';
+    scenariosHTML += '</main>';
+
+    console.log('🟢 AGREGANDO NAVIGATION CONTROLS');
+    scenariosHTML += `
+        <div id="navigation-controls">
+            <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
+            <span id="scenario-counter">Escenario <span id="current-num">0</span> de 8</span>
+            <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
+        </div>
+    `;
+
+    scenariosHTML += '</div>';
     scenariosHTML += getPopupsHTML();
 
+    console.log('🟢 INYECTANDO HTML');
     app.innerHTML = scenariosHTML;
+
+    console.log('🟢 VERIFICANDO BOTONES EN DOM:', {
+        prevBtn: document.getElementById('prev-scenario-btn'),
+        nextBtn: document.getElementById('next-scenario-btn'),
+        counter: document.getElementById('scenario-counter')
+    });
+
+    updateNavigationButtons();
 }
 
 export function getSessionId() {
@@ -44,6 +95,8 @@ export function getSessionId() {
 }
 
 window.startScenario = startScenario;
+window.previousScenario = previousScenario;
+window.nextScenario = nextScenario;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
 window.handlePasskey = handlePasskey;

@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { setupSessionRoutes } from './routes/sessions.js';
 
-// Cargar .env que está en la misma carpeta
-dotenv.config();
+// Cargar .env desde la raíz del proyecto
+dotenv.config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
