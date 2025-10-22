@@ -6,8 +6,19 @@ let historyIndex = -1;
 
 // Inicializar el navegador cuando se carga el escenario
 export function initBrowser() {
-    loadPage('google-home');
     setupBrowserControls();
+    // Configurar los resultados de búsqueda precargados
+    setTimeout(() => {
+        const urlInput = document.getElementById('browser-url');
+        if (urlInput) {
+            urlInput.value = 'https://www.google.com/search?q=mapa+topografico+sierra';
+        }
+        setupSearchResultsHandlers();
+        currentPage = 'search-results';
+        browserHistory.push('search-results');
+        historyIndex = 0;
+        updateNavigationButtons();
+    }, 100);
 }
 
 function setupBrowserControls() {
@@ -107,6 +118,17 @@ function navigateHistory(direction) {
 }
 
 function renderGoogleHomepage() {
+    setTimeout(() => {
+        const searchInput = document.getElementById('google-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loadPage('search-results');
+                }
+            });
+        }
+    }, 50);
+
     return `
         <div class="google-homepage">
             <div class="google-logo">
@@ -114,7 +136,7 @@ function renderGoogleHomepage() {
             </div>
             <div class="google-search-box">
                 <span>🔍</span>
-                <input type="text" id="google-search-input" placeholder="Buscar en Google o escribir una URL">
+                <input type="text" id="google-search-input" placeholder="Buscar en Google o escribir una URL" value="mapa topografico sierra">
             </div>
             <div class="google-search-buttons">
                 <button class="google-btn" onclick="window.performGoogleSearch()">Buscar con Google</button>

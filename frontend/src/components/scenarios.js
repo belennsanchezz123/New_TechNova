@@ -234,7 +234,47 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
                 <div id="browser-viewport">
                     <div id="browser-content">
-                        <!-- Contenido se carga aquí -->
+                        <div class="google-results">
+                            <div class="google-results-header">
+                                Cerca de 2.450.000 resultados (0,45 segundos)
+                            </div>
+
+                            <div class="search-result-item">
+                                <div class="result-url">
+                                    <div class="result-favicon" style="background: #34a853;">🏞️</div>
+                                    <span class="result-breadcrumb">parquesnaturales.gov.es › mapas</span>
+                                </div>
+                                <a class="result-title" data-site="official">Mapas Topográficos Oficiales - Parques Naturales</a>
+                                <div class="result-description">
+                                    Descarga gratuita de mapas topográficos oficiales de la Sierra. Información actualizada,
+                                    rutas señalizadas y puntos de interés. Servicio oficial del Ministerio de Medio Ambiente.
+                                </div>
+                            </div>
+
+                            <div class="search-result-item result-suspicious">
+                                <div class="result-url">
+                                    <div class="result-favicon" style="background: #ea4335;">⚠️</div>
+                                    <span class="result-breadcrumb">mapas-gratis-descarga.tk › sierra</span>
+                                </div>
+                                <a class="result-title" data-site="suspicious">Descarga GRATIS Mapas Topográficos Sierra - Archivo Completo</a>
+                                <div class="result-description">
+                                    ¡DESCARGA GRATUITA! Mapas topográficos de alta resolución de la Sierra. Archivo completo
+                                    con todas las rutas. Descarga directa sin registro. ¡Aprovecha esta oferta limitada!
+                                </div>
+                            </div>
+
+                            <div class="search-result-item">
+                                <div class="result-url">
+                                    <div class="result-favicon" style="background: #4285f4;">🗺️</div>
+                                    <span class="result-breadcrumb">wikipedia.org › Sierra</span>
+                                </div>
+                                <div class="result-title" style="cursor: default;">Sierra - Wikipedia, la enciclopedia libre</div>
+                                <div class="result-description">
+                                    La Sierra es una formación montañosa situada en el centro de la península.
+                                    Cuenta con numerosas rutas de senderismo y una rica biodiversidad...
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

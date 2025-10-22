@@ -165,7 +165,13 @@
 
 /* Resultados de búsqueda */
 .google-results {
-    padding: 20px 180px;
+    padding: 20px 60px;
+}
+
+@media (min-width: 1200px) {
+    .google-results {
+        padding: 20px 180px;
+    }
 }
 
 .google-results-header {
