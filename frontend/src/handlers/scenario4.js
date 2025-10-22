@@ -7,17 +7,9 @@ let historyIndex = -1;
 // Inicializar el navegador cuando se carga el escenario
 export function initBrowser() {
     setupBrowserControls();
-    // Configurar los resultados de búsqueda precargados
+    // Cargar la página de Google inicialmente
     setTimeout(() => {
-        const urlInput = document.getElementById('browser-url');
-        if (urlInput) {
-            urlInput.value = 'https://www.google.com/search?q=mapa+topografico+sierra';
-        }
-        setupSearchResultsHandlers();
-        currentPage = 'search-results';
-        browserHistory.push('search-results');
-        historyIndex = 0;
-        updateNavigationButtons();
+        loadPage('google-home');
     }, 100);
 }
 
@@ -126,6 +118,8 @@ function renderGoogleHomepage() {
                     loadPage('search-results');
                 }
             });
+            // Enfocar automáticamente el campo de búsqueda
+            searchInput.focus();
         }
     }, 50);
 
@@ -136,11 +130,14 @@ function renderGoogleHomepage() {
             </div>
             <div class="google-search-box">
                 <span>🔍</span>
-                <input type="text" id="google-search-input" placeholder="Buscar en Google o escribir una URL" value="mapa topografico sierra">
+                <input type="text" id="google-search-input" placeholder="Buscar en Google o escribir una URL" value="">
             </div>
             <div class="google-search-buttons">
                 <button class="google-btn" onclick="window.performGoogleSearch()">Buscar con Google</button>
             </div>
+            <p style="text-align: center; margin-top: 20px; color: #70757a; font-size: 14px;">
+                💡 Sugerencia: Busca "mapa topografico sierra"
+            </p>
         </div>
     `;
 }
@@ -264,11 +261,8 @@ function setupWarningHandlers() {
 // Funciones globales para eventos inline
 window.performGoogleSearch = function() {
     const searchInput = document.getElementById('google-search-input');
-    if (searchInput && searchInput.value.trim()) {
-        performSearch(searchInput.value);
-    } else {
-        loadPage('search-results');
-    }
+    // Siempre carga los resultados del mapa para mantener la coherencia del escenario
+    loadPage('search-results');
 };
 
 window.downloadMap = function(source) {
