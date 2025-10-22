@@ -5,7 +5,7 @@ import { renderEmails } from './utils/emails.js';
 import { registerService, handleMFA, handlePasskey } from './handlers/scenario1.js';
 import { handleInterruption } from './handlers/scenario2.js';
 import { openEmail, handlePhishingClick, reportEmail, useAI, sendDocument } from './handlers/scenario3.js';
-import { navigate, handleWarning, handleCookies, handleUpdate } from './handlers/scenario4.js';
+import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
@@ -22,6 +22,10 @@ function startScenario(scenarioNumber) {
 
     if (scenarioNumber === 3) {
         renderEmails();
+    }
+
+    if (scenarioNumber === 4) {
+        setTimeout(() => initBrowser(), 100);
     }
 
     updateNavigationButtons();

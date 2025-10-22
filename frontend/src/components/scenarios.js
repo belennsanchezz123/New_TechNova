@@ -213,15 +213,29 @@ export function getScenarioHTML(scenarioNumber) {
         4: `
             <h2>Scenario 4: Resource Search & Download</h2>
             <p><strong>Instruction:</strong> Use the Lynx Browser to find and download a 'Topographic Map of the Sierra'.</p>
-            <div class="browser-window">
-                <h3>Lynx Browser</h3>
-                <p>Search results for: <em>'Topographic Map of the Sierra'</em></p>
-                <div class="search-results">
-                    <a onclick="window.navigate('official')">Topographic Map of the Sierra - 'Official Site of Natural Parks'</a>
-                    <a onclick="window.navigate('external')">Topographic Map of the Sierra - 'External Map Archive'</a>
+            <div class="browser-container">
+                <div class="browser-header">
+                    <div class="browser-tabs">
+                        <div class="browser-tab active">
+                            <span>🔍 Nueva pestaña</span>
+                        </div>
+                    </div>
                 </div>
-                <div id="browser-content" style="margin-top:20px; border-top: 1px solid #eee; padding-top:15px;">
-                    <p>Click a link to navigate.</p>
+                <div class="browser-toolbar">
+                    <div class="browser-nav-buttons">
+                        <button id="browser-back" class="browser-nav-btn" disabled>←</button>
+                        <button id="browser-forward" class="browser-nav-btn" disabled>→</button>
+                        <button id="browser-refresh" class="browser-nav-btn">⟳</button>
+                    </div>
+                    <div class="browser-address-bar">
+                        <span class="browser-secure-icon">🔒</span>
+                        <input type="text" id="browser-url" placeholder="Buscar o introducir dirección web" value="">
+                    </div>
+                </div>
+                <div id="browser-viewport">
+                    <div id="browser-content">
+                        <!-- Contenido se carga aquí -->
+                    </div>
                 </div>
             </div>
         `,
