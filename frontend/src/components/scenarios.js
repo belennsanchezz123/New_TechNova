@@ -60,11 +60,11 @@ export function getScenarioHTML(scenarioNumber) {
                     <div class="fe-body">
                         <div class="fe-sidebar">
                             <ul>
-                                <li>▷ Documentos</li>
-                                <li>▷ Imágenes</li>
-                                <li class="active">▶ Este equipo</li>
-                                <li style="padding-left: 20px;">▷ Disco local (C:)</li>
-                                <li>▷ Red</li>
+                                <li id="sidebar-documents">▷ Documentos</li>
+                                <li id="sidebar-images">▷ Imágenes</li>
+                                <li id="sidebar-this-pc" class="active">▶ Este equipo</li>
+                                <li id="sidebar-drive-c" style="padding-left: 20px;">▷ Disco local (C:)</li>
+                                <li id="sidebar-network">▷ Red</li>
                             </ul>
                         </div>
                         <div class="fe-main">
@@ -83,6 +83,54 @@ export function getScenarioHTML(scenarioNumber) {
                                     <span>EVENT_FILES (E:)</span>
                                     <div class="progress-bar"><div style="width: 25%;"></div></div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div id="drive-c-view" style="display:none;">
+                            <div class="fe-item">
+                                <div class="fe-icon">📁</div>
+                                <div class="fe-item-details"><span>Archivos de programa</span></div>
+                            </div>
+                            <div class="fe-item">
+                                <div class="fe-icon">📁</div>
+                                <div class="fe-item-details"><span>Windows</span></div>
+                            </div>
+                            <div class="fe-item">
+                                <div class="fe-icon">📁</div>
+                                <div class="fe-item-details"><span>Usuarios</span></div>
+                            </div>
+                        </div>
+
+                        <div id="network-view" style="display:none;">
+                            <div class="fe-item">
+                                <div class="fe-icon">🖥️</div>
+                                <div class="fe-item-details"><span>SERVIDOR-OFICINA</span></div>
+                            </div>
+                            <div class="fe-item">
+                                <div class="fe-icon">🖥️</div>
+                                <div class="fe-item-details"><span>PC-SALA-02</span></div>
+                            </div>
+                        </div>
+
+                        <div id="documents-view" style="display:none;">
+                            <div class="fe-item">
+                                <div class="fe-icon">📄</div>
+                                <div class="fe-item-details"><span>Informe_2024.docx</span></div>
+                            </div>
+                            <div class="fe-item">
+                                <div class="fe-icon">📄</div>
+                                <div class="fe-item-details"><span>Presupuesto.xlsx</span></div>
+                            </div>
+                        </div>
+
+                        <div id="images-view" style="display:none;">
+                            <div class="fe-item">
+                                <div class="fe-icon">🖼️</div>
+                                <div class="fe-item-details"><span>vacaciones_2024.jpg</span></div>
+                            </div>
+                            <div class="fe-item">
+                                <div class="fe-icon">🖼️</div>
+                                <div class="fe-item-details"><span>logo_empresa.png</span></div>
                             </div>
                         </div>
 

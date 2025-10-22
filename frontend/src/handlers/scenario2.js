@@ -2,6 +2,30 @@ import { metrics } from '../utils/metrics.js';
 
 let hasScannedDrive = false;
 
+// Función para cambiar entre vistas del explorador
+function navigateToView(viewId, pathText, sidebarActiveId) {
+    // Ocultar todas las vistas
+    const views = ['this-pc-view', 'drive-c-view', 'network-view', 'documents-view', 'images-view', 'usb-content-view'];
+    views.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
+    });
+
+    // Mostrar la vista seleccionada
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.style.display = 'block';
+
+    // Actualizar la ruta en la barra de dirección
+    const pathElement = document.querySelector('.fe-path');
+    if (pathElement) pathElement.textContent = pathText;
+
+    // Actualizar el elemento activo en la barra lateral
+    const sidebarItems = document.querySelectorAll('.fe-sidebar li');
+    sidebarItems.forEach(item => item.classList.remove('active'));
+    const activeItem = document.getElementById(sidebarActiveId);
+    if (activeItem) activeItem.classList.add('active');
+}
+
 // Función para "abrir" la unidad USB y mostrar su contenido
 function openDriveView() {
     // Si el usuario abre la unidad sin haberla escaneado, lo registramos
@@ -9,12 +33,7 @@ function openDriveView() {
         metrics.scenario2.usb_antivirus_scan = 'No, opened drive directly';
     }
 
-    // Oculta la vista de "Este equipo" y muestra la del contenido del USB
-    document.getElementById('this-pc-view').style.display = 'none';
-    document.getElementById('usb-content-view').style.display = 'block';
-
-    // Actualiza la ruta en la barra de dirección simulada
-    document.querySelector('.fe-path').textContent = 'Este equipo > EVENT_FILES (E:)';
+    navigateToView('usb-content-view', 'Este equipo > EVENT_FILES (E:)', 'sidebar-this-pc');
 
     // Añade el evento para que al hacer clic en el PDF, se avance de escenario
     document.getElementById('file-mapa').addEventListener('click', () => {
@@ -26,9 +45,38 @@ function openDriveView() {
 // Configura la interactividad del explorador de archivos
 function setupFileExplorer() {
     const usbDrive = document.getElementById('usb-drive');
+    const driveC = document.getElementById('drive-c');
     const contextMenu = document.getElementById('usb-context-menu');
 
-    // 1. Al hacer DOBLE CLIC en la unidad, se abre
+    // Navegación desde la barra lateral
+    document.getElementById('sidebar-this-pc').addEventListener('click', () => {
+        navigateToView('this-pc-view', 'Este equipo', 'sidebar-this-pc');
+    });
+
+    document.getElementById('sidebar-drive-c').addEventListener('click', () => {
+        navigateToView('drive-c-view', 'Este equipo > Disco local (C:)', 'sidebar-drive-c');
+    });
+
+    document.getElementById('sidebar-network').addEventListener('click', () => {
+        navigateToView('network-view', 'Red', 'sidebar-network');
+    });
+
+    document.getElementById('sidebar-documents').addEventListener('click', () => {
+        navigateToView('documents-view', 'Documentos', 'sidebar-documents');
+    });
+
+    document.getElementById('sidebar-images').addEventListener('click', () => {
+        navigateToView('images-view', 'Imágenes', 'sidebar-images');
+    });
+
+    // Doble clic en unidades en el panel principal
+    if (driveC) {
+        driveC.addEventListener('dblclick', () => {
+            navigateToView('drive-c-view', 'Este equipo > Disco local (C:)', 'sidebar-drive-c');
+        });
+    }
+
+    // 1. Al hacer DOBLE CLIC en la unidad USB, se abre
     usbDrive.addEventListener('dblclick', openDriveView);
 
     // 2. Al hacer CLIC DERECHO, muestra el menú de opciones
