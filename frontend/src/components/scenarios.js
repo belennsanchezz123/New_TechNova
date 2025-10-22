@@ -77,8 +77,14 @@ export function getScenarioHTML(scenarioNumber) {
                                         <div class="progress-bar"><div style="width: 55%;"></div></div>
                                 </div>
                             </div>
-                            <div class="fe-item" id="usb-drive">
-                                <div class="fe-icon">💾</div>
+                            <div class="fe-item fe-item-usb" id="usb-drive">
+                                <div class="fe-icon-usb">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2L8 6H11V11L6 11V8L2 12L6 16V13H13V6H16L12 2Z" fill="#6B46C1"/>
+                                        <rect x="11" y="11" width="2" height="6" fill="#6B46C1"/>
+                                        <circle cx="12" cy="19" r="2" fill="#6B46C1"/>
+                                    </svg>
+                                </div>
                                 <div class="fe-item-details">
                                     <span>EVENT_FILES (E:)</span>
                                     <div class="progress-bar"><div style="width: 25%;"></div></div>

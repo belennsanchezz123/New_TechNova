@@ -212,6 +212,22 @@ button.danger:hover {
     margin-right: 15px;
 }
 
+.fe-icon-usb {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.fe-item-usb {
+    border: 1px solid #e0e0e0;
+    background-color: #fafafa;
+}
+
+.fe-item-usb:hover {
+    background-color: #e8e8ff;
+    border-color: #6B46C1;
+}
+
 .fe-item-details {
     width: 100%;
 }
