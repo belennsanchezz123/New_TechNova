@@ -212,20 +212,30 @@ button.danger:hover {
     margin-right: 15px;
 }
 
-.fe-icon-usb {
-    margin-right: 15px;
+.fe-item-usb-drive {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #d9d9d9;
+    margin-top: 5px;
+    user-select: none;
+}
+
+.fe-item-usb-drive:hover {
+    background-color: #c8c8c8;
+}
+
+.usb-icon-container {
+    margin-right: 10px;
     display: flex;
     align-items: center;
 }
 
-.fe-item-usb {
-    border: 1px solid #e0e0e0;
-    background-color: #fafafa;
-}
-
-.fe-item-usb:hover {
-    background-color: #e8e8ff;
-    border-color: #6B46C1;
+.usb-label {
+    font-size: 13px;
+    color: #000;
 }
 
 .fe-item-details {
@@ -290,4 +300,54 @@ button.danger:hover {
     font-size: 0.95em;
     color: #555;
     margin-top: 10px;
+}
+
+/* Menú contextual estilo Windows */
+.context-menu-windows {
+    display: none;
+    position: fixed;
+    background: #f0f0f0;
+    border: 1px solid #999;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    min-width: 240px;
+    z-index: 3000;
+    padding: 3px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+}
+
+.context-menu-item {
+    padding: 6px 30px 6px 25px;
+    cursor: pointer;
+    color: #000;
+    position: relative;
+    user-select: none;
+}
+
+.context-menu-item:hover {
+    background: #0078d4;
+    color: white;
+}
+
+.context-menu-highlight {
+    background: #e6f3ff;
+    font-weight: 500;
+}
+
+.context-menu-highlight:hover {
+    background: #0078d4;
+    color: white;
+}
+
+.context-menu-icon {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.context-menu-separator {
+    height: 1px;
+    background: #d0d0d0;
+    margin: 3px 0;
 }

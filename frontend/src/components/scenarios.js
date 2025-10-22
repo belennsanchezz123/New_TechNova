@@ -77,18 +77,16 @@ export function getScenarioHTML(scenarioNumber) {
                                         <div class="progress-bar"><div style="width: 55%;"></div></div>
                                 </div>
                             </div>
-                            <div class="fe-item fe-item-usb" id="usb-drive">
-                                <div class="fe-icon-usb">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 2L8 6H11V11L6 11V8L2 12L6 16V13H13V6H16L12 2Z" fill="#6B46C1"/>
-                                        <rect x="11" y="11" width="2" height="6" fill="#6B46C1"/>
-                                        <circle cx="12" cy="19" r="2" fill="#6B46C1"/>
+                            <div class="fe-item-usb-drive" id="usb-drive">
+                                <div class="usb-icon-container">
+                                    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="8" y="4" width="16" height="24" rx="2" fill="#4A4A4A"/>
+                                        <rect x="10" y="6" width="12" height="18" fill="#5A5A5A"/>
+                                        <rect x="14" y="25" width="4" height="3" fill="#3A3A3A"/>
+                                        <rect x="12" y="8" width="8" height="2" fill="#7A7A7A"/>
                                     </svg>
                                 </div>
-                                <div class="fe-item-details">
-                                    <span>EVENT_FILES (E:)</span>
-                                    <div class="progress-bar"><div style="width: 25%;"></div></div>
-                                </div>
+                                <span class="usb-label">USB Drive (F:)</span>
                             </div>
                         </div>
 
@@ -154,10 +152,25 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
         </div>
 
-        <div id="usb-context-menu" class="context-menu">
-            <ul>
-                <li id="usb-context-scan">Analizar con Antivirus Lynx</li>
-            </ul>
+        <div id="usb-context-menu" class="context-menu-windows">
+            <div class="context-menu-item">Expandir</div>
+            <div class="context-menu-item">Abrir Reproducción automática...</div>
+            <div class="context-menu-item context-menu-highlight" id="usb-context-scan">
+                <span class="context-menu-icon">🛡️</span>
+                Analizar con Antivirus Lynx...
+            </div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">Incluir en biblioteca</div>
+            <div class="context-menu-item">Anclar al Acceso rápido</div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">Formatear...</div>
+            <div class="context-menu-item">Expulsar</div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">Cortar</div>
+            <div class="context-menu-item">Copiar</div>
+            <div class="context-menu-separator"></div>
+            <div class="context-menu-item">Cambiar nombre</div>
+            <div class="context-menu-item">Propiedades</div>
         </div>
 
         <div id="antivirus-scanning-modal" class="modal" style="display:none;">

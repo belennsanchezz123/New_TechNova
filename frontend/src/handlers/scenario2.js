@@ -126,9 +126,17 @@ function setupFileExplorer() {
     // Ocultar el menú si se hace clic en cualquier otro lugar
     window.addEventListener('click', (e) => {
         // Solo oculta si el clic no es sobre el propio menú
-        if (!e.target.closest('.context-menu')) {
+        if (!e.target.closest('.context-menu-windows')) {
             contextMenu.style.display = 'none';
         }
+    });
+
+    // Agregar event listeners para los otros items del menú (no hacen nada, solo cierran el menú)
+    const contextMenuItems = contextMenu.querySelectorAll('.context-menu-item:not(#usb-context-scan)');
+    contextMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
     });
 }
 
