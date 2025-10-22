@@ -87,17 +87,40 @@ function setupFileExplorer() {
         contextMenu.style.top = `${e.pageY}px`;
     });
 
-    // --- Lógica para los botones del menú contextual ---
+    // --- Lógica para el botón de escaneo del menú contextual ---
     document.getElementById('usb-context-scan').addEventListener('click', () => {
         hasScannedDrive = true;
         metrics.scenario2.usb_antivirus_scan = 'Yes, scanned drive first';
-        alert('Lynx Antivirus: Escaneo de la unidad completado. No se encontraron amenazas.');
         contextMenu.style.display = 'none';
-    });
 
-    document.getElementById('usb-context-open').addEventListener('click', () => {
-        openDriveView();
-        contextMenu.style.display = 'none';
+        // Mostrar el modal de escaneo
+        const modal = document.getElementById('antivirus-scanning-modal');
+        modal.style.display = 'flex';
+
+        // Simular el escaneo con una barra de progreso
+        const scanningBar = document.querySelector('.scanning-bar');
+        scanningBar.style.width = '0%';
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            scanningBar.style.width = progress + '%';
+
+            if (progress >= 100) {
+                clearInterval(interval);
+
+                // Cambiar el mensaje a "completado"
+                document.querySelector('.scanning-status').textContent = 'Listo, tu archivo no contiene ningún virus';
+                document.querySelector('.modal-content h3').textContent = 'Escaneo Completado';
+
+                // Cerrar el modal después de 2 segundos
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    // Abrir automáticamente la unidad después del escaneo
+                    openDriveView();
+                }, 2000);
+            }
+        }, 100);
     });
 
     // Ocultar el menú si se hace clic en cualquier otro lugar

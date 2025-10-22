@@ -150,9 +150,19 @@ export function getScenarioHTML(scenarioNumber) {
 
         <div id="usb-context-menu" class="context-menu">
             <ul>
-                <li id="usb-context-open">Abrir</li>
                 <li id="usb-context-scan">Analizar con Antivirus Lynx</li>
             </ul>
+        </div>
+
+        <div id="antivirus-scanning-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h3>Lynx Antivirus</h3>
+                <p>Analizando EVENT_FILES (E:)...</p>
+                <div class="scanning-progress">
+                    <div class="scanning-bar"></div>
+                </div>
+                <p class="scanning-status">Escaneando archivos...</p>
+            </div>
         </div>
         </div>
         `,
