@@ -66,6 +66,7 @@ function loadPage(pageName) {
     const content = document.getElementById('browser-content');
     const urlInput = document.getElementById('browser-url');
     const secureIcon = document.querySelector('.browser-secure-icon');
+    const infoBtn = document.getElementById('browser-info-btn');
     const siteInfo = document.getElementById('browser-site-info');
 
     // Cerrar el panel de información al cambiar de página
@@ -86,22 +87,24 @@ function loadPage(pageName) {
     switch(pageName) {
         case 'google-home':
             urlInput.value = 'https://www.google.com';
-            secureIcon.textContent = '🔒';
+            secureIcon.style.display = 'none';
+            infoBtn.style.display = 'none';
             content.innerHTML = renderGoogleHomepage();
-            updateSiteInfo('google');
             break;
 
         case 'search-results':
             urlInput.value = 'https://www.google.com/search?q=mapa+topografico+sierra';
-            secureIcon.textContent = '🔒';
+            secureIcon.style.display = 'none';
+            infoBtn.style.display = 'none';
             content.innerHTML = renderSearchResults();
             setupSearchResultsHandlers();
-            updateSiteInfo('google');
             break;
 
         case 'official-site':
             urlInput.value = 'https://parquesnaturales.gov.es/mapas';
             secureIcon.textContent = '🔒';
+            secureIcon.style.display = 'inline';
+            infoBtn.style.display = 'flex';
             content.innerHTML = renderOfficialSite();
             setupOfficialSiteHandlers();
             updateSiteInfo('official');
@@ -110,6 +113,8 @@ function loadPage(pageName) {
         case 'ad-suspicious-site':
             urlInput.value = 'https://mapas-topograficos.es/descargas';
             secureIcon.textContent = '🔒';
+            secureIcon.style.display = 'inline';
+            infoBtn.style.display = 'flex';
             content.innerHTML = renderAdSuspiciousSite();
             updateSiteInfo('ad-suspicious');
             break;
@@ -117,6 +122,8 @@ function loadPage(pageName) {
         case 'suspicious-site':
             urlInput.value = 'http://mapas-gratis-rapido.xyz/sierra-completo';
             secureIcon.textContent = '⚠️';
+            secureIcon.style.display = 'inline';
+            infoBtn.style.display = 'flex';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
             updateSiteInfo('suspicious');
