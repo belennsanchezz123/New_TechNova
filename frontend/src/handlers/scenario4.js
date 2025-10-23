@@ -102,8 +102,7 @@ function loadPage(pageName) {
 
         case 'official-site':
             urlInput.value = 'https://parquesnaturales.gov.es/mapas';
-            secureIcon.textContent = '🔒';
-            secureIcon.style.display = 'inline';
+            secureIcon.style.display = 'none';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderOfficialSite();
             setupOfficialSiteHandlers();
@@ -112,8 +111,7 @@ function loadPage(pageName) {
 
         case 'ad-suspicious-site':
             urlInput.value = 'https://mapas-topograficos.es/descargas';
-            secureIcon.textContent = '🔒';
-            secureIcon.style.display = 'inline';
+            secureIcon.style.display = 'none';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderAdSuspiciousSite();
             updateSiteInfo('ad-suspicious');
@@ -121,8 +119,7 @@ function loadPage(pageName) {
 
         case 'suspicious-site':
             urlInput.value = 'http://mapas-gratis-rapido.xyz/sierra-completo';
-            secureIcon.textContent = '⚠️';
-            secureIcon.style.display = 'inline';
+            secureIcon.style.display = 'none';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
