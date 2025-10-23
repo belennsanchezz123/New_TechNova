@@ -93,13 +93,16 @@
 .browser-info-btn {
     background: none;
     border: none;
-    padding: 4px 8px;
+    padding: 4px;
     cursor: pointer;
     color: #5f6368;
     display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 4px;
     transition: background-color 0.2s;
+    height: 24px;
+    width: 24px;
 }
 
 .browser-info-btn:hover {
