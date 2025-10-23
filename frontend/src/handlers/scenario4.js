@@ -18,6 +18,7 @@ function setupBrowserControls() {
     const backBtn = document.getElementById('browser-back');
     const forwardBtn = document.getElementById('browser-forward');
     const refreshBtn = document.getElementById('browser-refresh');
+    const infoBtn = document.getElementById('browser-info-btn');
 
     // Búsqueda desde la barra de direcciones
     urlInput.addEventListener('keypress', (e) => {
@@ -33,6 +34,20 @@ function setupBrowserControls() {
     backBtn.addEventListener('click', () => navigateHistory(-1));
     forwardBtn.addEventListener('click', () => navigateHistory(1));
     refreshBtn.addEventListener('click', () => loadPage(currentPage));
+
+    // Botón de información del sitio
+    if (infoBtn) {
+        infoBtn.addEventListener('click', toggleSiteInfo);
+    }
+
+    // Cerrar el panel si se hace clic fuera
+    document.addEventListener('click', (e) => {
+        const siteInfo = document.getElementById('browser-site-info');
+        const infoBtn = document.getElementById('browser-info-btn');
+        if (siteInfo && !siteInfo.contains(e.target) && !infoBtn.contains(e.target)) {
+            siteInfo.classList.remove('active');
+        }
+    });
 }
 
 function performSearch(query) {
@@ -51,6 +66,12 @@ function loadPage(pageName) {
     const content = document.getElementById('browser-content');
     const urlInput = document.getElementById('browser-url');
     const secureIcon = document.querySelector('.browser-secure-icon');
+    const siteInfo = document.getElementById('browser-site-info');
+
+    // Cerrar el panel de información al cambiar de página
+    if (siteInfo) {
+        siteInfo.classList.remove('active');
+    }
 
     // Actualizar historial
     if (currentPage !== pageName) {
@@ -67,6 +88,7 @@ function loadPage(pageName) {
             urlInput.value = 'https://www.google.com';
             secureIcon.textContent = '🔒';
             content.innerHTML = renderGoogleHomepage();
+            updateSiteInfo('google');
             break;
 
         case 'search-results':
@@ -74,6 +96,7 @@ function loadPage(pageName) {
             secureIcon.textContent = '🔒';
             content.innerHTML = renderSearchResults();
             setupSearchResultsHandlers();
+            updateSiteInfo('google');
             break;
 
         case 'official-site':
@@ -81,12 +104,14 @@ function loadPage(pageName) {
             secureIcon.textContent = '🔒';
             content.innerHTML = renderOfficialSite();
             setupOfficialSiteHandlers();
+            updateSiteInfo('official');
             break;
 
         case 'ad-suspicious-site':
             urlInput.value = 'https://mapas-topograficos.es/descargas';
             secureIcon.textContent = '🔒';
             content.innerHTML = renderAdSuspiciousSite();
+            updateSiteInfo('ad-suspicious');
             break;
 
         case 'suspicious-site':
@@ -94,6 +119,7 @@ function loadPage(pageName) {
             secureIcon.textContent = '⚠️';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
+            updateSiteInfo('suspicious');
             break;
     }
 }
@@ -273,12 +299,7 @@ function renderOfficialSite() {
             <p>Bienvenido al portal oficial de mapas topográficos de los Parques Naturales de España.</p>
             <p>Aquí puede descargar gratuitamente mapas actualizados y verificados de todas las rutas de la Sierra.</p>
 
-            <div style="margin: 30px 0; padding: 20px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">
-                <strong>✓ Sitio Oficial Verificado</strong><br>
-                <span style="font-size: 14px; color: #555;">Este es el portal oficial del Ministerio de Medio Ambiente</span>
-            </div>
-
-            <button onclick="window.downloadMap('official')" style="background: #4caf50; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+            <button onclick="window.downloadMap('official')" style="background: #4caf50; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">
                 📥 Descargar Mapa Topográfico
             </button>
 
@@ -334,6 +355,175 @@ function setupOfficialSiteHandlers() {
 
 function setupWarningHandlers() {
     // Ya están definidos los handlers inline en el HTML
+}
+
+function toggleSiteInfo(e) {
+    e.stopPropagation();
+    const siteInfo = document.getElementById('browser-site-info');
+    siteInfo.classList.toggle('active');
+}
+
+function updateSiteInfo(siteType) {
+    const siteInfo = document.getElementById('browser-site-info');
+    const urlInput = document.getElementById('browser-url');
+
+    let content = '';
+
+    switch(siteType) {
+        case 'google':
+            content = `
+                <div class="site-info-header">
+                    <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
+                    <div class="site-info-url">google.com</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🔒</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">La conexión es segura</div>
+                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🍪</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Cookies y datos de sitios</div>
+                        <div class="site-info-desc">En uso</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">⚙️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Configuración del sitio</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">ℹ️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Acerca de esta página</div>
+                        <div class="site-info-desc">Google LLC es una empresa de tecnología...</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+            `;
+            break;
+
+        case 'official':
+            content = `
+                <div class="site-info-header">
+                    <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
+                    <div class="site-info-url">parquesnaturales.gov.es</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🔒</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">La conexión es segura</div>
+                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🍪</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Cookies y datos de sitios</div>
+                        <div class="site-info-desc">En uso</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">⚙️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Configuración del sitio</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">ℹ️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Acerca de esta página</div>
+                        <div class="site-info-desc">Ministerio de Medio Ambiente - Gobierno de España</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+            `;
+            break;
+
+        case 'ad-suspicious':
+            content = `
+                <div class="site-info-header">
+                    <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
+                    <div class="site-info-url">mapas-topograficos.es</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🔒</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">La conexión es segura</div>
+                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🍪</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Cookies y datos de sitios</div>
+                        <div class="site-info-desc">En uso</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">⚙️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Configuración del sitio</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">ℹ️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Acerca de esta página</div>
+                        <div class="site-info-desc">Sitio web comercial registrado recientemente</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+            `;
+            break;
+
+        case 'suspicious':
+            content = `
+                <div class="site-info-header">
+                    <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
+                    <div class="site-info-url">mapas-gratis-rapido.xyz</div>
+                </div>
+                <div class="site-info-item" style="background: #fee;">
+                    <div class="site-info-icon">⚠️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title" style="color: #d32f2f;">La conexión no es segura</div>
+                        <div class="site-info-desc">Los atacantes podrían estar intentando robar tu información</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">🍪</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Cookies y datos de sitios</div>
+                        <div class="site-info-desc">Bloqueadas</div>
+                    </div>
+                    <div class="site-info-arrow">›</div>
+                </div>
+                <div class="site-info-item">
+                    <div class="site-info-icon">⚙️</div>
+                    <div class="site-info-text">
+                        <div class="site-info-title">Configuración del sitio</div>
+                    </div>
+                    <div class="site-info-arrow">↗</div>
+                </div>
+            `;
+            break;
+    }
+
+    siteInfo.innerHTML = content;
 }
 
 // Funciones globales para eventos inline
