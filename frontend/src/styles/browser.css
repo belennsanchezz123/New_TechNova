@@ -225,11 +225,6 @@
     line-height: 1.58;
 }
 
-.result-suspicious {
-    border-left: 3px solid #ea4335;
-    padding-left: 12px;
-}
-
 /* Advertencia del navegador */
 .browser-warning {
     background-color: #fee;

@@ -83,8 +83,14 @@ function loadPage(pageName) {
             setupOfficialSiteHandlers();
             break;
 
+        case 'ad-suspicious-site':
+            urlInput.value = 'https://mapas-topograficos.es/descargas';
+            secureIcon.textContent = '🔒';
+            content.innerHTML = renderAdSuspiciousSite();
+            break;
+
         case 'suspicious-site':
-            urlInput.value = 'http://mapas-gratis-descarga.tk/sierra';
+            urlInput.value = 'http://mapas-gratis-rapido.xyz/sierra-completo';
             secureIcon.textContent = '⚠️';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
@@ -149,39 +155,109 @@ function renderSearchResults() {
                 Cerca de 2.450.000 resultados (0,45 segundos)
             </div>
 
+            <!-- Resultado 1: Anuncio sutil que parece legítimo -->
+            <div class="search-result-item" style="background: #fef9f0; border-left: 2px solid #f9ab00; padding: 12px; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #5f6368; margin-right: 8px; padding: 2px 6px; border: 1px solid #dadce0; border-radius: 3px;">Anuncio</span>
+                    <div class="result-url" style="margin: 0;">
+                        <div class="result-favicon" style="background: #1976d2;">🗺️</div>
+                        <span class="result-breadcrumb">mapas-topograficos.es › descargas</span>
+                    </div>
+                </div>
+                <a class="result-title" data-site="ad-suspicious" style="font-size: 18px;">Mapas Topográficos de la Sierra - Descarga Actualizada 2025</a>
+                <div class="result-description">
+                    Mapas topográficos profesionales de la Sierra. Acceso inmediato a cartografía detallada.
+                    Última actualización disponible. Compatible con GPS y dispositivos móviles.
+                </div>
+            </div>
+
+            <!-- Resultado 2: Oficial y seguro -->
             <div class="search-result-item">
                 <div class="result-url">
                     <div class="result-favicon" style="background: #34a853;">🏞️</div>
-                    <span class="result-breadcrumb">parquesnaturales.gov.es › mapas</span>
+                    <span class="result-breadcrumb">parquesnaturales.gov.es › mapas › sierra</span>
                 </div>
-                <a class="result-title" data-site="official">Mapas Topográficos Oficiales - Parques Naturales</a>
+                <a class="result-title" data-site="official">Mapas Topográficos - Parque Natural de la Sierra</a>
                 <div class="result-description">
-                    Descarga gratuita de mapas topográficos oficiales de la Sierra. Información actualizada,
-                    rutas señalizadas y puntos de interés. Servicio oficial del Ministerio de Medio Ambiente.
+                    Portal oficial del Ministerio de Medio Ambiente. Descarga gratuita de mapas topográficos oficiales
+                    del Parque Natural de la Sierra. Información actualizada y rutas señalizadas.
                 </div>
             </div>
 
-            <div class="search-result-item result-suspicious">
-                <div class="result-url">
-                    <div class="result-favicon" style="background: #ea4335;">⚠️</div>
-                    <span class="result-breadcrumb">mapas-gratis-descarga.tk › sierra</span>
-                </div>
-                <a class="result-title" data-site="suspicious">Descarga GRATIS Mapas Topográficos Sierra - Archivo Completo</a>
-                <div class="result-description">
-                    ¡DESCARGA GRATUITA! Mapas topográficos de alta resolución de la Sierra. Archivo completo
-                    con todas las rutas. Descarga directa sin registro. ¡Aprovecha esta oferta limitada!
-                </div>
-            </div>
-
+            <!-- Resultado 3: Sospechoso pero sutil -->
             <div class="search-result-item">
                 <div class="result-url">
-                    <div class="result-favicon" style="background: #4285f4;">🗺️</div>
-                    <span class="result-breadcrumb">wikipedia.org › Sierra</span>
+                    <div class="result-favicon" style="background: #ff6d00;">📁</div>
+                    <span class="result-breadcrumb">mapas-gratis-rapido.xyz › sierra-completo</span>
                 </div>
-                <div class="result-title" style="cursor: default;">Sierra - Wikipedia, la enciclopedia libre</div>
+                <a class="result-title" data-site="suspicious">Descarga DIRECTA GRATIS YA - Mapa Sierra Completo HD</a>
                 <div class="result-description">
-                    La Sierra es una formación montañosa situada en el centro de la península.
-                    Cuenta con numerosas rutas de senderismo y una rica biodiversidad...
+                    ⭐⭐⭐⭐⭐ DESCARGA INSTANTÁNEA sin esperas ni registros. Archivo completo con todos los mapas
+                    topográficos en máxima calidad. ¡Miles de usuarios ya lo tienen! Descarga directa garantizada.
+                </div>
+            </div>
+
+            <!-- Resultado 4: Informativo (no clickeable) -->
+            <div class="search-result-item">
+                <div class="result-url">
+                    <div class="result-favicon" style="background: #4285f4;">📖</div>
+                    <span class="result-breadcrumb">es.wikipedia.org › wiki › Sierra</span>
+                </div>
+                <div class="result-title" style="cursor: default;">Sierra (formación montañosa) - Wikipedia</div>
+                <div class="result-description">
+                    Una sierra es una formación montañosa con cumbres y crestas afiladas. El término hace referencia
+                    al perfil dentado que caracteriza a este tipo de formaciones geológicas...
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderAdSuspiciousSite() {
+    return `
+        <div class="official-site" style="background: #fff;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px;">
+                <h2 style="margin: 0 0 10px 0; font-size: 28px;">MapasPro - Cartografía Digital</h2>
+                <p style="margin: 0; opacity: 0.9;">Tu plataforma de confianza para mapas topográficos</p>
+            </div>
+
+            <div style="padding: 20px;">
+                <h3 style="color: #333; margin-bottom: 15px;">Mapa Topográfico de la Sierra - Edición Premium</h3>
+                <p style="color: #666; line-height: 1.6;">
+                    Accede ahora a nuestro mapa topográfico completo de la Sierra. Incluye rutas exclusivas,
+                    puntos de interés y datos actualizados para tu próxima aventura.
+                </p>
+
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <strong style="font-size: 18px;">Descarga Completa</strong><br>
+                            <span style="color: #888; font-size: 14px;">Tamaño: 45.3 MB</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="text-decoration: line-through; color: #999;">29,99€</span><br>
+                            <strong style="color: #4caf50; font-size: 20px;">GRATIS</strong>
+                        </div>
+                    </div>
+
+                    <button onclick="window.downloadMap('ad-suspicious')"
+                            style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                   color: white; border: none; padding: 15px; border-radius: 6px;
+                                   cursor: pointer; font-size: 16px; font-weight: bold;">
+                        📥 Descargar Ahora - Acceso Inmediato
+                    </button>
+                </div>
+
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+                    <strong>⚡ Oferta por tiempo limitado</strong><br>
+                    <span style="font-size: 14px;">Descarga gratuita solo por hoy. Aprovecha esta oportunidad única.</span>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <p style="font-size: 12px; color: #999; line-height: 1.5;">
+                        Al descargar aceptas los términos y condiciones. Se requiere registro para acceder al contenido premium.
+                        Pueden aplicarse cargos adicionales por funciones avanzadas.
+                    </p>
                 </div>
             </div>
         </div>
@@ -220,7 +296,7 @@ function renderSuspiciousWarning() {
         <div class="browser-warning">
             <h2>⚠️ Advertencia de Seguridad</h2>
             <p><strong>La conexión a este sitio no es privada</strong></p>
-            <p>Es posible que atacantes estén intentando robar tu información de <strong>mapas-gratis-descarga.tk</strong>
+            <p>Es posible que atacantes estén intentando robar tu información de <strong>mapas-gratis-rapido.xyz</strong>
             (por ejemplo, contraseñas, mensajes o tarjetas de crédito).</p>
             <p>Este sitio no tiene un certificado de seguridad válido y puede ser peligroso.</p>
 
@@ -245,6 +321,8 @@ function setupSearchResultsHandlers() {
                 loadPage('official-site');
             } else if (site === 'suspicious') {
                 loadPage('suspicious-site');
+            } else if (site === 'ad-suspicious') {
+                loadPage('ad-suspicious-site');
             }
         });
     });
@@ -271,6 +349,10 @@ window.downloadMap = function(source) {
         setTimeout(() => {
             document.getElementById('popup-update').classList.add('active');
         }, 1500);
+    } else if (source === 'ad-suspicious') {
+        // Mostrar mensaje engañoso que pide registro
+        alert('⚠️ Para acceder a la descarga gratuita, primero debes crear una cuenta y verificar tu método de pago.\n\nNOTA: Este es un ejemplo de sitio engañoso. En la realidad, podrían solicitar datos personales o información bancaria.');
+        metrics.scenario4.download_choice = 'Suspicious Ad Site';
     }
 };
 
