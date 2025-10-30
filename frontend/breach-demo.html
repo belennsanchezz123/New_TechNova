@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Brechas - LYNX Platform</title>
+    <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+    <div id="simulation-container">
+        <header>
+            <h1>LYNX Platform - Verificador de Brechas</h1>
+        </header>
+        <main>
+            <div id="breach-checker-app"></div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { createBreachChecker, initBreachChecker } from '/src/components/BreachChecker.jsx';
+
+        const app = document.getElementById('breach-checker-app');
+        app.innerHTML = createBreachChecker();
+        initBreachChecker();
+    </script>
+</body>
+</html>
