@@ -1,4 +1,4 @@
-export async function checkEmailBreach(email) {
+export async function checkEmailBreach(email, participantId = null) {
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-breach`;
 
     const headers = {
@@ -10,7 +10,10 @@ export async function checkEmailBreach(email) {
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers,
-            body: JSON.stringify({ email })
+            body: JSON.stringify({
+                email,
+                participantId: participantId || localStorage.getItem('participant_id')
+            })
         });
 
         if (!response.ok) {

@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,7 +18,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { email } = await req.json();
+    const { email, participantId } = await req.json();
 
     if (!email) {
       return new Response(
@@ -28,6 +29,11 @@ Deno.serve(async (req: Request) => {
         }
       );
     }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Check breaches for the email
     const breachesResponse = await fetch(
@@ -57,7 +63,7 @@ Deno.serve(async (req: Request) => {
       throw new Error(`HIBP API returned status ${breachesResponse.status}`);
     }
 
-    // Check pastes (optional - this requires API key for full access)
+    // Check pastes (optional)
     let pastes = [];
     const pastesResponse = await fetch(
       `${HIBP_API_URL}/pasteaccount/${encodeURIComponent(email)}`,
@@ -71,29 +77,77 @@ Deno.serve(async (req: Request) => {
     if (pastesResponse.status === 200) {
       pastes = await pastesResponse.json();
     } else if (pastesResponse.status !== 404) {
-      // Ignore pastes if 404 (not found) or if there's an error
       console.log(`Pastes check returned: ${pastesResponse.status}`);
+    }
+
+    // Prepare breach data
+    const breachesData = breaches.map((breach: any) => ({
+      name: breach.Name,
+      title: breach.Title,
+      domain: breach.Domain,
+      breachDate: breach.BreachDate,
+      addedDate: breach.AddedDate,
+      modifiedDate: breach.ModifiedDate,
+      pwnCount: breach.PwnCount,
+      description: breach.Description,
+      dataClasses: breach.DataClasses,
+      isVerified: breach.IsVerified,
+      isSensitive: breach.IsSensitive,
+      isRetired: breach.IsRetired,
+      logoPath: breach.LogoPath,
+    }));
+
+    // Extract data types
+    const dataTypesSet = new Set<string>();
+    breaches.forEach((breach: any) => {
+      breach.DataClasses?.forEach((dataClass: string) => dataTypesSet.add(dataClass));
+    });
+    const dataTypesExposed = Array.from(dataTypesSet);
+
+    // Calculate total affected accounts
+    const totalAccountsAffected = breaches.reduce(
+      (sum: number, breach: any) => sum + (breach.PwnCount || 0),
+      0
+    );
+
+    // Get most recent breach date
+    let mostRecentBreachDate = null;
+    if (breaches.length > 0) {
+      const dates = breaches
+        .map((b: any) => b.BreachDate)
+        .filter(Boolean)
+        .sort()
+        .reverse();
+      mostRecentBreachDate = dates[0] || null;
+    }
+
+    // Save to database
+    const { data: savedData, error: dbError } = await supabase
+      .from('breach_checks')
+      .insert({
+        participant_id: participantId || null,
+        email: email,
+        breach_count: breaches.length,
+        paste_count: pastes.length,
+        breaches_data: breachesData,
+        data_types_exposed: dataTypesExposed,
+        total_accounts_affected: totalAccountsAffected,
+        most_recent_breach_date: mostRecentBreachDate,
+        checked_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Error saving to database:', dbError);
+      // Continue even if database save fails
     }
 
     return new Response(
       JSON.stringify({
         email,
         breachCount: breaches.length,
-        breaches: breaches.map((breach: any) => ({
-          name: breach.Name,
-          title: breach.Title,
-          domain: breach.Domain,
-          breachDate: breach.BreachDate,
-          addedDate: breach.AddedDate,
-          modifiedDate: breach.ModifiedDate,
-          pwnCount: breach.PwnCount,
-          description: breach.Description,
-          dataClasses: breach.DataClasses,
-          isVerified: breach.IsVerified,
-          isSensitive: breach.IsSensitive,
-          isRetired: breach.IsRetired,
-          logoPath: breach.LogoPath,
-        })),
+        breaches: breachesData,
         pasteCount: pastes.length,
         pastes: pastes.map((paste: any) => ({
           source: paste.Source,
@@ -102,7 +156,11 @@ Deno.serve(async (req: Request) => {
           date: paste.Date,
           emailCount: paste.EmailCount,
         })),
+        dataTypesExposed,
+        totalAccountsAffected,
+        mostRecentBreachDate,
         checkedAt: new Date().toISOString(),
+        savedToDatabase: !dbError,
       }),
       {
         status: 200,

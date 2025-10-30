@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LYNX - Resultados de Verificación de Brechas</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ff9800;
+            --dark: #343a4e;
+            --light: #f8f9fa;
+            --background: #eef2f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: var(--secondary);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .stat-card.warning .value {
+            color: var(--warning);
+        }
+
+        .stat-card.danger .value {
+            color: var(--danger);
+        }
+
+        .breaches-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .breaches-container h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--light);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: var(--light);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-safe {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-compromised {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .view-btn:hover {
+            background: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .close-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background: #5a6268;
+        }
+
+        .breach-detail-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .breach-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .breach-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .breach-date {
+            color: var(--secondary);
+            font-size: 0.9em;
+        }
+
+        .breach-description {
+            color: #666;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .breach-data-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .data-type-badge {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: var(--dark);
+            border: 1px solid #ddd;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--secondary);
+            font-size: 1.1em;
+        }
+
+        .email-info {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .email-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔒 LYNX - Resultados de Verificación de Brechas</h1>
+            <p>Panel de análisis de exposición de datos personales</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Verificaciones</h3>
+                <div class="value" id="total-checks">0</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Emails Comprometidos</h3>
+                <div class="value" id="compromised-count">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Emails Seguros</h3>
+                <div class="value" id="safe-count">0</div>
+            </div>
+            <div class="stat-card danger">
+                <h3>Total Brechas Detectadas</h3>
+                <div class="value" id="total-breaches">0</div>
+            </div>
+        </div>
+
+        <div class="breaches-container">
+            <h2>Verificaciones de Emails</h2>
+            <div id="breaches-list">
+                <div class="loading">Cargando resultados...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="breach-details-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles de Verificación</h2>
+                <button class="close-btn" onclick="closeModal()">Cerrar</button>
+            </div>
+            <div id="email-details"></div>
+            <div id="breach-details-content"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://dxkntndroctjrihvqrbb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4a250bmRyb2N0anJpaHZxcmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NjYzMDYsImV4cCI6MjA3NjI0MjMwNn0.qxLafitjmBU1xI5hQTaKNDFExEk6D1oqYHr34P6GCRw';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadBreachChecks() {
+            try {
+                const { data, error } = await supabase
+                    .from('breach_checks')
+                    .select('*')
+                    .order('checked_at', { ascending: false });
+
+                if (error) {
+                    throw error;
+                }
+
+                displayBreachChecks(data || []);
+                updateStats(data || []);
+            } catch (error) {
+                console.error('Error loading breach checks:', error);
+                document.getElementById('breaches-list').innerHTML =
+                    '<div class="loading">Error al cargar resultados</div>';
+            }
+        }
+
+        function updateStats(checks) {
+            const total = checks.length;
+            const compromised = checks.filter(c => c.breach_count > 0).length;
+            const safe = total - compromised;
+            const totalBreaches = checks.reduce((sum, c) => sum + (c.breach_count || 0), 0);
+
+            document.getElementById('total-checks').textContent = total;
+            document.getElementById('compromised-count').textContent = compromised;
+            document.getElementById('safe-count').textContent = safe;
+            document.getElementById('total-breaches').textContent = totalBreaches;
+        }
+
+        function displayBreachChecks(checks) {
+            if (checks.length === 0) {
+                document.getElementById('breaches-list').innerHTML =
+                    '<div class="loading">No hay verificaciones registradas</div>';
+                return;
+            }
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Fecha de Verificación</th>
+                            <th>Brechas Encontradas</th>
+                            <th>Tipos de Datos Expuestos</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${checks.map(check => `
+                            <tr>
+                                <td><strong>${maskEmail(check.email)}</strong></td>
+                                <td>${new Date(check.checked_at).toLocaleString('es-ES')}</td>
+                                <td><strong>${check.breach_count}</strong></td>
+                                <td>${check.data_types_exposed?.length || 0}</td>
+                                <td>
+                                    <span class="status-badge ${check.breach_count > 0 ? 'status-compromised' : 'status-safe'}">
+                                        ${check.breach_count > 0 ? '⚠️ Comprometido' : '✅ Seguro'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="view-btn" onclick="window.viewBreachDetails('${check.id}')">
+                                        Ver Detalles
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('breaches-list').innerHTML = table;
+        }
+
+        function maskEmail(email) {
+            const [username, domain] = email.split('@');
+            if (username.length <= 3) {
+                return `${username[0]}***@${domain}`;
+            }
+            const visibleStart = username.slice(0, 2);
+            const visibleEnd = username.slice(-1);
+            return `${visibleStart}***${visibleEnd}@${domain}`;
+        }
+
+        async function viewBreachDetails(id) {
+            try {
+                const { data, error } = await supabase
+                    .from('breach_checks')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+
+                displayBreachDetailsModal(data);
+            } catch (error) {
+                console.error('Error loading breach details:', error);
+            }
+        }
+
+        function displayBreachDetailsModal(check) {
+            const emailDetails = `
+                <div class="email-info">
+                    <p><strong>Email:</strong> ${maskEmail(check.email)}</p>
+                    <p><strong>Fecha de Verificación:</strong> ${new Date(check.checked_at).toLocaleString('es-ES')}</p>
+                    <p><strong>Brechas Encontradas:</strong> ${check.breach_count}</p>
+                    <p><strong>Tipos de Datos Expuestos:</strong> ${check.data_types_exposed?.length || 0}</p>
+                    ${check.total_accounts_affected ? `<p><strong>Total Cuentas Afectadas:</strong> ${check.total_accounts_affected.toLocaleString()}</p>` : ''}
+                    ${check.most_recent_breach_date ? `<p><strong>Brecha Más Reciente:</strong> ${new Date(check.most_recent_breach_date).toLocaleDateString('es-ES')}</p>` : ''}
+                </div>
+            `;
+
+            let breachDetailsHTML = '';
+
+            if (check.breach_count > 0 && check.breaches_data) {
+                breachDetailsHTML = `
+                    <h3>Detalles de las Brechas Encontradas</h3>
+                    ${check.breaches_data.map(breach => `
+                        <div class="breach-detail-card">
+                            <div class="breach-detail-header">
+                                <span class="breach-title">${breach.title || breach.name}</span>
+                                <span class="breach-date">${new Date(breach.breachDate).toLocaleDateString('es-ES')}</span>
+                            </div>
+                            <p class="breach-description">${breach.description}</p>
+                            <p style="margin-top: 10px;"><strong>Cuentas afectadas:</strong> ${breach.pwnCount?.toLocaleString() || 'N/A'}</p>
+                            ${breach.domain ? `<p><strong>Dominio:</strong> ${breach.domain}</p>` : ''}
+                            ${breach.dataClasses && breach.dataClasses.length > 0 ? `
+                                <div style="margin-top: 15px;">
+                                    <strong>Datos Comprometidos:</strong>
+                                    <div class="breach-data-types">
+                                        ${breach.dataClasses.map(type => `
+                                            <span class="data-type-badge">${type}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                breachDetailsHTML = `
+                    <div style="text-align: center; padding: 40px; background: #d4edda; border-radius: 8px;">
+                        <h3 style="color: #155724;">✅ Email Seguro</h3>
+                        <p style="color: #155724; margin-top: 10px;">
+                            Este email no ha sido encontrado en ninguna brecha de datos conocida.
+                        </p>
+                    </div>
+                `;
+            }
+
+            if (check.data_types_exposed && check.data_types_exposed.length > 0) {
+                breachDetailsHTML += `
+                    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;">
+                        <h4 style="color: #856404; margin-top: 0;">Resumen de Datos Expuestos</h4>
+                        <div class="breach-data-types">
+                            ${check.data_types_exposed.map(type => `
+                                <span class="data-type-badge" style="border-color: #856404;">${type}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('email-details').innerHTML = emailDetails;
+            document.getElementById('breach-details-content').innerHTML = breachDetailsHTML;
+            document.getElementById('breach-details-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('breach-details-modal').classList.remove('active');
+        }
+
+        window.viewBreachDetails = viewBreachDetails;
+        window.closeModal = closeModal;
+
+        loadBreachChecks();
+        setInterval(loadBreachChecks, 30000);
+    </script>
+</body>
+</html>

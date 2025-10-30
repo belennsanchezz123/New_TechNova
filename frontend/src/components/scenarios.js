@@ -297,12 +297,20 @@ export function getScenarioHTML(scenarioNumber) {
         7: `
             <h2>Optional Final Phase: Data Breach Check</h2>
             <p>As part of our research, we are studying how public data exposure relates to cybersecurity behavior. This is <strong>100% voluntary</strong>.</p>
-            <p>If you consent, you can provide your personal email address. We will use an automated tool to check if it has appeared in any known public data breaches. Your email will be anonymized and deleted after the check.</p>
+            <p>If you consent, you can provide your personal email address. We will use an automated tool to check if it has appeared in any known public data breaches. Your email will be anonymized and stored securely for research purposes only.</p>
             <div class="form-group">
                 <label for="consent-email">Your Email Address (Optional)</label>
                 <input type="email" id="consent-email" placeholder="Leave blank to decline">
             </div>
-            <button onclick="window.finishSimulation(true)">I Consent and Submit</button>
+
+            <div id="breach-loading-scenario" style="display: none; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+                <div class="spinner" style="border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+                <p>Checking email against breach databases...</p>
+            </div>
+
+            <div id="breach-results-scenario" style="display: none; margin: 20px 0;"></div>
+
+            <button id="consent-submit-btn" onclick="window.finishSimulation(true)">I Consent and Submit</button>
             <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
         8: `
