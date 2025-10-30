@@ -1,15 +1,12 @@
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 export async function checkEmailBreach(email, participantId = null) {
-    const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-breach`;
-
-    const headers = {
-        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-    };
-
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${API_URL}/breach/check`, {
             method: 'POST',
-            headers,
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 email,
                 participantId: participantId || localStorage.getItem('participant_id')

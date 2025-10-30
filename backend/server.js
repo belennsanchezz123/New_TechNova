@@ -1,40 +1,25 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
 import { setupSessionRoutes } from './routes/sessions.js';
+import { setupBreachRoutes } from './routes/breach.js';
 
-// Cargar .env desde la raíz del proyecto
 dotenv.config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Conectar con Supabase (usa las variables del .env)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 app.use(cors());
-// Mas seguro usar esto en un futuro app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
-// Ruta de prueba para ver si el .env funciona
-app.get('/api/env-check', (req, res) => {
-  res.json({
-    port: process.env.PORT,
-    supabase_url: process.env.SUPABASE_URL ? 'OK' : 'MISSING',
-    supabase_key: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'OK' : 'MISSING'
-  });
-});
-
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'LYNX Backend is running' });
+  res.json({ status: 'ok', message: 'LYNX Backend is running with SQLite' });
 });
 
-app.use('/api/sessions', setupSessionRoutes(supabase));
+app.use('/api/sessions', setupSessionRoutes());
+app.use('/api/breach', setupBreachRoutes());
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`SQLite database: backend/lynx-study.db`);
 });

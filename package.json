@@ -8,7 +8,5 @@
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
     "backend": "npm start --prefix backend"
   },
-  "devDependencies": {
-    "supabase": "^2.51.0"
-  }
+  "devDependencies": {}
 }
