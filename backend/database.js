@@ -21,7 +21,7 @@ const initDB = () => {
             service TEXT NOT NULL,
             password_strength TEXT,
             mfa_enabled INTEGER DEFAULT 0,
-            participant_id TEXT,
+            participant_id TEXT NOT NULL UNIQUE,
             password_reuse_count INTEGER DEFAULT 0,
             created_at TEXT DEFAULT (datetime('now'))
         );
@@ -32,7 +32,7 @@ const initDB = () => {
         CREATE TABLE IF NOT EXISTS breach_checks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL,
-            participant_id TEXT,
+            participant_id TEXT NOT NULL UNIQUE,
             breach_count INTEGER DEFAULT 0,
             paste_count INTEGER DEFAULT 0,
             breaches_data TEXT,
