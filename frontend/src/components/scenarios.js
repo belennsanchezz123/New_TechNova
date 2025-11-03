@@ -198,7 +198,6 @@ export function getScenarioHTML(scenarioNumber) {
                  <p><strong>Instruction 1:</strong> On your desktop, you find 'Lista_Participantes_Excursion.docx'. It contains sensitive attendee details. Use the 'Lynx AI Assistant' below to create a summary of dietary and medical needs.</p>
                  <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Paste content here for the AI Assistant..."></textarea>
                  <button onclick="window.useAI()">Process with AI</button>
-                 <p><strong>Remember the rule:</strong> Never use the AI for documents with personal contact data.</p>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
