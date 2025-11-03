@@ -15,6 +15,11 @@ export function renderEmails() {
         item.className = `email-item ${email.read ? '' : 'unread'}`;
         item.innerHTML = `<strong>${email.from}</strong><br>${email.subject}`;
         item.onclick = () => window.openEmail(email.id);
+        item.oncontextmenu = (e) => {
+            e.preventDefault();
+            showEmailContextMenu(e.clientX, e.clientY, email.id);
+            return false;
+        };
         listEl.appendChild(item);
     });
 }
@@ -32,17 +37,6 @@ export function openEmail(id) {
         </div>
     `;
     renderEmails();
-
-    setTimeout(() => {
-        const emailContent = viewEl.querySelector('.email-content');
-        if (emailContent) {
-            emailContent.oncontextmenu = (e) => {
-                e.preventDefault();
-                showEmailContextMenu(e.clientX, e.clientY, id);
-                return false;
-            };
-        }
-    }, 100);
 }
 
 function showEmailContextMenu(x, y, emailId) {
