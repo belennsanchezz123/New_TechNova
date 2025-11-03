@@ -44,7 +44,6 @@ export function getScenarioHTML(scenarioNumber) {
             <h2>Scenario 2: External Devices</h2>
             <div id="task-interruption">
                 <p><strong>Instruction:</strong> You need to retrieve the document <strong>'Lista_Participantes_Excursion.docx'</strong> from another room. Please leave your workstation to get it.</p>
-                <p><em>For this simulation, imagine you are stepping away from your computer for a moment.</em></p>
                 <button onclick="window.handleInterruption(false)">Continue</button>
             </div>
             <div id="task-usb" style="display:none;">
