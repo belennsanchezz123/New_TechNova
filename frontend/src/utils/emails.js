@@ -52,10 +52,7 @@ function showEmailContextMenu(x, y, emailId) {
             <div class="context-menu-item" id="reply-email">Reply</div>
             <div class="context-menu-item" id="forward-email">Forward</div>
             <div class="context-menu-separator"></div>
-            <div class="context-menu-item context-menu-highlight" id="report-email">
-                <span class="context-menu-icon">⚠️</span>
-                Report Suspicious Email
-            </div>
+            <div class="context-menu-item" id="report-email">Report Suspicious Email</div>
             <div class="context-menu-separator"></div>
             <div class="context-menu-item" id="delete-email">Delete</div>
         `;
