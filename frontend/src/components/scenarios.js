@@ -41,16 +41,18 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
         `,
         2: `
-            <h2>Scenario 2: Interruption & Peripherals</h2>
+            <h2>Scenario 2: External Devices</h2>
             <div id="task-interruption">
-                <p><strong>Instruction:</strong> Before you continue, one of the organizers needs to ask you a few quick questions. Please get their attention. For this simulation, imagine you are turning away from your screen to talk to someone for a minute.</p>
-                <p>What do you do with your computer screen?</p>
+                <p><strong>Instruction:</strong> You need to retrieve the document <strong>'Lista_Participantes_Excursion.docx'</strong> from another room. Please leave your workstation to get it.</p>
+                <p><em>For this simulation, imagine you are stepping away from your computer for a moment.</em></p>
+                <p>Before you go, what do you do with your computer screen?</p>
                 <button id="lock-screen-btn" onclick="window.handleInterruption(true)">Lock Screen (Win + L)</button>
-                <button class="secondary" onclick="window.handleInterruption(false)">Do Nothing</button>
+                <button class="secondary" onclick="window.handleInterruption(false)">Do Nothing, Leave Unlocked</button>
             </div>
             <div id="task-usb" style="display:none;">
                 <h3>Handling External Devices</h3>
-                <p><strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
+                <p><em>You return to your desk.</em></p>
+                <p><strong>Instruction:</strong> A USB device has been connected while you were away. Please navigate to it and open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
     
                 <div class="file-explorer-window">
                     <div class="fe-header">

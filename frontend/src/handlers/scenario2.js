@@ -140,12 +140,10 @@ function setupFileExplorer() {
     });
 }
 
-// Función principal que inicia el escenario 2
 export function handleInterruption(didLock) {
-    metrics.scenario2.manual_lock_screen = didLock ? 'Yes, locked screen' : 'No, did not lock';
+    metrics.scenario2.manual_lock_screen = didLock ? 'Yes, locked before leaving' : 'No, left computer unlocked';
     document.getElementById('task-interruption').style.display = 'none';
     document.getElementById('task-usb').style.display = 'block';
-    
-    // Inicia la lógica del explorador de archivos
+
     setupFileExplorer();
 }
