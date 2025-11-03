@@ -45,14 +45,11 @@ export function getScenarioHTML(scenarioNumber) {
             <div id="task-interruption">
                 <p><strong>Instruction:</strong> You need to retrieve the document <strong>'Lista_Participantes_Excursion.docx'</strong> from another room. Please leave your workstation to get it.</p>
                 <p><em>For this simulation, imagine you are stepping away from your computer for a moment.</em></p>
-                <p>Before you go, what do you do with your computer screen?</p>
-                <button id="lock-screen-btn" onclick="window.handleInterruption(true)">Lock Screen (Win + L)</button>
-                <button class="secondary" onclick="window.handleInterruption(false)">Do Nothing, Leave Unlocked</button>
+                <button onclick="window.handleInterruption(false)">Continue</button>
             </div>
             <div id="task-usb" style="display:none;">
                 <h3>Handling External Devices</h3>
-                <p><em>You return to your desk.</em></p>
-                <p><strong>Instruction:</strong> A USB device has been connected while you were away. Please navigate to it and open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
+                <p><strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file named <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
     
                 <div class="file-explorer-window">
                     <div class="fe-header">

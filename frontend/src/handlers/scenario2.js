@@ -141,7 +141,6 @@ function setupFileExplorer() {
 }
 
 export function handleInterruption(didLock) {
-    metrics.scenario2.manual_lock_screen = didLock ? 'Yes, locked before leaving' : 'No, left computer unlocked';
     document.getElementById('task-interruption').style.display = 'none';
     document.getElementById('task-usb').style.display = 'block';
 
