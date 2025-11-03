@@ -184,8 +184,8 @@ export function getScenarioHTML(scenarioNumber) {
         </div>
         `,
         3: `
-            <h2>Scenario 3: Communications Management (Phishing)</h2>
-            <p><strong>Instruction:</strong> Open Lynx Mail. Your task is to categorize each message using the action buttons. Decide if each email is Important, Informative (Archive), Spam, or Phishing.</p>
+            <h2>Scenario 3: Communications Management</h2>
+            <p><strong>Instruction:</strong> Open Lynx Mail and review your incoming messages. Read through them and handle them as you normally would.</p>
             <div class="email-client">
                 <div class="email-list" id="email-list"></div>
                 <div class="email-view" id="email-view">

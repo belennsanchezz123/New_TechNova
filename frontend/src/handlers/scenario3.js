@@ -23,7 +23,7 @@ export function reportEmail(id, type) {
     } else if (type === 'phishing' && email.type === 'legit') {
         metrics.scenario3.phishing_report_rate = 'Incorrectly reported a legitimate email (false positive)';
     }
-    alert(`Email from '${email.from}' has been reported.`);
+    alert(`This email has been reported to Lynx Security. Thank you for helping keep our platform safe.`);
     document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
 }
 
