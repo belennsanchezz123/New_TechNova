@@ -33,58 +33,61 @@ export function openEmail(id) {
     `;
     renderEmails();
 
-    const emailContent = viewEl.querySelector('.email-content');
-    emailContent.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        showEmailContextMenu(e.pageX, e.pageY, id);
-    });
+    setTimeout(() => {
+        const emailContent = viewEl.querySelector('.email-content');
+        if (emailContent) {
+            emailContent.oncontextmenu = (e) => {
+                e.preventDefault();
+                showEmailContextMenu(e.clientX, e.clientY, id);
+                return false;
+            };
+        }
+    }, 100);
 }
 
 function showEmailContextMenu(x, y, emailId) {
-    let menu = document.getElementById('email-context-menu');
-    if (!menu) {
-        menu = document.createElement('div');
-        menu.id = 'email-context-menu';
-        menu.className = 'context-menu-windows';
-        menu.style.position = 'absolute';
-        menu.style.zIndex = '10000';
-        menu.innerHTML = `
-            <div class="context-menu-item" id="reply-email">Reply</div>
-            <div class="context-menu-item" id="forward-email">Forward</div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item" id="report-email">Report Suspicious Email</div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item" id="delete-email">Delete</div>
-        `;
-        document.body.appendChild(menu);
-
-        document.addEventListener('click', () => {
-            menu.style.display = 'none';
-        });
+    const existingMenu = document.getElementById('email-context-menu');
+    if (existingMenu) {
+        existingMenu.remove();
     }
 
-    menu.style.display = 'block';
+    const menu = document.createElement('div');
+    menu.id = 'email-context-menu';
+    menu.className = 'context-menu-windows';
+    menu.style.position = 'fixed';
     menu.style.left = `${x}px`;
     menu.style.top = `${y}px`;
+    menu.style.zIndex = '10000';
+    menu.style.display = 'block';
+    menu.innerHTML = `
+        <div class="context-menu-item" data-action="reply">Reply</div>
+        <div class="context-menu-item" data-action="forward">Forward</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" data-action="report">Report Suspicious Email</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" data-action="delete">Delete</div>
+    `;
 
-    document.getElementById('report-email').onclick = (e) => {
-        e.stopPropagation();
-        window.reportEmail(emailId, 'phishing');
-        menu.style.display = 'none';
+    document.body.appendChild(menu);
+
+    const hideMenu = () => {
+        if (menu && menu.parentNode) {
+            menu.remove();
+        }
     };
 
-    document.getElementById('reply-email').onclick = (e) => {
-        e.stopPropagation();
-        menu.style.display = 'none';
+    menu.onclick = (e) => {
+        const item = e.target.closest('.context-menu-item');
+        if (!item) return;
+
+        const action = item.getAttribute('data-action');
+        if (action === 'report') {
+            window.reportEmail(emailId, 'phishing');
+        }
+        hideMenu();
     };
 
-    document.getElementById('forward-email').onclick = (e) => {
-        e.stopPropagation();
-        menu.style.display = 'none';
-    };
-
-    document.getElementById('delete-email').onclick = (e) => {
-        e.stopPropagation();
-        menu.style.display = 'none';
-    };
+    setTimeout(() => {
+        document.addEventListener('click', hideMenu, { once: true });
+    }, 10);
 }
