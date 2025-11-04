@@ -7,8 +7,8 @@ export function getScenarioHTML(scenarioNumber) {
             <p><strong>One important rule:</strong> For the privacy of your guests, never use the 'AI Assistant' to process documents containing lists of people or their contact details.</p>
             <div class="participant-id-form" style="margin: 30px 0;">
                 <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">Participant ID (provided by researchers):</label>
-                <input type="text" id="participant-id-input" placeholder="e.g., P001" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
-                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Please enter a valid Participant ID</p>
+                <input type="text" id="participant-id-input" placeholder="" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
+                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Please enter a valid Participant ID (P001-P050)</p>
             </div>
             <button onclick="window.validateAndStart()">Begin Simulation</button>
         `,
