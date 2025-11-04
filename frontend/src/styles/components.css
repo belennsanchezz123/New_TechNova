@@ -351,3 +351,67 @@ button.danger:hover {
     background: #d0d0d0;
     margin: 3px 0;
 }
+
+.questionnaire-form {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.question-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.question-section h3 {
+    margin-top: 0;
+    color: var(--lynx-primary);
+    border-bottom: 2px solid var(--lynx-primary);
+    padding-bottom: 10px;
+}
+
+.question {
+    margin-bottom: 25px;
+}
+
+.question label:first-child {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.radio-group label:hover {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background: var(--lynx-primary);
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}

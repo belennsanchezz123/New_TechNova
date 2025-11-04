@@ -320,14 +320,135 @@ export function getScenarioHTML(scenarioNumber) {
             <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
         8: `
-            <h2>Simulation Complete!</h2>
-            <p>Thank you for your participation. Your interactions have been recorded to help us improve the Lynx platform. Below is a summary of the metrics collected during your session.</p>
-            <table id="results-table">
-                <thead>
-                    <tr><th>Metric Category</th><th>Metric</th><th>Your Result</th></tr>
-                </thead>
-                <tbody id="results-body"></tbody>
-            </table>
+            <h2>Cuestionario Post-Simulación (Concienciación y Hábitos)</h2>
+            <p><strong>Instrucciones:</strong> Por favor, responde a las siguientes preguntas sobre tus hábitos y percepciones de seguridad. No hay respuestas correctas o incorrectas. Tus respuestas son anónimas y nos ayudarán a entender mejor los resultados de la simulación.</p>
+
+            <div class="questionnaire-form">
+                <div class="question-section">
+                    <h3>1. Percepción General</h3>
+
+                    <div class="question">
+                        <label>1.1. En una escala del 1 (Nada) al 5 (Muy), ¿cómo de prioritario es para ti mantener la seguridad de tus cuentas y datos online?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q1_1" value="1"> 1 (Nada)</label>
+                            <label><input type="radio" name="q1_1" value="2"> 2</label>
+                            <label><input type="radio" name="q1_1" value="3"> 3</label>
+                            <label><input type="radio" name="q1_1" value="4"> 4</label>
+                            <label><input type="radio" name="q1_1" value="5"> 5 (Muy)</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>1.2. En una escala del 1 (Novato) al 5 (Experto), ¿cómo calificarías tu nivel general de conocimientos en ciberseguridad?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q1_2" value="1"> 1 (Novato)</label>
+                            <label><input type="radio" name="q1_2" value="2"> 2</label>
+                            <label><input type="radio" name="q1_2" value="3"> 3</label>
+                            <label><input type="radio" name="q1_2" value="4"> 4</label>
+                            <label><input type="radio" name="q1_2" value="5"> 5 (Experto)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>2. Hábitos de Contraseñas y Cuentas</h3>
+
+                    <div class="question">
+                        <label>2.1. Cuando un servicio online te ofrece la "Autenticación de Dos Pasos" (MFA/2FA), ¿con qué frecuencia la activas?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q2_1" value="a"> (a) Siempre, es lo primero que hago.</label>
+                            <label><input type="radio" name="q2_1" value="b"> (b) A menudo, si el servicio es importante (ej. banco, email).</label>
+                            <label><input type="radio" name="q2_1" value="c"> (c) Rara vez, me parece una molestia.</label>
+                            <label><input type="radio" name="q2_1" value="d"> (d) Nunca, no sé qué es o cómo usarlo.</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>2.2. ¿Cómo gestionas tus contraseñas para diferentes sitios web?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q2_2" value="a"> (a) Uso un gestor de contraseñas (ej. Bitwarden, 1Password, Llavero de Apple/Google).</label>
+                            <label><input type="radio" name="q2_2" value="b"> (b) Intento crear contraseñas únicas y memorizarlas.</label>
+                            <label><input type="radio" name="q2_2" value="c"> (c) Reutilizo la misma contraseña (o variaciones leves) en la mayoría de los sitios.</label>
+                            <label><input type="radio" name="q2_2" value="d"> (d) Las apunto en un documento en mi ordenador o en un papel.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>3. Redes Sociales y Privacidad</h3>
+
+                    <div class="question">
+                        <label>3.1. Aproximadamente, ¿en cuántas redes sociales (Facebook, Instagram, LinkedIn, X, TikTok, etc.) tienes un perfil activo?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q3_1" value="a"> (a) 0</label>
+                            <label><input type="radio" name="q3_1" value="b"> (b) 1-2</label>
+                            <label><input type="radio" name="q3_1" value="c"> (c) 3-4</label>
+                            <label><input type="radio" name="q3_1" value="d"> (d) 5 o más</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>3.2. ¿Con qué frecuencia revisas la configuración de privacidad de tus redes sociales (ej. quién puede ver tus publicaciones o tu información)?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q3_2" value="a"> (a) Regularmente (al menos cada 6 meses).</label>
+                            <label><input type="radio" name="q3_2" value="b"> (b) A veces (quizás una vez al año, o si oigo una noticia).</label>
+                            <label><input type="radio" name="q3_2" value="c"> (c) Solo cuando creé la cuenta.</label>
+                            <label><input type="radio" name="q3_2" value="d"> (d) Nunca.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>4. Seguridad del Dispositivo y Navegación</h3>
+
+                    <div class="question">
+                        <label>4.1. Si te levantas de tu ordenador en un lugar público o en la oficina (ej. para ir al baño o a por un café), ¿bloqueas la pantalla?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q4_1" value="a"> (a) Siempre, es un acto reflejo (ej. Win+L).</label>
+                            <label><input type="radio" name="q4_1" value="b"> (b) Casi siempre, a menos que sea solo un segundo.</label>
+                            <label><input type="radio" name="q4_1" value="c"> (c) Rara vez.</label>
+                            <label><input type="radio" name="q4_1" value="d"> (d) Nunca, confío en la gente a mi alrededor.</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>4.2. Cuando tu teléfono o tu ordenador te notifica sobre una "actualización de seguridad" disponible:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q4_2" value="a"> (a) La instalo tan pronto como puedo.</label>
+                            <label><input type="radio" name="q4_2" value="b"> (b) La pospongo repetidamente hasta que me obliga.</label>
+                            <label><input type="radio" name="q4_2" value="c"> (c) Intento ignorarla, me preocupa que algo deje de funcionar.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-section">
+                    <h3>5. Correo Electrónico y Phishing</h3>
+
+                    <div class="question">
+                        <label>5.1. Recibes un correo de un servicio que usas (ej. Netflix, Amazon) diciendo que hay un "problema con tu pago" y un enlace para "solucionarlo ahora". ¿Qué haces?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q5_1" value="a"> (a) Hago clic en el enlace para ver qué pasa.</label>
+                            <label><input type="radio" name="q5_1" value="b"> (b) No hago clic. Abro una nueva pestaña del navegador y escribo la dirección del sitio yo mismo para comprobarlo desde allí.</label>
+                            <label><input type="radio" name="q5_1" value="c"> (c) Ignoro el correo, probablemente sea un error.</label>
+                            <label><input type="radio" name="q5_1" value="d"> (d) Reviso con mucho cuidado la dirección del remitente y la URL del enlace antes de decidir.</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>5.2. Si detectas un correo que es claramente "phishing" o una estafa, ¿qué sueles hacer?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="q5_2" value="a"> (a) Simplemente lo borro.</label>
+                            <label><input type="radio" name="q5_2" value="b"> (b) Lo borro y bloqueo al remitente.</label>
+                            <label><input type="radio" name="q5_2" value="c"> (c) Utilizo el botón de "Reportar Phishing" o "Reportar Spam" de mi email.</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button onclick="window.submitQuestionnaire()" class="primary-btn">Enviar Cuestionario</button>
+                    <p id="questionnaire-error" style="display: none; color: #d32f2f; margin-top: 10px;">Por favor, responde a todas las preguntas antes de enviar.</p>
+                </div>
+            </div>
         `
     };
 

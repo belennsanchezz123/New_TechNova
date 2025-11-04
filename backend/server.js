@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { setupSessionRoutes } from './routes/sessions.js';
 import { setupBreachRoutes } from './routes/breach.js';
+import { setupQuestionnaireRoutes } from './routes/questionnaire.js';
 
 dotenv.config({ path: '../.env' });
 
@@ -18,6 +19,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/sessions', setupSessionRoutes());
 app.use('/api/breach', setupBreachRoutes());
+app.use('/api/questionnaire', setupQuestionnaireRoutes());
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
