@@ -202,9 +202,8 @@ export function getScenarioHTML(scenarioNumber) {
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
                 <p><strong>Instruction:</strong> Now, send the original complete document ('Lista_Participantes_Excursion.docx') to your collaborator at 'colaborador@lynx-mail.sim'.</p>
-                <p>How do you want to send the file?</p>
-                <button onclick="window.sendDocument('insecure')">Attach File directly to Email</button>
-                <button onclick="window.sendDocument('secure')">Share from Lynx Drive (Secure Link)</button>
+                <p>Use the email client above to compose a new message to your collaborator and attach the document. Right-click on any email and select "Reply" or "Forward" to open the compose window, or click the "New Email" button below.</p>
+                <button onclick="window.openComposeEmail()">New Email</button>
             </div>
         `,
         4: `

@@ -35,3 +35,42 @@
     padding: 5px 10px;
     margin: 0 5px;
 }
+
+.email-compose {
+    padding: 20px;
+}
+
+.compose-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.compose-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.compose-field label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.compose-field input,
+.compose-field textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.compose-field textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.compose-actions {
+    display: flex;
+    gap: 10px;
+}

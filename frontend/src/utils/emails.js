@@ -85,3 +85,40 @@ function showEmailContextMenu(x, y, emailId) {
         document.addEventListener('click', hideMenu, { once: true });
     }, 10);
 }
+
+export function openComposeEmail(replyTo = null) {
+    const viewEl = document.getElementById('email-view');
+    const toField = replyTo ? replyTo.from : '';
+    const subjectField = replyTo ? `Re: ${replyTo.subject}` : '';
+
+    viewEl.innerHTML = `
+        <div class="email-compose">
+            <h3>New Email</h3>
+            <div class="compose-form">
+                <div class="compose-field">
+                    <label><strong>To:</strong></label>
+                    <input type="text" id="compose-to" value="${toField}" placeholder="recipient@lynx-mail.sim">
+                </div>
+                <div class="compose-field">
+                    <label><strong>Subject:</strong></label>
+                    <input type="text" id="compose-subject" value="${subjectField}" placeholder="Email subject">
+                </div>
+                <div class="compose-field">
+                    <label><strong>Body:</strong></label>
+                    <textarea id="compose-body" rows="10" placeholder="Write your message here..."></textarea>
+                </div>
+                <div class="compose-field">
+                    <label><strong>Attachments:</strong></label>
+                    <div id="compose-attachments" style="margin-top: 10px;">
+                        <p style="color: #666; font-size: 14px;">No attachments</p>
+                    </div>
+                    <button onclick="window.addAttachment()" style="margin-top: 10px;">Add Attachment</button>
+                </div>
+                <div class="compose-actions" style="margin-top: 20px;">
+                    <button onclick="window.sendComposedEmail()" style="background: #2ecc71;">Send Email</button>
+                    <button class="secondary" onclick="window.cancelCompose()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
