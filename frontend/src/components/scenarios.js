@@ -255,7 +255,7 @@ export function getScenarioHTML(scenarioNumber) {
                     <input type="text" id="prof-name" value="Alex">
                 </div>
                 <div class="form-group">
-                    <label for="prof-dob">Date of Birth</label>
+                    <label for="prof-dob">Date of Birth *</label>
                     <input type="text" id="prof-dob">
                 </div>
                 <div class="form-group">
