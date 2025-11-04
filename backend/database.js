@@ -41,6 +41,24 @@ const initDB = () => {
 
         CREATE INDEX IF NOT EXISTS idx_breach_email ON breach_checks(email);
         CREATE INDEX IF NOT EXISTS idx_breach_participant ON breach_checks(participant_id);
+
+        CREATE TABLE IF NOT EXISTS questionnaire_responses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            participant_id TEXT NOT NULL UNIQUE,
+            q1_1 INTEGER,
+            q1_2 INTEGER,
+            q2_1 TEXT,
+            q2_2 TEXT,
+            q3_1 TEXT,
+            q3_2 TEXT,
+            q4_1 TEXT,
+            q4_2 TEXT,
+            q5_1 TEXT,
+            q5_2 TEXT,
+            submitted_at TEXT DEFAULT (datetime('now'))
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_questionnaire_participant ON questionnaire_responses(participant_id);
     `);
 };
 

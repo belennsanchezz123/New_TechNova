@@ -9,6 +9,7 @@ import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } fro
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
+import { submitQuestionnaire } from './handlers/scenario8.js';
 import { startSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 
@@ -153,5 +154,6 @@ window.handleAppPerms = handleAppPerms;
 window.saveFinalPlan = saveFinalPlan;
 window.deleteFile = deleteFile;
 window.finishSimulation = finishSimulation;
+window.submitQuestionnaire = submitQuestionnaire;
 
 initApp();
