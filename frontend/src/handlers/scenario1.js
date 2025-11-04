@@ -86,6 +86,43 @@ export async function handleMFA(activated) {
 export function handlePasskey(activated) {
     metrics.scenario1.passkey_adoption_rate = activated ? 'Accepted' : 'Rejected';
     document.getElementById('popup-passkey').classList.remove('active');
-    // Avanza al siguiente escenario
+
+    showRegistrationComplete();
+}
+
+function showRegistrationComplete() {
+    const mailUsername = registrations['mail']?.username || '-';
+    const driveUsername = registrations['drive']?.username || '-';
+    const eventsUsername = registrations['events']?.username || '-';
+
+    document.getElementById('mail-username').textContent = mailUsername;
+    document.getElementById('drive-username').textContent = driveUsername;
+    document.getElementById('events-username').textContent = eventsUsername;
+
+    const firstUsername = mailUsername !== '-' ? mailUsername : (driveUsername !== '-' ? driveUsername : eventsUsername);
+    const firstInitial = firstUsername !== '-' ? firstUsername[0].toUpperCase() : 'U';
+
+    document.getElementById('profile-display-name').textContent = firstUsername;
+    document.getElementById('profile-display-email').textContent = `${firstUsername}@lynx.com`;
+
+    const avatar = document.querySelector('.profile-avatar');
+    if (avatar) {
+        avatar.textContent = firstInitial;
+    }
+
+    document.getElementById('popup-registration-complete').classList.add('active');
+}
+
+export function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profile-dropdown-menu');
+    if (dropdown.style.display === 'none') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+export function closeRegistrationComplete() {
+    document.getElementById('popup-registration-complete').classList.remove('active');
     window.startScenario(2);
 }

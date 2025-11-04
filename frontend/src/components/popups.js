@@ -39,5 +39,55 @@ export function getPopupsHTML() {
                 <button class="secondary" onclick="window.handleUpdate('later')">Remind Me Later</button>
             </div>
         </div>
+
+        <div id="popup-registration-complete" class="popup-overlay">
+            <div class="popup-content">
+                <h3>Registration Complete!</h3>
+                <p>You have successfully registered all your Lynx accounts.</p>
+
+                <div class="profile-dropdown-container">
+                    <button class="profile-button" onclick="window.toggleProfileDropdown()">
+                        <div class="profile-avatar">B</div>
+                        <div class="profile-info">
+                            <span class="profile-name" id="profile-display-name">User</span>
+                            <span class="profile-email" id="profile-display-email">user@lynx.com</span>
+                        </div>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+
+                    <div id="profile-dropdown-menu" class="profile-dropdown-menu" style="display: none;">
+                        <div class="dropdown-section">
+                            <div class="dropdown-header">Lynx Accounts</div>
+
+                            <div class="account-item">
+                                <div class="account-icon">📧</div>
+                                <div class="account-details">
+                                    <div class="account-service">Lynx Mail</div>
+                                    <div class="account-username" id="mail-username">-</div>
+                                </div>
+                            </div>
+
+                            <div class="account-item">
+                                <div class="account-icon">💾</div>
+                                <div class="account-details">
+                                    <div class="account-service">Lynx Drive</div>
+                                    <div class="account-username" id="drive-username">-</div>
+                                </div>
+                            </div>
+
+                            <div class="account-item">
+                                <div class="account-icon">📅</div>
+                                <div class="account-details">
+                                    <div class="account-service">Lynx Events</div>
+                                    <div class="account-username" id="events-username">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="window.closeRegistrationComplete()" style="margin-top: 20px;">Continue</button>
+            </div>
+        </div>
     `;
 }
