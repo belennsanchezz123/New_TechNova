@@ -10,6 +10,7 @@ import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js
 import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
 import { startSession } from './services/api.js';
+import { setParticipantId, getParticipantId } from './utils/participant.js';
 
 let currentScenario = 0;
 let sessionId = null;
@@ -98,6 +99,30 @@ export function getSessionId() {
     return sessionId;
 }
 
+function validateAndStart() {
+    const input = document.getElementById('participant-id-input');
+    const error = document.getElementById('participant-id-error');
+    const participantId = input.value.trim();
+
+    if (!participantId) {
+        error.style.display = 'block';
+        input.style.borderColor = '#d32f2f';
+        return;
+    }
+
+    try {
+        setParticipantId(participantId);
+        error.style.display = 'none';
+        input.style.borderColor = '';
+        startScenario(1);
+    } catch (err) {
+        error.textContent = err.message;
+        error.style.display = 'block';
+        input.style.borderColor = '#d32f2f';
+    }
+}
+
+window.validateAndStart = validateAndStart;
 window.startScenario = startScenario;
 window.previousScenario = previousScenario;
 window.nextScenario = nextScenario;

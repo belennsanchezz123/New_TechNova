@@ -5,8 +5,12 @@ export function getScenarioHTML(scenarioNumber) {
             <p>Thank you for helping us test Lynx, the new all-in-one platform for organizing your projects and personal events.</p>
             <p>Your mission is to use the new Lynx suite to plan a fictional event: a <strong>Hiking Trip</strong> for a group of friends. Your primary goal is to evaluate the usability, flow, and intuitiveness of the tools.</p>
             <p><strong>One important rule:</strong> For the privacy of your guests, never use the 'AI Assistant' to process documents containing lists of people or their contact details.</p>
-            <p>Click "Begin" to start the simulation.</p>
-            <button onclick="window.startScenario(1)">Begin Simulation</button>
+            <div class="participant-id-form" style="margin: 30px 0;">
+                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">Participant ID (provided by researchers):</label>
+                <input type="text" id="participant-id-input" placeholder="e.g., P001" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
+                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Please enter a valid Participant ID</p>
+            </div>
+            <button onclick="window.validateAndStart()">Begin Simulation</button>
         `,
         1: `
             <h2>Scenario 1: Account Creation</h2>
