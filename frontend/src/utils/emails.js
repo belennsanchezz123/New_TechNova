@@ -109,10 +109,17 @@ export function openComposeEmail(replyTo = null) {
                 </div>
                 <div class="compose-field">
                     <label><strong>Attachments:</strong></label>
-                    <div id="compose-attachments" style="margin-top: 10px;">
-                        <p style="color: #666; font-size: 14px;">No attachments</p>
+                    <div id="compose-attachments" style="margin-top: 10px; min-height: 30px; padding: 10px; background: #f9f9f9; border: 1px dashed #ccc; border-radius: 4px;">
+                        <p style="color: #666; font-size: 14px; margin: 0;">No attachments</p>
                     </div>
-                    <button onclick="window.addAttachment()" style="margin-top: 10px;">Add Attachment</button>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button onclick="window.openLocalFileExplorer()" title="Adjuntar archivo local" style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 18px;">📎</span> Adjuntar archivo
+                        </button>
+                        <button onclick="window.openDriveFileExplorer()" title="Insertar desde Lynx Drive" style="display: flex; align-items: center; gap: 5px; background: #4CAF50;">
+                            <span style="font-size: 18px;">☁️</span> Lynx Drive
+                        </button>
+                    </div>
                 </div>
                 <div class="compose-actions" style="margin-top: 20px;">
                     <button onclick="window.sendComposedEmail()" style="background: #2ecc71;">Send Email</button>
