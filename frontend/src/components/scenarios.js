@@ -251,19 +251,23 @@ export function getScenarioHTML(scenarioNumber) {
                 <h3>Complete Your Lynx Events Profile</h3>
                 <p><strong>Instruction:</strong> Please complete your profile on Lynx Events. Fill in the information you consider appropriate for the event page.</p>
                 <div class="form-group">
-                    <label for="prof-name">Name (Required)</label>
+                    <label for="prof-name">Name *</label>
                     <input type="text" id="prof-name" value="Alex">
                 </div>
                 <div class="form-group">
-                    <label for="prof-dob">Date of Birth (Optional)</label>
+                    <label for="prof-dob">Date of Birth</label>
                     <input type="text" id="prof-dob">
                 </div>
                 <div class="form-group">
-                    <label for="prof-phone">Personal Phone (Optional)</label>
+                    <label for="prof-phone">Personal Phone</label>
                     <input type="text" id="prof-phone">
                 </div>
                 <div class="form-group">
-                    <label for="prof-city">City of Residence (Optional)</label>
+                    <label for="prof-workplace">Workplace</label>
+                    <input type="text" id="prof-workplace">
+                </div>
+                <div class="form-group">
+                    <label for="prof-city">City of Residence</label>
                     <input type="text" id="prof-city">
                 </div>
                 <button onclick="window.saveProfile()">Save Profile</button>
