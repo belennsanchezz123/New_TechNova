@@ -432,3 +432,152 @@
     border: 1px solid #dadce0;
     color: #5f6368;
 }
+
+/*
+ * --- ESTILOS PARA EL BANNER DE COOKIES AVANZADO ---
+ */
+
+.cookie-banner {
+    /* El banner existente que ya tienes */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px; /* Ajustado para más contenido */
+    background: #333;
+    color: white;
+    padding: 15px; /* Reducido para dar espacio al contenido interno */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 10001; /* Asegura que esté sobre el contenido del navegador simulado */
+    font-size: 14px;
+}
+
+.cookie-banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cookie-banner-content p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.cookie-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Para que se ajusten en móviles */
+}
+
+/* El panel de configuración */
+.cookie-settings-panel {
+    background: #444; /* Un poco más claro que el fondo */
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 5px;
+    display: none; /* Oculto por defecto */
+    border: 1px solid #555;
+}
+
+.cookie-settings-panel h5 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #fff;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+}
+
+.cookie-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.cookie-option + .cookie-option {
+    border-top: 1px solid #555;
+}
+
+.cookie-text {
+    display: flex;
+    flex-direction: column;
+    margin-right: 15px;
+}
+
+.cookie-text small {
+    color: #ccc;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* --- ESTILOS PARA EL INTERRUPTOR (TOGGLE SWITCH) --- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; /* Ancho reducido */
+  height: 28px; /* Alto reducido */
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #777;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; /* Reducido */
+  width: 20px; /* Reducido */
+  left: 4px; /* Ajustado */
+  bottom: 4px; /* Ajustado */
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #4caf50; /* Verde de "Aceptar" */
+}
+
+input:disabled + .slider {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+input:disabled:checked + .slider {
+  background-color: #5a8c5c; /* Verde oscuro para deshabilitado-chequeado */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4caf50;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px); /* Distancia de movimiento reducida */
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

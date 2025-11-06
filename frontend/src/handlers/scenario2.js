@@ -2,6 +2,59 @@ import { metrics } from '../utils/metrics.js';
 
 let hasScannedDrive = false;
 
+// --- INICIO DE LA NUEVA LÓGICA ---
+
+// Esta función maneja el desbloqueo al pulsar la tecla 'v'
+function handleKeyUnlock(event) {
+    if (event.key === 'v') {
+        const lockScreen = document.getElementById('simulated-lock-screen');
+        if (lockScreen) {
+            lockScreen.style.display = 'none';
+        }
+        showUsbTask();
+        document.removeEventListener('keydown', handleKeyUnlock);
+    }
+}
+
+// Muestra la siguiente parte de la tarea (el USB)
+function showUsbTask() {
+    document.getElementById('task-interruption').style.display = 'none';
+    document.getElementById('task-usb').style.display = 'block';
+    setupFileExplorer(); // Configura la lógica del explorador de archivos
+}
+
+// Función 'onclick' para los botones de interrupción
+// La exportamos a 'window' para que el 'onclick' del HTML la encuentre
+export function handleInterruption(didLock) {
+    if (didLock) {
+        // Opción Correcta: El usuario suspende la sesión
+        metrics.scenario2.manual_lock_screen = 'Yes, locked screen';
+        
+        // Muestra la pantalla de bloqueo
+        const lockScreen = document.getElementById('simulated-lock-screen');
+        if (lockScreen) {
+            lockScreen.style.display = 'flex';
+        }
+
+        // Añade el 'listener' que espera a que el usuario pulse la tecla 'v'
+        document.addEventListener('keydown', handleKeyUnlock);
+        
+    } else {
+        // Opción Incorrecta: El usuario continúa
+        metrics.scenario2.manual_lock_screen = 'No, left screen unlocked';
+        
+        // (No mostramos alert, como pediste)
+        
+        // Muestra la tarea del USB inmediatamente
+        showUsbTask();
+    }
+}
+
+// --- FIN DE LA NUEVA LÓGICA ---
+
+
+// ===== TU CÓDIGO ORIGINAL (SIN CAMBIOS) =====
+
 // Función para cambiar entre vistas del explorador
 function navigateToView(viewId, pathText, sidebarActiveId) {
     // Ocultar todas las vistas
@@ -138,11 +191,4 @@ function setupFileExplorer() {
             contextMenu.style.display = 'none';
         });
     });
-}
-
-export function handleInterruption(didLock) {
-    document.getElementById('task-interruption').style.display = 'none';
-    document.getElementById('task-usb').style.display = 'block';
-
-    setupFileExplorer();
 }

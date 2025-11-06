@@ -101,7 +101,7 @@ function loadPage(pageName) {
             break;
 
         case 'official-site':
-            urlInput.value = 'https://parquesnaturales.gov.es/mapas';
+            urlInput.value = 'https://parquesnaturales.gob.es/mapas';
             secureIcon.style.display = 'none';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderOfficialSite();
@@ -297,6 +297,7 @@ function renderAdSuspiciousSite() {
 function renderOfficialSite() {
     metrics.scenario4.response_to_browser_warnings = 'N/A (Chose safe site)';
 
+    // HTML del nuevo banner de cookies con panel de configuración
     return `
         <div class="official-site">
             <h4>Mapas Topográficos Oficiales - Parques Naturales</h4>
@@ -307,13 +308,73 @@ function renderOfficialSite() {
                 📥 Descargar Mapa Topográfico
             </button>
 
-            <div class="cookie-banner">
-                <p>Este sitio web utiliza cookies para mejorar la experiencia del usuario y ofrecer contenidos personalizados.</p>
-                <button onclick="window.handleCookies('accept')">Aceptar todas</button>
-                <button class="secondary" onclick="window.handleCookies('reject')">Rechazar todas</button>
+            <div class="cookie-banner" id="cookie-banner-main">
+                <div class="cookie-banner-content">
+                    <p>Este sitio web utiliza cookies para mejorar la experiencia del usuario y ofrecer contenidos personalizados.</p>
+                    
+                    <div class="cookie-settings-panel" id="cookie-settings">
+                        <h5>Configurar Preferencias</h5>
+                        
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies Técnicas (Necesarias)</strong>
+                                <small>Siempre activas. Son esenciales para que el sitio web funcione.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies Analíticas (Rendimiento)</strong>
+                                <small>Nos permiten medir el tráfico y mejorar el rendimiento del sitio.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cookie-analytics" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies de Publicidad (Marketing)</strong>
+                                <small>Usadas para mostrarte anuncios relevantes para ti.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cookie-marketing">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="cookie-buttons">
+                        <button onclick="window.handleCookies('accept')">Aceptar todas</button>
+                        <button class="secondary" onclick="window.toggleCookieSettings()">Personalizar</button>
+                        <button class="secondary" onclick="window.handleCookies('reject')">Rechazar todas</button>
+                        <button class="primary" id="cookie-save-btn" style="display:none;" onclick="window.handleCookies('custom')">Guardar y Cerrar</button>
+                    </div>
+                </div>
             </div>
-        </div>
+            </div>
     `;
+}
+
+window.toggleCookieSettings = function() {
+    const settingsPanel = document.getElementById('cookie-settings');
+    const saveBtn = document.getElementById('cookie-save-btn');
+    
+    const style = window.getComputedStyle(settingsPanel);
+    const isVisible = settingsPanel.style.display === 'block';
+    
+    if (isVisible) {
+        settingsPanel.style.display = 'none';
+        saveBtn.style.display = 'none';
+    } else {
+        settingsPanel.style.display = 'block';
+        saveBtn.style.display = 'inline-block';
+    }
 }
 
 function renderSuspiciousWarning() {
@@ -572,11 +633,27 @@ export function handleWarning(action) {
 }
 
 export function handleCookies(decision) {
-    metrics.scenario4.cookie_consent = `Chose to '${decision}' cookies`;
-    const banner = document.querySelector('.cookie-banner');
+    let consentMetric = `Chose to '${decision}' cookies`;
+
+    // Si el usuario guardó una configuración personalizada
+    if (decision === 'custom') {
+        const analytics = document.getElementById('cookie-analytics').checked;
+        const marketing = document.getElementById('cookie-marketing').checked;
+        
+        consentMetric = `Chose 'custom': Analytics=${analytics}, Marketing=${marketing}`;
+        metrics.scenario4.cookie_consent = consentMetric;
+    
+    } else {
+        metrics.scenario4.cookie_consent = consentMetric;
+    }
+
+    // Oculta el banner principal
+    const banner = document.getElementById('cookie-banner-main');
     if (banner) {
         banner.style.display = 'none';
     }
+
+    // Continúa con el escenario
     setTimeout(() => {
         document.getElementById('popup-update').classList.add('active');
     }, 1500);

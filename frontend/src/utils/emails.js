@@ -1,11 +1,61 @@
 export const emails = [
-    { id: 1, from: 'Hiking Club', subject: 'Welcome to the Group!', body: 'Hi! We\'re glad to have you planning the trip with us. Looking forward to the adventure!', read: false, type: 'legit' },
-    { id: 2, from: 'Lynx Support', subject: 'Important: Account Security Alert', body: 'We detected an unusual login attempt to your account from an unknown device.<br><br>If this was you, please disregard this message. Otherwise, <a href="#" onclick="window.handlePhishingClick(true)">verify your account immediately</a> to secure your information.<br><br>Best regards,<br>Lynx Security Team', read: false, type: 'phishing-creds' },
-    { id: 3, from: 'Sara Martinez', subject: 'Re: Hiking Trip Confirmation', body: 'Hey! Just confirming I can make it for the hike next Saturday. I\'m bringing my tent and some extra water. So excited! Let me know if you need me to bring anything else.<br><br>Cheers,<br>Sara', read: false, type: 'legit' },
-    { id: 4, from: 'Customer Rewards Center', subject: 'Congratulations - You\'ve Been Selected!', body: 'Dear Valued Customer,<br><br>Great news! You have been randomly selected to receive a $1000 gift card as part of our customer appreciation program.<br><br><a href="#" onclick="window.handlePhishingClick(false)">Click here to claim your reward now</a> before it expires!<br><br>Act fast - this offer is only valid for 24 hours!', read: false, type: 'phishing-spam' },
-    { id: 5, from: 'Miguel Torres', subject: 'Equipment list', body: 'Hi there,<br><br>I put together a list of recommended equipment for the hike:<br>- Hiking boots<br>- Backpack (30-40L)<br>- Water bottles<br>- First aid kit<br>- Sunscreen<br><br>Let me know if I missed anything!<br><br>Miguel', read: false, type: 'legit' },
-    { id: 6, from: 'Lynx Events Team', subject: 'Your Event Page is Ready', body: 'Hello,<br><br>Your hiking trip event page has been created successfully! You can now start inviting participants and sharing details about the adventure.<br><br>To access your event page, log in to Lynx Events and navigate to "My Events".<br><br>Happy planning!<br>The Lynx Events Team', read: false, type: 'legit' },
-];
+    {
+      id: 1,
+      from: 'Club de Senderismo <club@senderismo-lynx.sim>',
+      subject: '¡Bienvenido/a al Grupo!',
+      body: '¡Hola! Estamos encantados de tenerte planificando el viaje con nosotros. ¡Estamos ansiosos por la aventura!',
+      read: false,
+      type: 'legit'
+    },
+    {
+      id: 2,
+      from: 'Soporte Técnico <admin@it-support-alerts.com>',
+      subject: 'Acción Requerida: Su contraseña ha expirado',
+      body: 'Estimado usuario,<br><br>Su contraseña para la plataforma ha <b>expirado hoy</b>. Para evitar la suspensión de su cuenta, debe actualizarla inmediatamente.<br><br><a href="#" onclick="window.handlePhishingClick(true)">Haga clic aquí para restablecer su contraseña.</a><br><br>Gracias,<br><br><span style="font-family: \'Comic Sans MS\', cursive, sans-serif; color: #333;">-- Departamento de Soporté Ténico</span>',
+      read: false,
+      type: 'phishing-creds'
+    },
+    {
+      id: 3,
+      from: 'Sara Martinez <sara.martinez@lynx-mail.sim>',
+      subject: 'Re: Confirmación del viaje de senderismo',
+      body: '¡Hola! Solo confirmo que sí puedo ir a la caminata el próximo sábado. Llevo mi tienda de campaña y agua extra. ¡Qué emoción! Avísame si necesitas que lleve algo más.<br><br>Saludos,<br>Sara',
+      read: false,
+      type: 'legit'
+    },
+    {
+      id: 4,
+      from: 'Centro de Recompensas al Cliente <premios@centro-recompensas.net>',
+      subject: '¡Felicidades - Ha sido seleccionado!',
+      body: 'Estimado Cliente,<br><br>¡Buenas noticias! Ha sido seleccionado al azar para recibir una tarjeta de regalo de $1000 como parte de nuestro programa de apreciación al cliente.<br><br><a href="#" onclick="window.handlePhishingClick(false)">Haga clic aquí para reclamar su premio ahora</a> antes de que expire.<br><br>¡Actúe rápido - esta oferta solo es válida por 24 horas!',
+      read: false,
+      type: 'phishing-spam'
+    },
+    {
+      id: 5,
+      from: 'Miguel Torres <miguel.torres@lynx-mail.sim>',
+      subject: 'Lista de equipamiento',
+      body: 'Hola,<br><br>Armé una lista del equipo recomendado para la caminata:<br>- Botas de senderismo<br>- Mochila (30-40L)<br>- Botellas de agua<br>- Botiquín de primeros auxilios<br>- Protector solar<br><br>¡Avísame si me faltó algo!<br><br>Miguel',
+      read: false,
+      type: 'legit'
+    },
+    {
+      id: 6,
+      from: 'Equipo de Eventos Lynx <eventos@lynx-mail.sim>',
+      subject: 'Tu página de evento está lista',
+      body: 'Hola,<br><br>¡La página de tu evento de senderismo ha sido creada con éxito! Ya puedes empezar a invitar participantes y compartir detalles sobre la aventura.<br><br>Para acceder a la página de tu evento, inicia sesión en Eventos Lynx y navega a "Mis Eventos".<br><br>¡Feliz planificación!<br>El Equipo de Eventos Lynx',
+      read: false,
+      type: 'legit'
+    },
+    {
+      id: 7,
+      from: 'Soporte de Lynx <soporte@lynx-mail.sim>',
+      subject: 'Importante: Alerta de Seguridad de la Cuenta',
+      body: 'Detectamos un intento de inicio de sesión inusual en su cuenta desde un dispositivo desconocido.<br><br>Si ha sido usted, puede ignorar este mensaje.<br><br>Si <b>no</b> ha sido usted, le recomendamos que inicie sesión de forma segura en su cuenta (escribiendo la dirección oficial en su navegador) y revise su actividad reciente en la sección de \'Seguridad\'.<br><br>Atentamente,<br>El Equipo de Seguridad de Lynx',
+      read: false,
+      type: 'legit'
+    },
+    ];
 
 export function renderEmails() {
     const listEl = document.getElementById('email-list');
@@ -28,10 +78,15 @@ export function openEmail(id) {
     const email = emails.find(e => e.id === id);
     email.read = true;
     const viewEl = document.getElementById('email-view');
+    // Creamos un elemento temporal para "escapar" el contenido de 'email.from'
+    // Esto convierte '<' y '>' en '&lt;' y '&gt;' para que se muestren como texto.
+    const tempEl = document.createElement('p');
+    tempEl.textContent = email.from;
+    const safeFromHTML = tempEl.innerHTML;
     viewEl.innerHTML = `
         <div class="email-content" data-email-id="${id}">
             <h3>${email.subject}</h3>
-            <p><strong>From:</strong> ${email.from}</p>
+            <p><strong>From:</strong> ${safeFromHTML}</p> <hr>
             <hr>
             <div>${email.body}</div>
         </div>
