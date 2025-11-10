@@ -90,7 +90,7 @@ function openDriveView() {
 
     // Añade el evento para que al hacer clic en el PDF, se avance de escenario
     document.getElementById('file-mapa').addEventListener('click', () => {
-        alert("Abriendo 'Mapa_Ruta_Senderismo.pdf'...");
+        alert("Abriendo 'Reservas_Refugio.pdf'...");
         setTimeout(() => window.startScenario(3), 1000);
     });
 }

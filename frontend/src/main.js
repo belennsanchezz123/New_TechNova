@@ -40,7 +40,7 @@ function updateNavigationButtons() {
 
     if (prevBtn && nextBtn) {
         prevBtn.disabled = currentScenario <= 0;
-        nextBtn.disabled = currentScenario >= TOTAL_SCENARIOS;
+        nextBtn.disabled = (currentScenario === 0) || (currentScenario >= TOTAL_SCENARIOS);
     }
 
     if (currentNum) {

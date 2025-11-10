@@ -62,7 +62,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
 
             <div id="task-interruption">
-                <p><strong>Instrucción:</strong> Necesitas ir a otra sala a por el documento <strong>'Lista_Participantes_Excursion.docx'</strong>. Vas a dejar tu puesto de trabajo por un momento.</p>
+                <p><strong>Instrucción:</strong> Necesitas ir a otra sala a por el documento <strong>'Lista_Participantes_Excursion.docx'</strong>.</p>
                 
                 <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
                     
@@ -78,7 +78,7 @@ export function getScenarioHTML(scenarioNumber) {
 
             <div id="task-usb" style="display:none;">
                 <h3>Manejo de Dispositivos Externos</h3>
-                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Mapa_Ruta_Senderismo.pdf'</strong>.</p>
+                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Reservas_Refugio.pdf'</strong>.</p>
     
                 <div class="file-explorer-window">
                     <div class="fe-header">
@@ -169,11 +169,11 @@ export function getScenarioHTML(scenarioNumber) {
                         <div id="usb-content-view" style="display:none;">
                             <div class="fe-item" id="file-mapa">
                                 <div class="fe-icon">📄</div>
-                                <div class="fe-item-details"><span>Mapa_Ruta_Senderismo.pdf</span></div>
+                                <div class="fe-item-details"><span>Reservas_Refugio.pdf</span></div>
                             </div>
                         <div class="fe-item" id="file-fotos">
-                            <div class="fe-icon">📦</div>
-                            <div class="fe-item-details"><span>Fotos_Localizacion.zip</span></div>
+                            <div class="fe-icon">📄</div>
+                            <div class="fe-item-details"><span>Mapa_Ruta_Senderismo_BORRADOR.pdf</span></div>
                         </div>
                     </div>
                 </div>
