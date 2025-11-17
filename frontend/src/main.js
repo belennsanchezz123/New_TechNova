@@ -65,7 +65,7 @@ async function initApp() {
     console.log('🟢 INICIANDO APP');
     const app = document.getElementById('app');
 
-    let scenariosHTML = '<div id="simulation-container"><header>LYNX Platform Evaluation Simulation</header><main>';
+    let scenariosHTML = '<div id="simulation-container"><header>Simulación del Primer Día - TechNova</header><main>';
 
     for (let i = 0; i <= 8; i++) {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
@@ -116,7 +116,7 @@ function validateAndStart() {
         setParticipantId(participantId);
         error.style.display = 'none';
         input.style.borderColor = '';
-        startScenario(1);
+        showPolicyPopup(); 
     } catch (err) {
         error.textContent = err.message;
         error.style.display = 'block';
@@ -124,10 +124,21 @@ function validateAndStart() {
     }
 }
 
+
+function showPolicyPopup() {
+    document.getElementById('popup-policy-rules').classList.add('active');
+}
+
+function acceptPolicyAndStart() {
+    document.getElementById('popup-policy-rules').classList.remove('active');
+    startScenario(1);
+}
+
 window.validateAndStart = validateAndStart;
 window.startScenario = startScenario;
 window.previousScenario = previousScenario;
 window.nextScenario = nextScenario;
+window.acceptPolicyAndStart = acceptPolicyAndStart;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
 window.handlePasskey = handlePasskey;

@@ -7,21 +7,32 @@ const passwords = [];
 const registrations = {};
 
 function goNext(service) {
-    document.getElementById(`lynx-${service}-form`).style.display = 'none';
+    const currentForm = document.getElementById(`technova-${service}-form`);
+
+    // Si encontramos el formulario, lo ocultamos.
+    if (currentForm) {
+        currentForm.style.display = 'none';
+    } else {
+        // Si no se encuentra, registramos el error para depurar, pero no rompemos el programa.
+        console.error(`Error: No se encontró el formulario con ID: technova-${service}-form. Verifica scenarios.js`);
+    }
 
     if (service === 'mail') {
         // Mostrar el formulario de Drive
-        document.getElementById('lynx-drive-form').style.display = 'block';
+        const driveForm = document.getElementById('technova-drive-form'); // MODIFICADO
+        if (driveForm) {
+            driveForm.style.display = 'block';
+        }
     } else if (service === 'drive') {
         // Mostrar popup de MFA
         document.getElementById('popup-mfa').classList.add('active');
         // Métrica: ¿reutilizó la contraseña?
         metrics.scenario1.password_reused =
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
-        } else if (service === 'events') {
-            document.getElementById('popup-passkey').classList.add('active');
-        }
+    } else if (service === 'events') {
+        document.getElementById('popup-passkey').classList.add('active');
     }
+}
 
 export async function registerService(service) {
     const userInput = document.getElementById(`${service}-user`);

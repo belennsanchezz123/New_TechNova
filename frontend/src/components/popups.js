@@ -95,5 +95,78 @@ export function getPopupsHTML() {
                 <button onclick="window.closeRegistrationComplete()" style="margin-top: 20px;">Continue</button>
             </div>
         </div>
+
+<div id="popup-policy-rules" class="popup-overlay">
+    <div class="popup-content">
+        <h3>📘 Notificación de Seguridad – IT TechNova</h3>
+        <p style="font-size: 1.1em; font-weight: bold; margin-bottom: 15px;">
+            Antes de comenzar, por favor revise las políticas de uso de plataformas internas. Su cumplimiento es obligatorio.
+        </p>
+
+        <div style="text-align: left; padding: 15px; border: 1px solid #cce5ff; background: #e6f3ff; border-radius: 4px; font-size: 0.98em;">
+            
+            <h4 style="margin-bottom: 8px;">🔐 Política de Privacidad y Uso de Asistentes de IA:</h4>
+            <ul style="list-style-type: '❌ '; padding-left: 20px; margin-top: 0;">
+                <li>No se permite ingresar, copiar o analizar ningún documento que contenga datos personales, financieros o sensibles en el Asistente de IA.</li>
+                <li>Queda prohibido el uso del asistente para tratar información identificable de empleados, clientes o proveedores.</li>
+            </ul>
+
+            <h4 style="margin-top: 18px; margin-bottom: 8px;">🔑 Política de Seguridad de Contraseñas:</h4>
+            <ul style="list-style-type: '✔️ '; padding-left: 20px;">
+                <li>Debe utilizar una contraseña única y robusta para cada plataforma interna (correo, nube, red social, etc.).</li>
+                <li>Se recomienda activar la autenticación multifactor (MFA) siempre que esté disponible.</li>
+                <li>Evite reutilizar contraseñas entre plataformas personales y corporativas.</li>
+            </ul>
+
+            <h4 style="margin-top: 18px; margin-bottom: 8px;">📁 Política de Gestión de Información:</h4>
+            <ul style="list-style-type: '🛑 '; padding-left: 20px;">
+                <li>No está permitido almacenar archivos confidenciales en servicios no autorizados.</li>
+                <li>Todos los documentos internos deben ser tratados bajo las normas de clasificación de TechNova.</li>
+            </ul>
+        </div>
+
+        <button onclick="window.acceptPolicyAndStart()" style="margin-top: 25px;">
+            He leído y acepto las Políticas de Seguridad
+        </button>
+    </div>
+</div>
     `;
+}
+// ----------------------------------------------------
+// --- NUEVA FUNCIÓN AÑADIDA ---
+// ----------------------------------------------------
+// Esta es la función que `BreachChecker.jsx` necesita.
+// Crea un popup de alerta simple y dinámico.
+
+export function showPopup(title, message) {
+    // Crear el overlay (fondo)
+    const overlay = document.createElement('div');
+    overlay.className = 'popup-overlay';
+    // Añadimos 'active' para que se muestre inmediatamente
+    overlay.style.display = 'flex'; 
+
+    // Crear el contenido del popup
+    const content = document.createElement('div');
+    content.className = 'popup-content';
+
+    // Añadir título y mensaje
+    content.innerHTML = `
+        <h3>${title}</h3>
+        <p>${message}</p>
+    `;
+
+    // Crear el botón de OK
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'OK';
+    closeButton.onclick = () => {
+        // Al hacer clic, eliminar el popup del body
+        document.body.removeChild(overlay);
+    };
+
+    // Ensamblar el popup
+    content.appendChild(closeButton);
+    overlay.appendChild(content);
+
+    // Añadir el popup completo al body del documento
+    document.body.appendChild(overlay);
 }

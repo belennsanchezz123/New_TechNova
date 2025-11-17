@@ -28,50 +28,52 @@ function generateQuestionGroup(title, questions, groupIndex) {
 export function getScenarioHTML(scenarioNumber) {
     const scenarios = {
         0: `
-            <h2>Welcome, Beta Tester!</h2>
-            <p>Thank you for helping us test Lynx, the new all-in-one platform for organizing your projects and personal events.</p>
-            <p>Your mission is to use the new Lynx suite to plan a fictional event: a <strong>Hiking Trip</strong> for a group of friends. Your primary goal is to evaluate the usability, flow, and intuitiveness of the tools.</p>
-            <p><strong>One important rule:</strong> For the privacy of your guests, never use the 'AI Assistant' to process documents containing lists of people or their contact details.</p>
+            <h2>¡Bienvenido a TechNova, Alex!</h2>
+            <p>Este laboratorio virtual simula tu primer día laboral en la empresa tecnológica TechNova.</p>
+            <p>A lo largo de tu jornada, deberás completar varias tareas típicas de incorporación digital.</p>
+            
             <div class="participant-id-form" style="margin: 30px 0;">
-                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">Participant ID (provided by researchers):</label>
+                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">ID de Participante (proporcionado por el investigador):</label>
                 <input type="text" id="participant-id-input" placeholder="e.g., P001" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
-                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Please enter a valid Participant ID</p>
+                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Por favor, introduce un ID de Participante válido</p>
             </div>
-            <button onclick="window.validateAndStart()">Begin Simulation</button>
+            <button onclick="window.validateAndStart()">Comenzar Simulación</button>
         `,
         1: `
-            <h2>Scenario 1: Account Creation</h2>
-            <p>Your first task is to create user accounts in the main Lynx applications. We want to measure how intuitive the registration process is.</p>
+            <h2>Escenario 1: Configuración de Cuentas</h2>
+            <p>Tu primera tarea es crear tus cuentas de usuario en las plataformas internas de TechNova.</p>
             <div id="registration-forms">
-                <div class="form-group" id="lynx-mail-form">
-                    <h3>1. Register for Lynx Mail</h3>
-                    <label for="mail-user">Username:</label>
-                    <input type="text" id="mail-user" placeholder="e.g., hikinglover">
-                    <label for="mail-pass">Password:</label>
+
+                <div class="form-group" id="technova-mail-form">
+                    <h3>1. Registrarse en TechNova Mail</h3>
+                    <label for="mail-user">Usuario:</label>
+                    <input type="text" id="mail-user">
+                    <label for="mail-pass">Contraseña:</label>
                     <input type="password" id="mail-pass">
-                    <button onclick="window.registerService('mail')">Create Lynx Mail Account</button>
+                    <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
                 </div>
-                <div class="form-group" id="lynx-drive-form" style="display:none;">
-                    <h3>2. Register for Lynx Drive</h3>
-                    <p>Now, register for Lynx Drive, our cloud storage system.</p>
-                     <label for="drive-user">Username:</label>
-                    <input type="text" id="drive-user" placeholder="e.g., hikinglover">
-                    <label for="drive-pass">Password:</label>
-                    <input type="password" id="drive-pass">
-                    <button onclick="window.registerService('drive')">Create Lynx Drive Account</button>
-                </div>
-                <div class="form-group" id="lynx-events-form" style="display:none;">
-                    <h3>3. Register for Lynx Events</h3>
-                    <p>Finally, create your profile on Lynx Events, the social network for organizing the trip.</p>
-                    <label for="events-user">Username:</label>
-                    <input type="text" id="events-user" placeholder="e.g., hikinglover">
-                    <label for="events-pass">Password:</label>
-                    <input type="password" id="events-pass">
-                    <button onclick="window.registerService('events')">Create Lynx Events Account</button>
-                </div>
+                
+            <div class="form-group" id="technova-drive-form" style="display:none;">
+                <h3>2. Registrarse en TechNova Drive</h3>
+                <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
+                <label for="drive-user">Usuario:</label>
+                <input type="text" id="drive-user">
+                <label for="drive-pass">Contraseña:</label>
+                <input type="password" id="drive-pass">
+                <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive</button>
             </div>
+
+            <div class="form-group" id="technova-events-form" style="display:none;">
+                <h3>3. Registrarse en TechNova Events</h3>
+                <p>Finalmente, crea tu perfil en TechNova Events, la red social interna de la compañía.</p>
+                <label for="events-user">Usuario:</label>
+                <input type="text" id="events-user">
+                <label for="events-pass">Contraseña:</label>
+                <input type="password" id="events-pass">
+                <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events</button>
+            </div>
+        </div>
         `,
-        // En: frontend/src/components/scenarios.js
 
         2:
             `
@@ -212,7 +214,7 @@ export function getScenarioHTML(scenarioNumber) {
             <div class="context-menu-item">Abrir Reproducción automática...</div>
             <div class="context-menu-item context-menu-highlight" id="usb-context-scan">
                 <span class="context-menu-icon">🛡️</span>
-                Analizar con Antivirus Lynx...
+                Analizar con Antivirus...
             </div>
             <div class="context-menu-separator"></div>
             <div class="context-menu-item">Incluir en biblioteca</div>
@@ -230,7 +232,7 @@ export function getScenarioHTML(scenarioNumber) {
 
         <div id="antivirus-scanning-modal" class="modal" style="display:none;">
             <div class="modal-content">
-                <h3>Lynx Antivirus</h3>
+                <h3> Antivirus</h3>
                 <p>Analizando EVENT_FILES (E:)...</p>
                 <div class="scanning-progress">
                     <div class="scanning-bar"></div>
@@ -242,7 +244,7 @@ export function getScenarioHTML(scenarioNumber) {
         `,
         3: `
             <h2>Scenario 3: Communications Management</h2>
-            <p><strong>Instruction:</strong> Open Lynx Mail and review your incoming messages. Read through them and handle them as you normally would. <strong>To interact with an email (reply, forward, report, etc.), right-click on it in the inbox.</strong></p>
+            <p><strong>Instruction:</strong> Open Mail and review your incoming messages. Read through them and handle them as you normally would. <strong>To interact with an email (reply, forward, report, etc.), right-click on it in the inbox.</strong></p>
             <div style="margin-bottom: 10px;">
                 <button onclick="window.openComposeEmail()">New Email</button>
             </div>
@@ -255,19 +257,19 @@ export function getScenarioHTML(scenarioNumber) {
             <hr>
             <div id="ai-task" style="margin-top:20px;">
                  <h3>Task: Use the AI Assistant</h3>
-                 <p><strong>Instruction 1:</strong> On your desktop, you find 'Lista_Participantes_Excursion.docx'. It contains sensitive attendee details. Use the 'Lynx AI Assistant' below to create a summary of dietary and medical needs.</p>
+                 <p><strong>Instruction 1:</strong> On your desktop, you find 'Lista_Participantes_Excursion.docx'. It contains sensitive attendee details. Use the 'AI Assistant' below to create a summary of dietary and medical needs.</p>
                  <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Paste content here for the AI Assistant..."></textarea>
                  <button onclick="window.useAI()">Process with AI</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
-                <p><strong>Instruction:</strong> Now, send the original complete document ('Lista_Participantes_Excursion.docx') to your collaborator at 'colaborador@lynx-mail.sim'.</p>
+                <p><strong>Instruction:</strong> Now, send the original complete document ('Lista_Participantes_Excursion.docx') to your collaborator at 'colaborador@tech_nova'.</p>
                 <p>Use the email client above to compose a new message to your collaborator and attach the document.</p>
             </div>
         `,
         4: `
             <h2>Scenario 4: Resource Search & Download</h2>
-            <p><strong>Instruction:</strong> Use the Lynx Browser to find and download a 'Topographic Map of the Sierra'.</p>
+            <p><strong>Instruction:</strong> Use the  Browser to find and download a 'Topographic Map of the Sierra'.</p>
             <div class="browser-container">
                 <div class="browser-header">
                     <div class="browser-tabs">
@@ -293,13 +295,11 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="browser-url" placeholder="Buscar o introducir dirección web" value="" readonly>
                     </div>
                     <div class="browser-site-info" id="browser-site-info">
-                        <!-- Info del sitio se muestra aquí -->
-                    </div>
+                        </div>
                 </div>
                 <div id="browser-viewport">
                     <div id="browser-content">
-                        <!-- Contenido se carga dinámicamente -->
-                    </div>
+                        </div>
                 </div>
             </div>
             <div id="update-notification" class="update-notification">
@@ -315,8 +315,8 @@ export function getScenarioHTML(scenarioNumber) {
         5: `
             <h2>Scenario 5: Social Media & Personal Information</h2>
             <div id="profile-task">
-                <h3>Complete Your Lynx Events Profile</h3>
-                <p><strong>Instruction:</strong> Please complete your profile on Lynx Events. Fill in the information you consider appropriate for the event page.</p>
+                <h3>Complete Your Events Profile</h3>
+                <p><strong>Instruction:</strong> Please complete your profile on Tech Nova Events. Fill in the information you consider appropriate for the event page.</p>
                 <div class="form-group">
                     <label for="prof-name">Name *</label>
                     <input type="text" id="prof-name" value="Alex">
@@ -469,7 +469,7 @@ export function getScenarioHTML(scenarioNumber) {
                 ], 1)}
                 
                 ${generateQuestionGroup("2. Device Securement & Physical Security", [
-                    "Bloqueo manualmente mi equipo al alejarme.",
+                    "Bloqueo manually mi equipo al alejarme.",
                     "Uso contraseña para desbloquear portátil/tablet.",
                     "Uso Wi-Fi pública gratuita.",
                     "Escaneo los dispositivos externos (USB, discos) antes de usarlos."
@@ -537,7 +537,7 @@ export function getScenarioHTML(scenarioNumber) {
             `,
         9: `
             <h2>Simulation Complete!</h2>
-            <p>Thank you for your participation. Your interactions have been recorded to help us improve the Lynx platform. Below is a summary of the metrics collected during your session.</p>
+            <p>Thank you for your participation. Your interactions have been recorded to help us improve the Tech Nova platform. Below is a summary of the metrics collected during your session.</p>
             <table id="results-table">
                 <thead>
                     <tr><th>Metric Category</th><th>Metric</th><th>Your Result</th></tr>
