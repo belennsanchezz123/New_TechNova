@@ -592,3 +592,159 @@ button.danger:hover {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* --- ESTILOS PARA LA NOTIFICACIÓN DE ACTUALIZACIÓN DE WINDOWS --- */
+
+.update-notification {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 5000;
+  overflow: hidden;
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+.notification-header {
+  background: #0078d4; /* Azul de Windows */
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.notification-header span {
+  font-weight: 600;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+.notification-close:hover {
+  color: #ddd;
+}
+
+.notification-body {
+  padding: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* --- ESTILOS PARA EL CUESTIONARIO DE TAXONOMÍA (CORREGIDO) --- */
+
+.question-section-taxonomy {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.question-section-taxonomy h3 {
+    margin-top: 0;
+    color: var(--lynx-primary);
+    border-bottom: 2px solid var(--lynx-primary);
+    padding-bottom: 10px;
+}
+
+/* --- ESTA ES LA PARTE IMPORTANTE (ESCALA 1-5) --- */
+
+.question-row {
+    display: flex; /* <-- Fuerza a que los hijos estén en línea */
+    flex-wrap: nowrap; /* <-- Evita que los botones salten abajo */
+    justify-content: space-between; /* <-- Pone espacio entre la pregunta y los botones */
+    align-items: center; /* <-- Los alinea verticalmente */
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+.question-row:last-child {
+    border-bottom: none;
+}
+
+.question-label {
+    flex-grow: 1; /* <-- Hace que la pregunta ocupe el espacio disponible */
+    padding-right: 15px;
+    font-size: 0.95em;
+}
+
+.radio-group-horizontal {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0; /* <-- Evita que los botones se encojan */
+}
+
+.radio-group-horizontal label {
+    padding: 5px;
+    cursor: pointer;
+    min-width: 30px;
+    text-align: center;
+}
+.radio-group-horizontal input[type="radio"] {
+    margin-right: 5px; /* <-- Añade espacio entre el botón y el número */
+}
+
+
+/* --- ESTILOS PARA PREGUNTAS DEMOGRÁFICAS (CUSTOM) --- */
+
+.question-custom {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+.question-custom:last-child {
+    border-bottom: none;
+}
+
+.question-custom label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.radio-group-custom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.radio-group-custom label {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    background: #f0f0f0;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.radio-group-custom label:hover {
+    background: #e0e0e0;
+}
+
+.radio-group-custom input[type="radio"] {
+    margin-right: 8px;
+    cursor: pointer;
+}

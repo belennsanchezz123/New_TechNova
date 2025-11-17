@@ -77,7 +77,29 @@ export async function saveMetrics(sessionId, metrics) {
         return { success: false, error: error.message };
     }
 }
+export async function saveQuestionnaire(questionnaireData) {
+    try {
+        const response = await fetch('/api/questionnaire', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(questionnaireData),
+        });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Cuestionario guardado:', result);
+        return result;
+
+    } catch (error) {
+        console.error('Error al guardar el cuestionario:', error);
+        throw error;
+    }
+}
 
 // Registra el alta de un servicio (mail / drive / events) con fuerza de contraseña
 export async function registerServiceMetrics(sessionId, { service, username, password_strength }) {

@@ -9,13 +9,13 @@ import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } fro
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
-import { submitQuestionnaire } from './handlers/scenario8.js';
+import { submitTaxonomy } from './handlers/scenario8.js';
 import { startSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 
 let currentScenario = 0;
 let sessionId = null;
-const TOTAL_SCENARIOS = 8;
+const TOTAL_SCENARIOS = 9;
 
 function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
@@ -39,6 +39,7 @@ function updateNavigationButtons() {
     const currentNum = document.getElementById('current-num');
 
     if (prevBtn && nextBtn) {
+        //botones para desactivarlos a través de los escenarios
         prevBtn.disabled = currentScenario <= 0;
         nextBtn.disabled = (currentScenario === 0) || (currentScenario >= TOTAL_SCENARIOS);
     }
@@ -156,6 +157,6 @@ window.handleAppPerms = handleAppPerms;
 window.saveFinalPlan = saveFinalPlan;
 window.deleteFile = deleteFile;
 window.finishSimulation = finishSimulation;
-window.submitQuestionnaire = submitQuestionnaire;
+window.submitTaxonomy = submitTaxonomy;
 
 initApp();

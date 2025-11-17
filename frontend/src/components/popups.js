@@ -32,12 +32,18 @@ export function getPopupsHTML() {
         </div>
 
         <div id="popup-update" class="popup-overlay">
-            <div class="popup-content">
-                <h3>Critical Update Available</h3>
-                <p>A critical security update for Lynx Browser is available. It is recommended to install now to correct a vulnerability.</p>
-                <button onclick="window.handleUpdate('install')">Install Now</button>
-                <button class="secondary" onclick="window.handleUpdate('later')">Remind Me Later</button>
-            </div>
+                <div class="popup-content">
+                    <h3>La actualización de características más reciente de Windows ya está disponible</h3>
+                    <p>Está lista para instalarse. Con las nuevas características y aplicaciones, esta actualización podría tardar un poco más que las otras.</p>
+                    <p style="margin-top: 20px;">Puedes reiniciar ahora o posponer la actualización.</p>
+                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+                        
+                        <button onclick="window.handleUpdate('install')">Reiniciar ahora</button>
+                        
+                        <button class="secondary" onclick="window.handleUpdate('postpone')">Posponer</button>
+                    
+                    </div>
+                </div>
         </div>
 
         <div id="popup-registration-complete" class="popup-overlay">

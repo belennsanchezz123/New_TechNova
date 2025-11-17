@@ -17,7 +17,8 @@ export const metrics = {
         credential_compromise: 'No',
         sensitive_data_exposure_to_llm: 'No',
         policy_compliance_llm: 'Complied',
-        secure_data_transmission: 'Not Set'
+        secure_data_transmission: 'Not Set',
+        ai_prompt_text: 'N/A'
     },
     scenario4: {
         response_to_browser_warnings: 'Not Encountered',

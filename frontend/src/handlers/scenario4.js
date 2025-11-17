@@ -660,7 +660,20 @@ export function handleCookies(decision) {
 }
 
 export function handleUpdate(action) {
+    // Esta línea ya funciona: 'install' se guarda como 'Installed immediately', 'postpone' como 'Postponed'.
     metrics.unexpected.update_compliance_rate = (action === 'install') ? 'Installed immediately' : 'Postponed';
+    
+    // Oculta el popup principal
     document.getElementById('popup-update').classList.remove('active');
-    setTimeout(() => window.startScenario(5), 1000);
+
+    const notification = document.getElementById('update-notification');
+    const notificationMessage = document.getElementById('notification-message');
+
+    if (action === 'install') {
+        // No mostramos notificación
+    } else if (action === 'postpone') { // (Hemos quitado el 'else if' para 'schedule')
+        notificationMessage.textContent = 'Windows pospondrá esta actualización. Se te recordará de nuevo pronto.';
+        notification.style.display = 'block';
+        setTimeout(() => notification.style.display = 'none', 5000); // Ocultar después de 5 segundos
+    }
 }

@@ -30,13 +30,21 @@ export function reportEmail(id, type) {
 }
 
 export function useAI() {
-    const text = document.getElementById('ai-input').value.toLowerCase();
-    if (text.includes('participantes') || text.includes('alergias') || text.includes('contacto')) {
+    const rawText = document.getElementById('ai-input').value;
+    metrics.scenario3.ai_prompt_text = rawText;
+    const text = rawText.toLowerCase();
+    //const text = document.getElementById('ai-input').value.toLowerCase();
+    // Check for sensitive data
+    if (text.includes('participantes') || text.includes('alergias') || text.includes('contacto') || text.includes('lista_participantes')) {
         metrics.scenario3.sensitive_data_exposure_to_llm = 'Yes';
         metrics.scenario3.policy_compliance_llm = 'Broke the rule';
         alert("AI processed sensitive data.");
+    } else if (text.trim() === '') {
+        alert("Please paste some text for the AI to process.");
     } else {
-         alert("AI processing complete.");
+        metrics.scenario3.sensitive_data_exposure_to_llm = 'No';
+        metrics.scenario3.policy_compliance_llm = 'Followed the rule';
+        alert("AI processing complete. No sensitive data detected.");
     }
 }
 

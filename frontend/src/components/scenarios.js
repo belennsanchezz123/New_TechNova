@@ -1,3 +1,30 @@
+function generateQuestionGroup(title, questions, groupIndex) {
+    
+    // Genera el HTML para una sola pregunta (fila)
+    const generateQuestionHTML = (question, qIndex) => {
+        const questionName = `q_${groupIndex}_${qIndex}`;
+        return `
+            <div class="question-row">
+                <div class="question-label">${question}</div>
+                <div class="radio-group-horizontal">
+                    <label><input type="radio" name="${questionName}" value="1"> 1</label>
+                    <label><input type="radio" name="${questionName}" value="2"> 2</label>
+                    <label><input type="radio" name="${questionName}" value="3"> 3</label>
+                    <label><input type="radio" name="${questionName}" value="4"> 4</label>
+                    <label><input type="radio" name="${questionName}" value="5"> 5</label>
+                </div>
+            </div>
+        `;
+    };
+
+    // Crea el bloque completo del grupo
+    return `
+        <div class="question-section-taxonomy">
+            <h3>${title}</h3>
+            ${questions.map((q, i) => generateQuestionHTML(q, i)).join('')}
+        </div>
+    `;
+}
 export function getScenarioHTML(scenarioNumber) {
     const scenarios = {
         0: `
@@ -62,7 +89,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
 
             <div id="task-interruption">
-                <p><strong>Instrucción:</strong> Necesitas ir a otra sala a por el documento <strong>'Lista_Participantes_Excursion.docx'</strong>.</p>
+                <p><strong>Instrucción:</strong> You need to leave the room to fetch the document “Lista_Participantes_Excursion.docx”.'</strong>.</p>
                 
                 <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
                     
@@ -275,6 +302,15 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
                 </div>
             </div>
+            <div id="update-notification" class="update-notification">
+                <div class="notification-header">
+                    <span>🔔 Notificación de Windows</span>
+                    <button class="notification-close" onclick="this.parentNode.parentNode.style.display='none';">×</button>
+                </div>
+                <div class="notification-body">
+                    <p id="notification-message"></p>
+                </div>
+            </div>
         `,
         5: `
             <h2>Scenario 5: Social Media & Personal Information</h2>
@@ -345,7 +381,161 @@ export function getScenarioHTML(scenarioNumber) {
             <button id="consent-submit-btn" onclick="window.finishSimulation(true)">I Consent and Submit</button>
             <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
-        8: `
+        8:`
+            <h2>Cuestionario de la Meta-Taxonomía de Comportamiento Humano en Ciberseguridad</h2>
+            <p><strong>Instrucciones:</strong> Para cada afirmación, selecciona la opción que mejor describe tu comportamiento habitual.</p>
+            
+            <form class="questionnaire-form" id="taxonomy-questionnaire">
+
+                <div class="question-section-taxonomy">
+                    <h3>0. Información Demográfica y Experiencia</h3>
+                    
+                    <div class="question-custom">
+                        <label>¿Cuál es tu rango de edad?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_1" value="<18"> < 18</label>
+                            <label><input type="radio" name="q_0_1" value="18-24"> 18-24</label>
+                            <label><input type="radio" name="q_0_1" value="25-34"> 25-34</label>
+                            <label><input type="radio" name="q_0_1" value="35-44"> 35-44</label>
+                            <label><input type="radio" name="q_0_1" value="45-54"> 45-54</label>
+                            <label><input type="radio" name="q_0_1" value="55-64"> 55-64</label>
+                            <label><input type="radio" name="q_0_1" value=">65"> > 65</label>
+                        </div>
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿Cuál es tu nivel más alto de educación completado?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_2" value="Secundaria"> Secundaria</label>
+                            <label><input type="radio" name="q_0_2" value="Bachillerato"> Bachillerato</label>
+                            <label><input type="radio" name="q_0_2" value="FP"> FP</label>
+                            <label><input type="radio" name="q_0_2" value="Grado"> Grado</label>
+                            <label><input type="radio" name="q_0_2" value="Master"> Máster</label>
+                            <label><input type="radio" name="q_0_2" value="Doctorado"> Doctorado</label>
+                        </div>
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿Con qué frecuencia usas un ordenador para trabajar o estudiar?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_3" value="Diariamente"> Diariamente</label>
+                            <label><input type="radio" name="q_0_3" value="Semanalmente"> Varias veces por semana</label>
+                            <label><input type="radio" name="q_0_3" value="Mensualmente"> Varias veces al mes</label>
+                            <label><input type="radio" name="q_0_3" value="Rara vez"> Rara vez</label>
+                        </div>
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿Cómo calificarías tu nivel de habilidad con la tecnología?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_4" value="Muy bajo"> Muy bajo</label>
+                            <label><input type="radio" name="q_0_4" value="Bajo"> Bajo</label>
+                            <label><input type="radio" name="q_0_4" value="Medio"> Medio</label>
+                            <label><input type="radio" name="q_0_4" value="Alto"> Alto</label>
+                            <label><input type="radio" name="q_0_4" value="Experto"> Experto</label>
+                        </div>
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿Has recibido alguna vez formación formal en ciberseguridad?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_5" value="Si"> Sí</label>
+                            <label><input type="radio" name="q_0_5" value="No"> No</label>
+                        </div>
+                    </div>
+                    <div class="question-custom">
+                        <label>Aproximadamente, ¿en cuántas redes sociales (Facebook, Instagram, LinkedIn, X, TikTok, etc.) tienes un perfil activo?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_6" value="0"> 0</label>
+                            <label><input type="radio" name="q_0_6" value="1-2"> 1-2</label>
+                            <label><input type="radio" name="q_0_6" value="3-4"> 3-4</label>
+                            <label><input type="radio" name="q_0_6" value="5+"> 5 o más</label>
+                        </div>
+                    </div>
+                    </div>
+                <p style="margin-top: 30px; font-weight: bold; text-align: left;"><em>Escala para las siguientes preguntas: 1 (Nunca) - 5 (Siempre)</em></p>
+
+                ${generateQuestionGroup("1. Password Management & Authentication", [
+                    "No cambio mis contraseñas, a menos que sea obligatorio.",
+                    "Utilizo contraseñas distintas para cada cuenta.",
+                    "Creo contraseñas que superan los requisitos mínimos.",
+                    "No incluyo caracteres especiales si no son obligatorios.",
+                    "Uso contraseñas simples como el nombre o fecha de nacimiento.",
+                    "Uso la misma contraseña para varias cuentas.",
+                    "Uso verificación en dos pasos (OTP, SMS, etc.).",
+                    "Guardo mis contraseñas en el navegador.",
+                    "¿Utilizas autenticación multifactor (MFA)?",
+                    "¿Compruebas si tus contraseñas han sido comprometidas?"
+                ], 1)}
+                
+                ${generateQuestionGroup("2. Device Securement & Physical Security", [
+                    "Bloqueo manualmente mi equipo al alejarme.",
+                    "Uso contraseña para desbloquear portátil/tablet.",
+                    "Uso Wi-Fi pública gratuita.",
+                    "Escaneo los dispositivos externos (USB, discos) antes de usarlos."
+                ], 2)}
+
+                ${generateQuestionGroup("3. Phishing Awareness & Safe Email Use", [
+                    "Abro enlaces sin verificar a dónde dirigen.",
+                    "Paso el ratón sobre enlaces antes de hacer clic.",
+                    "Reconozco sitios por su apariencia, no por la URL.",
+                    "Envío datos sin verificar que la conexión sea segura.",
+                    "¿Reportas mensajes sospechosos?"
+                ], 3)}
+
+                ${generateQuestionGroup("4. Safe Internet Browsing & Download Practices", [
+                    "Introduzco datos de pago en sitios sin certificado.",
+                    "Descargo archivos sin verificar su autenticidad.",
+                    "Hago clic en anuncios emergentes en sitios web.",
+                    "Descargo contenido solo desde sitios oficiales."
+                ], 4)}
+
+                ${generateQuestionGroup("5. Social Media & Personal Information Protection", [
+                    "Acepto solicitudes de amistad solo por reconocer la foto.",
+                    "Comparto mi ubicación actual en redes sociales.",
+                    "Muestro información personal en mis perfiles.",
+                    "Reenvío publicaciones sin confirmar su veracidad.",
+                    "¿Verificas qué datos personales están públicos en internet?"
+                ], 5)}
+
+                ${generateQuestionGroup("6. Secure Information Handling & Data Protection", [
+                    "Abro archivos sin importar la extensión.",
+                    "¿Cifras tus archivos sensibles?",
+                    "¿Eliminas datos antes de desechar un dispositivo?"
+                ], 6)}
+
+                ${generateQuestionGroup("7. Software Updating & Patch Management", [
+                    "Instalo actualizaciones cuando el sistema me lo indica.",
+                    "Verifico que mis programas estén actualizados.",
+                    "Verifico que el antivirus se actualice.",
+                    "¿Mantienes el software de tu equipo actualizado?",
+                    "¿Usas antivirus y firewall activados?"
+                ], 7)}
+
+                ${generateQuestionGroup("8. Incident Reporting & Response", [
+                    "¿Reportas incidentes de seguridad?",
+                    "¿Reportas dispositivos perdidos o robados?",
+                    "¿Reportas mensajes o personas sin autorización?"
+                ], 8)}
+
+                ${generateQuestionGroup("9. Security Awareness & Policy Compliance", [
+                    "¿Lees y aceptas las políticas de seguridad de tu organización?",
+                    "¿Solicitas ayuda ante dudas de seguridad?",
+                    "¿Participas en programas de concienciación en ciberseguridad?",
+                    "¿Reportas políticas inseguras que dificultan tu trabajo?"
+                ], 9)}
+
+                ${generateQuestionGroup("10. Generative AI & LLM Usage", [
+                    "Antes de enviar un mensaje a un LLM, evalúo si contiene información confidencial.",
+                    "¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?"
+                ], 10)}
+                <div style="margin-top: 30px;">
+                    <button type="button" onclick="window.submitTaxonomy()" class="primary-btn">Enviar Cuestionario</button>
+                    <p id="questionnaire-error" style="display: none; color: #d32f2f; margin-top: 10px;">Por favor, responde a todas las preguntas antes de enviar.</p>
+                </div>
+            </form>
+            `,
+        9: `
             <h2>Simulation Complete!</h2>
             <p>Thank you for your participation. Your interactions have been recorded to help us improve the Lynx platform. Below is a summary of the metrics collected during your session.</p>
             <table id="results-table">

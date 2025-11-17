@@ -399,59 +399,24 @@
     line-height: 1.6;
 }
 
-.cookie-banner {
-    background: #fff;
-    border: 1px solid #dadce0;
-    padding: 20px;
-    margin-top: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.cookie-banner p {
-    margin-bottom: 16px;
-    font-size: 14px;
-}
-
-.cookie-banner button {
-    margin-right: 10px;
-    padding: 8px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.cookie-banner button:first-of-type {
-    background: #1a73e8;
-    color: white;
-    border: none;
-}
-
-.cookie-banner button.secondary {
-    background: white;
-    border: 1px solid #dadce0;
-    color: #5f6368;
-}
-
 /*
- * --- ESTILOS PARA EL BANNER DE COOKIES AVANZADO ---
+ * --- ESTILOS PARA EL BANNER DE COOKIES AVANZADO (TEMA CLARO) ---
  */
-
 .cookie-banner {
-    /* El banner existente que ya tienes */
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 600px; /* Ajustado para más contenido */
-    background: #333;
-    color: white;
-    padding: 15px; /* Reducido para dar espacio al contenido interno */
+    max-width: 600px;
+    background: #f8f9fa; /* <-- NUEVO: Fondo gris muy claro */
+    color: #212529; /* <-- NUEVO: Texto oscuro */
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    z-index: 10001; /* Asegura que esté sobre el contenido del navegador simulado */
+    z-index: 10001;
     font-size: 14px;
+    border: 1px solid #d6d8db; /* <-- NUEVO: Borde claro */
 }
 
 .cookie-banner-content {
@@ -459,59 +424,51 @@
     flex-direction: column;
     gap: 15px;
 }
-
 .cookie-banner-content p {
     margin: 0;
     line-height: 1.5;
 }
-
 .cookie-buttons {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap; /* Para que se ajusten en móviles */
+    flex-wrap: wrap;
 }
 
 /* El panel de configuración */
 .cookie-settings-panel {
-    background: #444; /* Un poco más claro que el fondo */
+    background: #e9ecef; /* <-- NUEVO: Panel gris claro */
+    border: 1px solid #ced4da; /* <-- NUEVO: Borde */
     border-radius: 6px;
     padding: 15px;
     margin-top: 5px;
-    display: none; /* Oculto por defecto */
-    border: 1px solid #555;
+    display: none;
 }
-
 .cookie-settings-panel h5 {
     margin: 0 0 15px 0;
     font-size: 16px;
-    color: #fff;
-    border-bottom: 1px solid #666;
+    color: #212529; /* <-- NUEVO: Texto oscuro */
+    border-bottom: 1px solid #adb5bd; /* <-- NUEVO: Borde */
     padding-bottom: 10px;
 }
-
 .cookie-option {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
 }
-
 .cookie-option + .cookie-option {
-    border-top: 1px solid #555;
+    border-top: 1px solid #ced4da; /* <-- NUEVO: Borde */
 }
-
 .cookie-text {
     display: flex;
     flex-direction: column;
     margin-right: 15px;
 }
-
 .cookie-text small {
-    color: #ccc;
+    color: #495057; /* <-- NUEVO: Texto gris oscuro */
     font-size: 12px;
     line-height: 1.4;
 }
-
 /* --- ESTILOS PARA EL INTERRUPTOR (TOGGLE SWITCH) --- */
 .switch {
   position: relative;

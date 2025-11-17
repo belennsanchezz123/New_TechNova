@@ -1,69 +1,86 @@
+import { metrics } from '../utils/metrics.js';
+import { getSessionId } from '../main.js';
 import { getParticipantId } from '../utils/participant.js';
+import { saveQuestionnaire } from '../services/api.js';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// ESTA ES LA FUNCIÓN QUE MUESTRA LOS RESULTADOS EN EL ESCENARIO 9
+function showResults() {
+    const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) return;
 
-export async function submitQuestionnaire() {
-    const errorMsg = document.getElementById('questionnaire-error');
-    errorMsg.style.display = 'none';
+    resultsBody.innerHTML = ''; // Limpiar tabla
 
-    const participantId = getParticipantId();
-    if (!participantId) {
-        errorMsg.textContent = 'Error: No se encontró el ID de participante';
-        errorMsg.style.display = 'block';
-        return;
-    }
+    const allMetrics = {
+        ...metrics.scenario1,
+        ...metrics.scenario2,
+        ...metrics.scenario3,
+        ...metrics.scenario4,
+        ...metrics.scenario5,
+        ...metrics.scenario6,
+        ...metrics.unexpected,
+        ...metrics.optional
+    };
 
-    const questions = ['q1_1', 'q1_2', 'q2_1', 'q2_2', 'q3_1', 'q3_2', 'q4_1', 'q4_2', 'q5_1', 'q5_2'];
-    const responses = {};
-    let allAnswered = true;
-
-    for (const question of questions) {
-        const selected = document.querySelector(`input[name="${question}"]:checked`);
-        if (!selected) {
-            allAnswered = false;
-            break;
-        }
-        responses[question] = selected.value;
-    }
-
-    if (!allAnswered) {
-        errorMsg.style.display = 'block';
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/questionnaire/submit`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                participantId,
-                ...responses
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Cuestionario enviado exitosamente. Gracias por tu participación.');
-            showCompletionMessage();
-        } else {
-            errorMsg.textContent = `Error: ${result.error}`;
-            errorMsg.style.display = 'block';
-        }
-    } catch (error) {
-        console.error('Error submitting questionnaire:', error);
-        errorMsg.textContent = 'Error al enviar el cuestionario. Por favor, intenta de nuevo.';
-        errorMsg.style.display = 'block';
+    for (const [key, value] of Object.entries(allMetrics)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>Scenario Data</td> 
+            <td class="metric-name">${key.replace(/_/g, ' ')}</td>
+            <td>${value}</td>
+        `;
+        resultsBody.appendChild(row);
     }
 }
 
-function showCompletionMessage() {
-    const scenario = document.getElementById('scenario-8');
-    scenario.innerHTML = `
-        <h2>Simulación Completada</h2>
-        <p>Gracias por completar el cuestionario y participar en este estudio.</p>
-        <p>Tus respuestas han sido registradas de forma segura y anónima.</p>
-        <p><strong>El ID de tu participante es: ${getParticipantId()}</strong></p>
-        <p>Puedes cerrar esta ventana.</p>
-    `;
+
+// ESTA ES LA NUEVA FUNCIÓN PARA ENVIAR EL NUEVO CUESTIONARIO
+export async function submitTaxonomy() {
+    // 1. Apunta al ID del nuevo formulario
+    const form = document.getElementById('taxonomy-questionnaire'); 
+    const errorEl = document.getElementById('questionnaire-error');
+    
+    const formData = new FormData(form);
+    const answers = {};
+    let answeredCount = 0; // Usamos un contador
+
+    // 2. Itera sobre todas las respuestas que encontró
+    for (const [key, value] of formData.entries()) {
+        answers[key] = value;
+        answeredCount++; // Suma cada respuesta encontrada
+    }
+
+    // 3. Compara con el total de preguntas que acordamos (53)
+    const totalQuestions = 53; // 45 tax + 5 demo + 2 perc + 1 redes
+
+    if (answeredCount < totalQuestions) {
+        errorEl.textContent = `Por favor, responde a todas las ${totalQuestions} preguntas. (Faltan ${totalQuestions - answeredCount})`;
+        errorEl.style.display = 'block';
+        return; // Detiene el envío
+    }
+
+    errorEl.style.display = 'none';
+
+    // 4. Si todo está bien, guarda los datos
+    try {
+        const participantId = getParticipantId();
+        const sessionId = getSessionId();
+        
+        await saveQuestionnaire({
+            participantId,
+            sessionId,
+            answers // Envía el nuevo objeto de respuestas
+        });
+
+        alert('Cuestionario enviado. ¡Gracias por completar la simulación!');
+        
+        // 5. Pasa a la pantalla de resultados (Escenario 9)
+        window.startScenario(9); 
+        
+        // 6. Rellena la tabla de resultados
+        setTimeout(showResults, 100); 
+
+    } catch (err) {
+        console.error('Error saving questionnaire:', err);
+        alert('Error al guardar el cuestionario.');
+    }
 }

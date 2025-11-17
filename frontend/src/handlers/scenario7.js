@@ -135,4 +135,5 @@ function displayBreachResults(breachData, container) {
             </div>
         `;
     }
+    window.startScenario(8);
 }
