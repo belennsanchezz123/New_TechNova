@@ -28,7 +28,7 @@ function generateQuestionGroup(title, questions, groupIndex) {
 export function getScenarioHTML(scenarioNumber) {
     const scenarios = {
         0: `
-            <h2>¡Bienvenido a TechNova, Alex!</h2>
+            <h2>¡Bienvenido a TechNova!</h2>
             <p>Este laboratorio virtual simula tu primer día laboral en la empresa tecnológica TechNova.</p>
             <p>A lo largo de tu jornada, deberás completar varias tareas típicas de incorporación digital.</p>
             
@@ -91,7 +91,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
 
             <div id="task-interruption">
-                <p><strong>Instrucción:</strong> You need to leave the room to fetch the document “Lista_Participantes_Excursion.docx”.'</strong>.</p>
+                <p><strong>Intrucción:</strong>Necesitas encontrar y descargar una plantilla de cronograma de proyectos para su equipo, que debe presentar en la reunión del lunes. Para eso usa el navegador asociado.'</strong>.</p>
                 
                 <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
                     
@@ -257,14 +257,14 @@ export function getScenarioHTML(scenarioNumber) {
             <hr>
             <div id="ai-task" style="margin-top:20px;">
                  <h3>Task: Use the AI Assistant</h3>
-                 <p><strong>Instruction 1:</strong> On your desktop, you find 'Lista_Participantes_Excursion.docx'. It contains sensitive attendee details. Use the 'AI Assistant' below to create a summary of dietary and medical needs.</p>
+                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a su jefa en una reunión estratégica. It contains sensitive attendee details. Use the 'AI Assistant' below to create a summary of dietary and medical needs.</p>
                  <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Paste content here for the AI Assistant..."></textarea>
                  <button onclick="window.useAI()">Process with AI</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
-                <p><strong>Instruction:</strong> Now, send the original complete document ('Lista_Participantes_Excursion.docx') to your collaborator at 'colaborador@tech_nova'.</p>
-                <p>Use the email client above to compose a new message to your collaborator and attach the document.</p>
+                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email to your collaborator at 'elena_sanchezr@tech_nova'.</p>
+                <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje a tu jefe y adjuntar el documento.</p>
             </div>
         `,
         4: `
@@ -316,7 +316,7 @@ export function getScenarioHTML(scenarioNumber) {
             <h2>Scenario 5: Social Media & Personal Information</h2>
             <div id="profile-task">
                 <h3>Complete Your Events Profile</h3>
-                <p><strong>Instruction:</strong> Please complete your profile on Tech Nova Events. Fill in the information you consider appropriate for the event page.</p>
+                <p><strong>Instrucción:</strong> Por favor, completa tu perfil en Tech Nova Events.</p>
                 <div class="form-group">
                     <label for="prof-name">Name *</label>
                     <input type="text" id="prof-name" value="Alex">
@@ -340,9 +340,9 @@ export function getScenarioHTML(scenarioNumber) {
                 <button onclick="window.saveProfile()">Save Profile</button>
             </div>
             <div id="app-task" style="display:none;">
-                <h3>Connect a Third-Party Application</h3>
-                <p><strong>Instruction:</strong> To improve organization, please integrate the 'Lynx Route Planner' app to add a map to your event.</p>
-                <button onclick="window.connectApp()">Connect 'Lynx Route Planner' App</button>
+                <h3>Conectar una Aplicación de Terceros</h3>
+                <p><strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.</p>
+                <button onclick="window.connectApp()">Conectar 'TechNova Calendar Sync' App</button>
             </div>
         `,
         6: `

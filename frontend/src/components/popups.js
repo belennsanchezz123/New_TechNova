@@ -22,9 +22,9 @@ export function getPopupsHTML() {
             <div class="popup-content">
                 <h3>'Lynx Route Planner' requests permission to:</h3>
                 <ul style="text-align: left; list-style-position: inside;">
-                    <li>✅ View your basic profile information</li>
-                    <li style="color:red;">⚠️ Access your contact list and private messages</li>
-                    <li style="color:red;">⚠️ Post on your behalf on Lynx Events</li>
+                    <li>View your basic profile information</li>
+                    <li>Access your contact list and private messages</li>
+                    <li>Post on your behalf on Lynx Events</li>
                 </ul>
                 <button onclick="window.handleAppPerms(true)">Accept</button>
                 <button class="danger" onclick="window.handleAppPerms(false)">Deny</button>
@@ -106,22 +106,22 @@ export function getPopupsHTML() {
         <div style="text-align: left; padding: 15px; border: 1px solid #cce5ff; background: #e6f3ff; border-radius: 4px; font-size: 0.98em;">
             
             <h4 style="margin-bottom: 8px;">🔐 Política de Privacidad y Uso de Asistentes de IA:</h4>
-            <ul style="list-style-type: '❌ '; padding-left: 20px; margin-top: 0;">
-                <li>No se permite ingresar, copiar o analizar ningún documento que contenga datos personales, financieros o sensibles en el Asistente de IA.</li>
-                <li>Queda prohibido el uso del asistente para tratar información identificable de empleados, clientes o proveedores.</li>
+            <ul style="padding-left: 24px; margin-top: 0;">
+                <li style="margin-left: 10px;">No se permite ingresar, copiar o analizar ningún documento que contenga datos personales, financieros o sensibles en el Asistente de IA.</li>
+                <li style="margin-left: 10px;">Queda prohibido el uso del asistente para tratar información identificable de empleados, clientes o proveedores.</li>
             </ul>
 
             <h4 style="margin-top: 18px; margin-bottom: 8px;">🔑 Política de Seguridad de Contraseñas:</h4>
-            <ul style="list-style-type: '✔️ '; padding-left: 20px;">
-                <li>Debe utilizar una contraseña única y robusta para cada plataforma interna (correo, nube, red social, etc.).</li>
-                <li>Se recomienda activar la autenticación multifactor (MFA) siempre que esté disponible.</li>
-                <li>Evite reutilizar contraseñas entre plataformas personales y corporativas.</li>
+            <ul style="padding-left: 24px; margin-top: 0;">
+                <li style="margin-left: 10px;">Debe utilizar una contraseña única y robusta para cada plataforma interna (correo, nube, red social, etc.).</li>
+                <li style="margin-left: 10px;">Se recomienda activar la autenticación multifactor (MFA) siempre que esté disponible.</li>
+                <li style="margin-left: 10px;">Evite reutilizar contraseñas entre plataformas personales y corporativas.</li>
             </ul>
 
             <h4 style="margin-top: 18px; margin-bottom: 8px;">📁 Política de Gestión de Información:</h4>
-            <ul style="list-style-type: '🛑 '; padding-left: 20px;">
-                <li>No está permitido almacenar archivos confidenciales en servicios no autorizados.</li>
-                <li>Todos los documentos internos deben ser tratados bajo las normas de clasificación de TechNova.</li>
+            <ul style="padding-left: 24px; margin-top: 0;">
+                <li style="margin-left: 10px;">No está permitido almacenar archivos confidenciales en servicios no autorizados.</li>
+                <li style="margin-left: 10px;">Todos los documentos internos deben ser tratados bajo las normas de clasificación de TechNova.</li>
             </ul>
         </div>
 
