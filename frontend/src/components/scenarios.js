@@ -107,7 +107,7 @@ export function getScenarioHTML(scenarioNumber) {
 
             <div id="task-usb" style="display:none;">
                 <h3>Manejo de Dispositivos Externos</h3>
-                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Reservas_Refugio.pdf'</strong>.</p>
+                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Bienvenida_Equipo_TechNova.docx'</strong>.</p>
     
                 <div class="file-explorer-window">
                     <div class="fe-header">
@@ -198,11 +198,11 @@ export function getScenarioHTML(scenarioNumber) {
                         <div id="usb-content-view" style="display:none;">
                             <div class="fe-item" id="file-mapa">
                                 <div class="fe-icon">📄</div>
-                                <div class="fe-item-details"><span>Reservas_Refugio.pdf</span></div>
+                                <div class="fe-item-details"><span>Bienvenida_Equipo_TechNova.docx</span></div>
                             </div>
                         <div class="fe-item" id="file-fotos">
                             <div class="fe-icon">📄</div>
-                            <div class="fe-item-details"><span>Mapa_Ruta_Senderismo_BORRADOR.pdf</span></div>
+                            <div class="fe-item-details"><span>Bienvenida_Equipo_TechNova_BORRADOR.docx</span></div>
                         </div>
                     </div>
                 </div>
@@ -244,26 +244,29 @@ export function getScenarioHTML(scenarioNumber) {
         `,
         3: `
             <h2>Scenario 3: Communications Management</h2>
-            <p><strong>Instruction:</strong> Open Mail and review your incoming messages. Read through them and handle them as you normally would. <strong>To interact with an email (reply, forward, report, etc.), right-click on it in the inbox.</strong></p>
+            <p><strong>Instrucción:</strong>Es hora de revisar tu bandeja de entrada de **TechNova Mail**  </p>
+            <p>Tu gerente te ha enviado mensajes importantes sobre tu incorporación.</p>
+            <p>Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. <strong>Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong></p>
+            
             <div style="margin-bottom: 10px;">
-                <button onclick="window.openComposeEmail()">New Email</button>
+                <button onclick="window.openComposeEmail()">Nuevo Correo</button>
             </div>
             <div class="email-client">
                 <div class="email-list" id="email-list"></div>
                 <div class="email-view" id="email-view">
-                    <p>Select an email to read it.</p>
+                    <p>Selecciona un correo para leerlo.</p>
                 </div>
             </div>
             <hr>
             <div id="ai-task" style="margin-top:20px;">
-                 <h3>Task: Use the AI Assistant</h3>
-                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a su jefa en una reunión estratégica. It contains sensitive attendee details. Use the 'AI Assistant' below to create a summary of dietary and medical needs.</p>
-                 <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Paste content here for the AI Assistant..."></textarea>
+                 <h3>Task: Usar el Asistente IA</h3>
+                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a su jefa en una reunión estratégica.</p>
+                 <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Pega el contenido aquí para el Asistente de IA..."></textarea>
                  <button onclick="window.useAI()">Process with AI</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
-                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email to your collaborator at 'elena_sanchezr@tech_nova'.</p>
+                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@tech_nova'.</p>
                 <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje a tu jefe y adjuntar el documento.</p>
             </div>
         `,

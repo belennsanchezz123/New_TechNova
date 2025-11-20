@@ -19,17 +19,17 @@ export function getPopupsHTML() {
         </div>
 
         <div id="popup-app-perms" class="popup-overlay">
-            <div class="popup-content">
-                <h3>'Lynx Route Planner' requests permission to:</h3>
-                <ul style="text-align: left; list-style-position: inside;">
-                    <li>View your basic profile information</li>
-                    <li>Access your contact list and private messages</li>
-                    <li>Post on your behalf on Lynx Events</li>
-                </ul>
-                <button onclick="window.handleAppPerms(true)">Accept</button>
-                <button class="danger" onclick="window.handleAppPerms(false)">Deny</button>
-            </div>
-        </div>
+    <div class="popup-content">
+        <h3>'TechNova Calendar Sync' solicita permiso para:</h3>
+        <ul style="text-align: left; list-style-position: inside;">
+            <li>Ver tu información básica de perfil</li>
+            <li>Acceder a tu lista de contactos y mensajes privados</li>
+            <li>Publicar en tu nombre en TechNova Events</li>
+        </ul>
+        <button onclick="window.handleAppPerms(true)">Aceptar</button>
+        <button class="danger" onclick="window.handleAppPerms(false)">Denegar</button>
+    </div>
+</div>
 
         <div id="popup-update" class="popup-overlay">
                 <div class="popup-content">

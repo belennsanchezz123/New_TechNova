@@ -1,57 +1,57 @@
 export const emails = [
     {
       id: 1,
-      from: 'Club de Senderismo <club@senderismo-lynx.sim>',
-      subject: '¡Bienvenido/a al Grupo!',
-      body: '¡Hola! Estamos encantados de tenerte planificando el viaje con nosotros. ¡Estamos ansiosos por la aventura!',
+      from: 'Laura Pérez (Gerente) <laura.perez@technova.com>',  //Legítimo
+      subject: 'Bienvenido al Equipo de Ventas, Alex', 
+      body: 'Hola Alex, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.', // MODIFICADO
       read: false,
       type: 'legit'
     },
     {
       id: 2,
-      from: 'Soporte Técnico <admin@it-support-alerts.com>',
-      subject: 'Acción Requerida: Su contraseña ha expirado',
-      body: 'Estimado usuario,<br><br>Su contraseña para la plataforma ha <b>expirado hoy</b>. Para evitar la suspensión de su cuenta, debe actualizarla inmediatamente.<br><br><a href="#" onclick="window.handlePhishingClick(true)">Haga clic aquí para restablecer su contraseña.</a><br><br>Gracias,<br><br><span style="font-family: \'Comic Sans MS\', cursive, sans-serif; color: #333;">-- Departamento de Soporté Ténico</span>',
+      from: 'Soporte Técnico TechNova <soporte@tech-nova.org>',  //PHISHING
+      subject: '[URGENTE] Acción Requerida: Verificación de Credenciales de TechNova', 
+      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><a href="#" onclick="window.handlePhishingClick(true)">VERIFICAR AHORA</a>', // MODIFICADO: Enlace malicioso
       read: false,
       type: 'phishing-creds'
     },
     {
       id: 3,
-      from: 'Sara Martinez <sara.martinez@lynx-mail.sim>',
-      subject: 'Re: Confirmación del viaje de senderismo',
-      body: '¡Hola! Solo confirmo que sí puedo ir a la caminata el próximo sábado. Llevo mi tienda de campaña y agua extra. ¡Qué emoción! Avísame si necesitas que lleve algo más.<br><br>Saludos,<br>Sara',
+      from: 'Equipo de IT TechNova <it-compliance@technova.com>', // Legítimo de IT
+      subject: 'Actualización de Protocolo de MFA – TechNova IT', 
+      body: 'Estimado Alex, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre `portal.technova.com`) para realizar la actualización. Gracias por tu cooperación.', // MODIFICADO
       read: false,
       type: 'legit'
     },
     {
       id: 4,
-      from: 'Centro de Recompensas al Cliente <premios@centro-recompensas.net>',
-      subject: '¡Felicidades - Ha sido seleccionado!',
-      body: 'Estimado Cliente,<br><br>¡Buenas noticias! Ha sido seleccionado al azar para recibir una tarjeta de regalo de $1000 como parte de nuestro programa de apreciación al cliente.<br><br><a href="#" onclick="window.handlePhishingClick(false)">Haga clic aquí para reclamar su premio ahora</a> antes de que expire.<br><br>¡Actúe rápido - esta oferta solo es válida por 24 horas!',
+      from: 'Departamento de Cuentas por Pagar <contabilidad-no-reply@cuentas-corporativas.com>', //Phishing (Factura/Malware)
+      subject: 'Factura Pendiente: Compra de Software - [Adjunto/Enlace Malicioso]', 
+      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado Alex, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, revise el documento adjunto (FACTURA_873321.zip) y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b>', // MODIFICADO
       read: false,
-      type: 'phishing-spam'
+      type: 'phishing-malware'
     },
     {
       id: 5,
-      from: 'Miguel Torres <miguel.torres@lynx-mail.sim>',
-      subject: 'Lista de equipamiento',
-      body: 'Hola,<br><br>Armé una lista del equipo recomendado para la caminata:<br>- Botas de senderismo<br>- Mochila (30-40L)<br>- Botellas de agua<br>- Botiquín de primeros auxilios<br>- Protector solar<br><br>¡Avísame si me faltó algo!<br><br>Miguel',
+      from: 'Comité Social TechNova <social@technova.com>', //Legítimo (Social)
+      subject: 'Invitación a Evento de \'Team Building\'',
+      body: '¡Hola Alex! Sabemos que estás empezando. Te invitamos a la \'Reunión de Novedades de TechNova\' este viernes. Es una excelente oportunidad para conocer a otros empleados nuevos y a tu equipo. Confirma tu asistencia en **TechNova Events** (nuestra red social interna) antes del miércoles. ¡Te esperamos!', // MODIFICADO
       read: false,
       type: 'legit'
     },
     {
       id: 6,
-      from: 'Equipo de Eventos Lynx <eventos@lynx-mail.sim>',
-      subject: 'Tu página de evento está lista',
-      body: 'Hola,<br><br>¡La página de tu evento de senderismo ha sido creada con éxito! Ya puedes empezar a invitar participantes y compartir detalles sobre la aventura.<br><br>Para acceder a la página de tu evento, inicia sesión en Eventos Lynx y navega a "Mis Eventos".<br><br>¡Feliz planificación!<br>El Equipo de Eventos Lynx',
+      from: 'RRHH TechNova <rrhh-alert@technova-support.net>', // Phishing (Emocional/HR)
+      subject: 'HR Alerta: Tu Bono de Incorporación fue Denegado', 
+      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><a href="#" onclick="window.handlePhishingClick(true)">ENLACE DE CORRECCIÓN</a>', // MODIFICADO: Enlace malicioso
       read: false,
-      type: 'legit'
+      type: 'phishing-creds'
     },
     {
       id: 7,
-      from: 'Soporte de Lynx <soporte@lynx-mail.sim>',
-      subject: 'Importante: Alerta de Seguridad de la Cuenta',
-      body: 'Detectamos un intento de inicio de sesión inusual en su cuenta desde un dispositivo desconocido.<br><br>Si ha sido usted, puede ignorar este mensaje.<br><br>Si <b>no</b> ha sido usted, le recomendamos que inicie sesión de forma segura en su cuenta (escribiendo la dirección oficial en su navegador) y revise su actividad reciente en la sección de \'Seguridad\'.<br><br>Atentamente,<br>El Equipo de Seguridad de Lynx',
+      from: 'Laura Pérez (Gerente de Equipo) <laura.perez@technova.com>', // MODIFICADO: Legítimo (Tarea)
+      subject: 'Resumen de Tareas Pendientes de su Gerente', // MODIFICADO
+      body: 'Alex, ¿podrías reenviarme la versión final del \'Plan de Introducción\' que te envié ayer? Necesito revisarla antes de nuestra reunión de las 3 PM. Gracias.', // MODIFICADO
       read: false,
       type: 'legit'
     },
@@ -152,7 +152,7 @@ export function openComposeEmail(replyTo = null) {
             <div class="compose-form">
                 <div class="compose-field">
                     <label><strong>To:</strong></label>
-                    <input type="text" id="compose-to" value="${toField}" placeholder="recipient@lynx-mail.sim">
+                    <input type="text" id="compose-to" value="${toField}" placeholder="destinatario@technova.com">
                 </div>
                 <div class="compose-field">
                     <label><strong>Subject:</strong></label>
@@ -171,8 +171,8 @@ export function openComposeEmail(replyTo = null) {
                         <button onclick="window.openLocalFileExplorer()" title="Adjuntar archivo local" style="display: flex; align-items: center; gap: 5px;">
                             <span style="font-size: 18px;">📎</span> Adjuntar archivo
                         </button>
-                        <button onclick="window.openDriveFileExplorer()" title="Insertar desde Lynx Drive" style="display: flex; align-items: center; gap: 5px; background: #4CAF50;">
-                            <span style="font-size: 18px;">☁️</span> Lynx Drive
+                        <button onclick="window.openDriveFileExplorer()" title="Insertar desde TechNova Drive" style="display: flex; align-items: center; gap: 5px; background: #4CAF50;">
+                            <span style="font-size: 18px;">☁️</span> TechNova Drive
                         </button>
                     </div>
                 </div>
