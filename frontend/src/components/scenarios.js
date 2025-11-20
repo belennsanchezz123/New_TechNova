@@ -244,9 +244,9 @@ export function getScenarioHTML(scenarioNumber) {
         `,
         3: `
             <h2>Scenario 3: Communications Management</h2>
-            <p><strong>Instrucción:</strong>Es hora de revisar tu bandeja de entrada de **TechNova Mail**  </p>
+            <p><strong>Instrucción:</strong> Es hora de revisar tu bandeja de entrada de <strong> TechNova Mail</strong></p>
             <p>Tu gerente te ha enviado mensajes importantes sobre tu incorporación.</p>
-            <p>Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. <strong>Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong></p>
+            <p>Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. <strong> Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong></p>
             
             <div style="margin-bottom: 10px;">
                 <button onclick="window.openComposeEmail()">Nuevo Correo</button>
@@ -260,14 +260,14 @@ export function getScenarioHTML(scenarioNumber) {
             <hr>
             <div id="ai-task" style="margin-top:20px;">
                  <h3>Task: Usar el Asistente IA</h3>
-                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a su jefa en una reunión estratégica.</p>
+                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a tu jefa en una reunión estratégica.</p>
                  <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Pega el contenido aquí para el Asistente de IA..."></textarea>
-                 <button onclick="window.useAI()">Process with AI</button>
+                 <button onclick="window.useAI()">Enviar</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Send Sensitive Document</h3>
                 <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@tech_nova'.</p>
-                <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje a tu jefe y adjuntar el documento.</p>
+                <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.</p>
             </div>
         `,
         4: `

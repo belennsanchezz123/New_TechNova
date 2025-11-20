@@ -51,10 +51,11 @@ function setupBrowserControls() {
 }
 
 function performSearch(query) {
-    // Si el usuario busca algo relacionado con mapas topográficos
-    if (query.toLowerCase().includes('mapa') ||
-        query.toLowerCase().includes('topograf') ||
-        query.toLowerCase().includes('sierra')) {
+    // MODIFICADO: Palabras clave de búsqueda a contexto corporativo
+    if (query.toLowerCase().includes('cronograma') ||
+        query.toLowerCase().includes('plantilla') ||
+        query.toLowerCase().includes('proyecto') ||
+        query.toLowerCase().includes('template')) {
         loadPage('search-results');
     } else {
         // Búsqueda genérica
@@ -84,25 +85,28 @@ function loadPage(pageName) {
     currentPage = pageName;
     updateNavigationButtons();
 
-    switch(pageName) {
+switch(pageName) {
         case 'google-home':
-            urlInput.value = 'https://www.google.com';
-            secureIcon.style.display = 'none';
+            // Simulamos el portal de inicio
+            urlInput.value = 'https://portal.technova.internal/home';
+            secureIcon.style.display = 'flex'; // Es seguro porque es interno
             infoBtn.style.display = 'none';
             content.innerHTML = renderGoogleHomepage();
             break;
 
         case 'search-results':
-            urlInput.value = 'https://www.google.com/search?q=mapa+topografico+sierra';
-            secureIcon.style.display = 'none';
+            // URL de búsqueda interna
+            urlInput.value = 'https://search.technova.internal/results?q=Plantilla+Cronograma';
+            secureIcon.style.display = 'flex';
             infoBtn.style.display = 'none';
             content.innerHTML = renderSearchResults();
             setupSearchResultsHandlers();
             break;
 
         case 'official-site':
-            urlInput.value = 'https://parquesnaturales.gob.es/mapas';
-            secureIcon.style.display = 'none';
+            // URL de SharePoint / Intranet
+            urlInput.value = 'https://sharepoint.technova.internal/sites/PMO/Templates';
+            secureIcon.style.display = 'flex';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderOfficialSite();
             setupOfficialSiteHandlers();
@@ -110,16 +114,18 @@ function loadPage(pageName) {
             break;
 
         case 'ad-suspicious-site':
-            urlInput.value = 'https://mapas-topograficos.es/descargas';
-            secureIcon.style.display = 'none';
+           // URL Externa Genérica
+            urlInput.value = 'https://www.plantillas-pro-gratis.net/descargas/auth';
+            secureIcon.style.display = 'flex'; // HTTPS (común hoy en día incluso en sitios dudosos)
             infoBtn.style.display = 'flex';
-            content.innerHTML = renderAdSuspiciousSite();
+            content.innerHTML = renderGenericLoginPage(); // <--- CAMBIO AQUÍ
             updateSiteInfo('ad-suspicious');
             break;
 
         case 'suspicious-site':
-            urlInput.value = 'http://mapas-gratis-rapido.xyz/sierra-completo';
-            secureIcon.style.display = 'none';
+            // MODIFICADO: Sitio externo peligroso (sin HTTPS)
+            urlInput.value = 'http://plantillas-gratis-hoy.xyz/proyectos';
+            secureIcon.style.display = 'none'; // No seguro (HTTP)
             infoBtn.style.display = 'flex';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
@@ -145,6 +151,10 @@ function navigateHistory(direction) {
     }
 }
 
+// -------------------------------------------------------
+// FUNCIONES DE RENDERIZADO (HTML)
+// -------------------------------------------------------
+
 function renderGoogleHomepage() {
     setTimeout(() => {
         const searchInput = document.getElementById('google-search-input');
@@ -154,163 +164,164 @@ function renderGoogleHomepage() {
                     loadPage('search-results');
                 }
             });
-            // Enfocar automáticamente el campo de búsqueda
             searchInput.focus();
         }
     }, 50);
 
-    return `
-        <div class="google-homepage">
-            <div class="google-logo">
-                <span class="g-blue">G</span><span class="g-red">o</span><span class="g-yellow">o</span><span class="g-blue">g</span><span class="g-green">l</span><span class="g-red">e</span>
+return `
+        <div class="google-homepage" style="background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 40px; font-weight: bold; color: #0056b3; margin-bottom: 10px;">TechNova <span style="color: #555; font-weight: normal;">Workspace</span></div>
+                <div style="color: #666;">Portal del Empleado & Búsqueda Unificada</div>
             </div>
-            <div class="google-search-box">
-                <span>🔍</span>
-                <input type="text" id="google-search-input" placeholder="Buscar en Google o escribir una URL" value="">
+            
+            <div class="google-search-box" style="box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <span style="color: #0056b3;">🔒</span>
+                <input type="text" id="google-search-input" placeholder="Buscar en SharePoint, Intranet y Web..." value="">
             </div>
+            
             <div class="google-search-buttons">
-                <button class="google-btn" onclick="window.performGoogleSearch()">Buscar con Google</button>
+                <button class="google-btn" onclick="window.performGoogleSearch()" style="background-color: #0056b3; color: white; font-weight: bold;">Buscar en TechNova</button>
             </div>
-            <p style="text-align: center; margin-top: 20px; color: #70757a; font-size: 14px;">
-                💡 Sugerencia: Busca "mapa topografico sierra"
-            </p>
+
+            <div style="margin-top: 40px; display: flex; gap: 30px; opacity: 0.7;">
+                <div style="text-align: center; font-size: 12px; color: #555;">📧<br>Outlook</div>
+                <div style="text-align: center; font-size: 12px; color: #555;">👥<br>Teams</div>
+                <div style="text-align: center; font-size: 12px; color: #555;">☁️<br>OneDrive</div>
+            </div>
         </div>
     `;
 }
 
 function renderSearchResults() {
     return `
-        <div class="google-results">
-            <div class="google-results-header">
-                Cerca de 2.450.000 resultados (0,45 segundos)
+        <div class="google-results" style="background-color: #fff; min-height: 100%;">
+            <div class="google-results-header" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                Resultados para: <strong>"Plantilla Cronograma"</strong>
             </div>
 
-            <!-- Resultado 1: Anuncio sutil que parece legítimo -->
-            <div class="search-result-item" style="background: #fef9f0; border-left: 2px solid #f9ab00; padding: 12px; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; margin-bottom: 4px;">
-                    <span style="font-size: 11px; font-weight: bold; color: #5f6368; margin-right: 8px; padding: 2px 6px; border: 1px solid #dadce0; border-radius: 3px;">Anuncio</span>
-                    <div class="result-url" style="margin: 0;">
-                        <div class="result-favicon" style="background: #1976d2;">🗺️</div>
-                        <span class="result-breadcrumb">mapas-topograficos.es › descargas</span>
+            <div style="margin-bottom: 30px;">
+                <div style="font-size: 12px; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center;">
+                    <span style="background: #e8f0fe; color: #1967d2; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">INTERNO</span>
+                    RECURSOS DE LA INTRANET
+                </div>
+
+                <div class="search-result-item" style="border-left: 3px solid #1967d2; padding-left: 15px;">
+                    <div class="result-url">
+                        <div class="result-favicon" style="background: #0056b3;">🏢</div>
+                        <span class="result-breadcrumb" style="color: #202124;">sharepoint.technova.internal › PMO › Templates</span>
+                    </div>
+                    <a class="result-title" data-site="official" style="color: #1a0dab;">Plantilla Oficial de Gestión de Proyectos Q4 (v2.1).docx</a>
+                    <div class="result-description">
+                        Plantilla estandarizada y obligatoria para todos los gestores de proyecto. Contiene las macros de seguridad aprobadas por IT. 
+                        <strong>Uso exclusivo interno.</strong>
                     </div>
                 </div>
-                <a class="result-title" data-site="ad-suspicious" style="font-size: 18px;">Mapas Topográficos de la Sierra - Descarga Actualizada 2025</a>
-                <div class="result-description">
-                    Mapas topográficos profesionales de la Sierra. Acceso inmediato a cartografía detallada.
-                    Última actualización disponible. Compatible con GPS y dispositivos móviles.
+
+                <div class="search-result-item" style="border-left: 3px solid #1967d2; padding-left: 15px; opacity: 0.8;">
+                    <div class="result-url">
+                        <div class="result-favicon" style="background: #0056b3;">📘</div>
+                        <span class="result-breadcrumb" style="color: #202124;">wiki.technova.internal › Políticas › Gestión</span>
+                    </div>
+                    <div class="result-title" style="cursor: default; color: #1a0dab;">Wiki Corporativa - Normativa de Cronogramas</div>
+                    <div class="result-description">
+                        Guía de estilo para la elaboración de cronogramas. Recuerde que no se permite el uso de software de terceros sin validación del CISO.
+                    </div>
                 </div>
             </div>
 
-            <!-- Resultado 2: Oficial y seguro -->
-            <div class="search-result-item">
-                <div class="result-url">
-                    <div class="result-favicon" style="background: #34a853;">🏞️</div>
-                    <span class="result-breadcrumb">parquesnaturales.gov.es › mapas › sierra</span>
+            <div>
+                <div style="font-size: 12px; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center;">
+                    <span style="background: #e8f0fe; color: #1967d2; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">INTERNO</span>
+                    WEB PÚBLICA RESULTADOS EXTERNOS</span>
+                    
                 </div>
-                <a class="result-title" data-site="official">Mapas Topográficos - Parque Natural de la Sierra</a>
-                <div class="result-description">
-                    Portal oficial del Ministerio de Medio Ambiente. Descarga gratuita de mapas topográficos oficiales
-                    del Parque Natural de la Sierra. Información actualizada y rutas señalizadas.
-                </div>
-            </div>
 
-            <!-- Resultado 3: Sospechoso pero sutil -->
-            <div class="search-result-item">
-                <div class="result-url">
-                    <div class="result-favicon" style="background: #ff6d00;">📁</div>
-                    <span class="result-breadcrumb">mapas-gratis-rapido.xyz › sierra-completo</span>
+                <div class="search-result-item">
+                    <div class="result-url">
+                        <div class="result-favicon" style="background: #ff6d00;">⚡</div>
+                        <span class="result-breadcrumb">www.plantillas-pro-gratis.net › descargas</span>
+                    </div>
+                    <a class="result-title" data-site="ad-suspicious">Plantillas Gantt Premium - Más bonitas y fáciles que Excel</a>
+                    <div class="result-description">
+                        ¿Cansado de las plantillas corporativas aburridas? Descarga nuestro pack de cronogramas visuales. 
+                        Compatibles con todo. ¡Sin restricciones!
+                    </div>
                 </div>
-                <a class="result-title" data-site="suspicious">Descarga DIRECTA GRATIS YA - Mapa Sierra Completo HD</a>
-                <div class="result-description">
-                    ⭐⭐⭐⭐⭐ DESCARGA INSTANTÁNEA sin esperas ni registros. Archivo completo con todos los mapas
-                    topográficos en máxima calidad. ¡Miles de usuarios ya lo tienen! Descarga directa garantizada.
-                </div>
-            </div>
 
-            <!-- Resultado 4: Informativo (no clickeable) -->
-            <div class="search-result-item">
-                <div class="result-url">
-                    <div class="result-favicon" style="background: #4285f4;">📖</div>
-                    <span class="result-breadcrumb">es.wikipedia.org › wiki › Sierra</span>
-                </div>
-                <div class="result-title" style="cursor: default;">Sierra (formación montañosa) - Wikipedia</div>
-                <div class="result-description">
-                    Una sierra es una formación montañosa con cumbres y crestas afiladas. El término hace referencia
-                    al perfil dentado que caracteriza a este tipo de formaciones geológicas...
+                <div class="search-result-item">
+                    <div class="result-url">
+                        <div class="result-favicon" style="background: #5f6368;">⬇️</div>
+                        <span class="result-breadcrumb">fast-downloads-now.xyz › project-manager</span>
+                    </div>
+                    <a class="result-title" data-site="suspicious">Descarga Directa .EXE - Gestor de Proyectos Gratuito</a>
+                    <div class="result-description">
+                        Instalador rápido. Consigue todas las funcionalidades de pago totalmente gratis. Click aquí para empezar.
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
-
-function renderAdSuspiciousSite() {
+// --- NUEVO: PÁGINA GENÉRICA QUE PIDE CREDENCIALES ---
+function renderGenericLoginPage() {
     return `
-        <div class="official-site" style="background: #fff;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px;">
-                <h2 style="margin: 0 0 10px 0; font-size: 28px;">MapasPro - Cartografía Digital</h2>
-                <p style="margin: 0; opacity: 0.9;">Tu plataforma de confianza para mapas topográficos</p>
-            </div>
+        <div style="background-color: #f9f9f9; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
+            <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 400px; text-align: center; border-top: 5px solid #ff6d00;">
+                
+                <div style="margin-bottom: 20px;">
+                   <div style="font-size: 28px; font-weight: bold; color: #333;">Plantillas<span style="color: #ff6d00;">PRO</span></div>
+                   <div style="font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Repositorio Global de Recursos</div>
+                </div>
 
-            <div style="padding: 20px;">
-                <h3 style="color: #333; margin-bottom: 15px;">Mapa Topográfico de la Sierra - Edición Premium</h3>
-                <p style="color: #666; line-height: 1.6;">
-                    Accede ahora a nuestro mapa topográfico completo de la Sierra. Incluye rutas exclusivas,
-                    puntos de interés y datos actualizados para tu próxima aventura.
+                <h3 style="margin-bottom: 15px; color: #333;">Descarga Protegida</h3>
+                
+                <div style="background: #fff8e1; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: left; font-size: 13px; border: 1px solid #ffe0b2; color: #8d6e63;">
+                    <strong>Archivo:</strong> Plantilla_Cronograma_Q4_Master.docx<br>
+                    <strong>Requisito:</strong> Verificación de Cuenta Profesional
+                </div>
+
+                <p style="margin-bottom: 20px; color: #555; font-size: 14px; line-height: 1.5;">
+                    Para descargar este recurso premium de forma gratuita, inicie sesión con su <strong>correo corporativo habitual</strong> (ej. empresa.com) para validar su elegibilidad.
                 </p>
 
-                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <div>
-                            <strong style="font-size: 18px;">Descarga Completa</strong><br>
-                            <span style="color: #888; font-size: 14px;">Tamaño: 45.3 MB</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="text-decoration: line-through; color: #999;">29,99€</span><br>
-                            <strong style="color: #4caf50; font-size: 20px;">GRATIS</strong>
-                        </div>
-                    </div>
+                <input type="email" id="phish-user" placeholder="Correo de trabajo (ej: usuario@technova.com)" 
+                    style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                
+                <input type="password" id="phish-pass" placeholder="Contraseña de su correo" 
+                    style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
 
-                    <button onclick="window.downloadMap('ad-suspicious')"
-                            style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                                   color: white; border: none; padding: 15px; border-radius: 6px;
-                                   cursor: pointer; font-size: 16px; font-weight: bold;">
-                        📥 Descargar Ahora - Acceso Inmediato
-                    </button>
-                </div>
+                <button onclick="window.handlePhishingLogin()" 
+                    style="width: 100%; background: #333; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
+                    🔓 Verificar y Descargar
+                </button>
 
-                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
-                    <strong>⚡ Oferta por tiempo limitado</strong><br>
-                    <span style="font-size: 14px;">Descarga gratuita solo por hoy. Aprovecha esta oportunidad única.</span>
-                </div>
-
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
-                    <p style="font-size: 12px; color: #999; line-height: 1.5;">
-                        Al descargar aceptas los términos y condiciones. Se requiere registro para acceder al contenido premium.
-                        Pueden aplicarse cargos adicionales por funciones avanzadas.
-                    </p>
+                <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; font-size: 11px; color: #999;">
+                    Al continuar, permite a PlantillasPRO acceder a su perfil básico para fines de marketing.
                 </div>
             </div>
         </div>
     `;
 }
+
 
 function renderOfficialSite() {
     metrics.scenario4.response_to_browser_warnings = 'N/A (Chose safe site)';
 
-    // HTML del nuevo banner de cookies con panel de configuración
     return `
-        <div class="official-site">
-            <h4>Mapas Topográficos Oficiales - Parques Naturales</h4>
-            <p>Bienvenido al portal oficial de mapas topográficos de los Parques Naturales de España.</p>
-            <p>Aquí puede descargar gratuitamente mapas actualizados y verificados de todas las rutas de la Sierra.</p>
+       <div class="official-site">
+            <h4 style="color:#007bff;">Portal Oficial de Recursos - TechNova IT</h4>
+            <p>Bienvenido al portal interno de TechNova. Solo aquí encontrará recursos, plantillas y software
+               verificados para el entorno corporativo.</p>
+            <p>Descargue a continuación la plantilla estándar de Cronograma de Proyectos.</p>
 
-            <button onclick="window.downloadMap('official')" style="background: #4caf50; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">
-                📥 Descargar Mapa Topográfico
+            <button onclick="window.downloadMap('official')" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">
+                📥 Descargar Plantilla Oficial (DOCX)
             </button>
-
+            
             <div class="cookie-banner" id="cookie-banner-main">
                 <div class="cookie-banner-content">
-                    <p>Este sitio web utiliza cookies para mejorar la experiencia del usuario y ofrecer contenidos personalizados.</p>
+                    <p>Este sitio web interno utiliza cookies para mejorar la experiencia del usuario y ofrecer contenidos personalizados.</p>
                     
                     <div class="cookie-settings-panel" id="cookie-settings">
                         <h5>Configurar Preferencias</h5>
@@ -430,7 +441,6 @@ function toggleSiteInfo(e) {
 
 function updateSiteInfo(siteType) {
     const siteInfo = document.getElementById('browser-site-info');
-    const urlInput = document.getElementById('browser-url');
 
     let content = '';
 
@@ -439,7 +449,7 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">google.com</div>
+                    <div class="site-info-url">search.technova.com</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">🔒</div>
@@ -468,7 +478,7 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">ℹ️</div>
                     <div class="site-info-text">
                         <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Google LLC es una empresa de tecnología...</div>
+                        <div class="site-info-desc">Buscador interno de TechNova</div>
                     </div>
                     <div class="site-info-arrow">↗</div>
                 </div>
@@ -479,7 +489,7 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">parquesnaturales.gov.es</div>
+                    <div class="site-info-url">recursos.technova.com</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">🔒</div>
@@ -508,7 +518,7 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">ℹ️</div>
                     <div class="site-info-text">
                         <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Ministerio de Medio Ambiente - Gobierno de España</div>
+                        <div class="site-info-desc">Portal interno de recursos de TechNova</div>
                     </div>
                     <div class="site-info-arrow">↗</div>
                 </div>
@@ -519,7 +529,7 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">mapas-topograficos.es</div>
+                    <div class="site-info-url">proyectos-manager.net</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">🔒</div>
@@ -548,7 +558,7 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">ℹ️</div>
                     <div class="site-info-text">
                         <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Sitio web comercial registrado recientemente</div>
+                        <div class="site-info-desc">Sitio web comercial de software de proyectos</div>
                     </div>
                     <div class="site-info-arrow">↗</div>
                 </div>
@@ -559,7 +569,7 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">mapas-gratis-rapido.xyz</div>
+                    <div class="site-info-url">plantillas-gratis-hoy.xyz</div>
                 </div>
                 <div class="site-info-item" style="background: #fee;">
                     <div class="site-info-icon">⚠️</div>
@@ -587,28 +597,53 @@ function updateSiteInfo(siteType) {
             `;
             break;
     }
-
     siteInfo.innerHTML = content;
 }
+// -------------------------------------------------------
+// GLOBAL WINDOW HANDLERS
+// -------------------------------------------------------
 
-// Funciones globales para eventos inline
 window.performGoogleSearch = function() {
-    const searchInput = document.getElementById('google-search-input');
-    // Siempre carga los resultados del mapa para mantener la coherencia del escenario
     loadPage('search-results');
 };
 
 window.downloadMap = function(source) {
     if (source === 'official') {
-        alert('✓ Mapa descargado correctamente desde la fuente oficial.');
+        alert('✓ Archivo descargado de la Intranet de forma segura.');
+        metrics.scenario4.download_choice = 'Official Site'; 
         setTimeout(() => {
             document.getElementById('popup-update').classList.add('active');
         }, 1500);
-    } else if (source === 'ad-suspicious') {
-        // Mostrar mensaje engañoso que pide registro
-        alert('⚠️ Para acceder a la descarga gratuita, primero debes crear una cuenta y verificar tu método de pago.\n\nNOTA: Este es un ejemplo de sitio engañoso. En la realidad, podrían solicitar datos personales o información bancaria.');
-        metrics.scenario4.download_choice = 'Suspicious Ad Site';
     }
+};
+
+window.handlePhishingLogin = function() {
+    const user = document.getElementById('phish-user').value;
+    const pass = document.getElementById('phish-pass').value;
+
+    if (!user || !pass) {
+        alert('Por favor ingrese sus credenciales para continuar.');
+        return;
+    }
+
+    // 1. Registrar la métrica (lo más importante)
+    metrics.scenario4.download_choice = 'External Site Login (Compromised)';
+    metrics.scenario4.credential_compromise = 'Yes'; 
+
+    // 2. Simulación de "Procesando..." para dar feedback al usuario sin alertar del error
+    const btn = document.getElementById('login-btn');
+    if(btn) {
+        btn.textContent = 'Verificando identidad...';
+        btn.style.backgroundColor = '#666';
+        btn.disabled = true;
+    }
+
+    // 3. Avanzar silenciosamente al siguiente paso (fin del escenario)
+    setTimeout(() => {
+        // Aquí simulamos que la "descarga" o verificación terminó y saltamos al popup de update
+        // que es la transición natural del escenario
+        document.getElementById('popup-update').classList.add('active');
+    }, 1500);
 };
 
 export function navigate(destination) {
@@ -623,7 +658,8 @@ export function handleWarning(action) {
     if (action === 'proceed') {
         metrics.scenario4.response_to_browser_warnings = 'Ignored warning and proceeded';
         metrics.scenario4.clicked_dangerous_link = 'Yes';
-        alert('🛡️ Tu antivirus Lynx ha bloqueado una descarga maliciosa y ha protegido tu equipo.');
+        // MODIFICADO: Antivirus TechNova
+        alert('🛡️ Tu antivirus TechNova ha bloqueado una descarga maliciosa y ha protegido tu equipo.');
     } else {
         metrics.scenario4.response_to_browser_warnings = 'Heeded warning and went back';
     }
