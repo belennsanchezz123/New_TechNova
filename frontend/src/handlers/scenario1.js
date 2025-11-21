@@ -1,7 +1,7 @@
 import { createRegistration, completeRegistration } from '../services/api.js';
 import { getPasswordStrength } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
-//import { saveRegistration, checkUserExists } from '../services/supabase.js';
+
 
 const passwords = [];
 const registrations = {};
@@ -13,22 +13,23 @@ function goNext(service) {
     if (currentForm) {
         currentForm.style.display = 'none';
     } else {
-        // Si no se encuentra, registramos el error para depurar, pero no rompemos el programa.
         console.error(`Error: No se encontró el formulario con ID: technova-${service}-form. Verifica scenarios.js`);
     }
 
     if (service === 'mail') {
         // Mostrar el formulario de Drive
-        const driveForm = document.getElementById('technova-drive-form'); // MODIFICADO
+        const driveForm = document.getElementById('technova-drive-form');
         if (driveForm) {
             driveForm.style.display = 'block';
         }
     } else if (service === 'drive') {
         // Mostrar popup de MFA
         document.getElementById('popup-mfa').classList.add('active');
-        // Métrica: ¿reutilizó la contraseña?
+        
+        // Métrica: ¿reutilizó la contraseña? (Comparar Mail y Drive)
         metrics.scenario1.password_reused =
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
+            
     } else if (service === 'events') {
         document.getElementById('popup-passkey').classList.add('active');
     }
@@ -49,17 +50,16 @@ export async function registerService(service) {
         return;
     }
 
-    const serviceName = `lynx_${service}`;
+    // MODIFICADO: Nombre del servicio actualizado a TechNova
+    const serviceName = `technova_${service}`;
 
-    // 1. Calcula cuántas veces se ha usado ya esta contraseña
-    // passwords.filter(p => p === password) crea un array con las contraseñas que coinciden.
-    // .length nos da el número de coincidencias.
     const strength = getPasswordStrength(password);
     const reuseCount = passwords.filter(p => p === password).length;
-    // 2. Llama a la API enviando el nuevo dato 'reuseCount'
+    
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
     metrics.scenario1[`${service}_password_strength`] = strength;
     passwords.push(password);
+    
     if (!success || !session) {
         console.error('createRegistration error:', error);
         alert('Error al crear la cuenta. Por favor, intenta de nuevo.');
@@ -77,21 +77,27 @@ export async function registerService(service) {
     goNext(service);
 }
 
-
 export async function handleMFA(activated) {
     metrics.scenario1.mfa_usage = activated ? 'Yes' : 'No';
 
     // Si el usuario activa MFA y ya tenemos un registro para 'drive'
     if (activated && registrations['drive']) {
         const sessionId = registrations['drive'].id;
-        // Llama a la API para actualizar el registro y marcar mfa_enabled = true
         await completeRegistration(sessionId, { mfaEnabled: true });
-        console.log('MFA state updated for Lynx Drive via API.');
+        console.log('MFA state updated for TechNova Drive via API.');
     }
 
-    // Oculta el popup y muestra el siguiente formulario
+    // Oculta el popup de MFA
     document.getElementById('popup-mfa').classList.remove('active');
-    document.getElementById('lynx-events-form').style.display = 'block';
+    
+    // --- CORRECCIÓN CLAVE AQUÍ ---
+    // Mostrar el formulario de Events usando el ID correcto 'technova-events-form'
+    const eventsForm = document.getElementById('technova-events-form');
+    if (eventsForm) {
+        eventsForm.style.display = 'block';
+    } else {
+        console.error('Error Crítico: No se encontró el elemento "technova-events-form" en el DOM.');
+    }
 }
 
 export function handlePasskey(activated) {
@@ -114,7 +120,9 @@ function showRegistrationComplete() {
     const firstInitial = firstUsername !== '-' ? firstUsername[0].toUpperCase() : 'U';
 
     document.getElementById('profile-display-name').textContent = firstUsername;
-    document.getElementById('profile-display-email').textContent = `${firstUsername}@lynx.com`;
+    
+    // MODIFICADO: Dominio de correo actualizado a TechNova
+    document.getElementById('profile-display-email').textContent = `${firstUsername}@technova.com`;
 
     const avatar = document.querySelector('.profile-avatar');
     if (avatar) {

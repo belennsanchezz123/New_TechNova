@@ -45,16 +45,19 @@ export function getScenarioHTML(scenarioNumber) {
             <div id="registration-forms">
 
                 <div class="form-group" id="technova-mail-form">
-                    <h3>1. Registrarse en TechNova Mail</h3>
-                    <label for="mail-user">Usuario:</label>
-                    <input type="text" id="mail-user">
-                    <label for="mail-pass">Contraseña:</label>
-                    <input type="password" id="mail-pass">
-                    <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
-                </div>
+                <h3>📧 1. Registrarse en TechNova Mail</h3>
+    
+                <label for="mail-user">Usuario:</label>
+                <input type="text" id="mail-user">
+    
+                <label for="mail-pass">Contraseña:</label>
+                <input type="password" id="mail-pass">
+    
+                <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
+            </div>
                 
             <div class="form-group" id="technova-drive-form" style="display:none;">
-                <h3>2. Registrarse en TechNova Drive</h3>
+                <h3>☁️ 2. Registrarse en TechNova Drive</h3>
                 <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
                 <label for="drive-user">Usuario:</label>
                 <input type="text" id="drive-user">
@@ -64,7 +67,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
 
             <div class="form-group" id="technova-events-form" style="display:none;">
-                <h3>3. Registrarse en TechNova Events</h3>
+                <h3>👥 3. Registrarse en TechNova Events</h3>
                 <p>Finalmente, crea tu perfil en TechNova Events, la red social interna de la compañía.</p>
                 <label for="events-user">Usuario:</label>
                 <input type="text" id="events-user">
@@ -265,7 +268,7 @@ export function getScenarioHTML(scenarioNumber) {
                  <button onclick="window.useAI()">Enviar</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
-                <h3>Task: Send Sensitive Document</h3>
+                <h3>Task: Mandar documento sensible</h3>
                 <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@tech_nova'.</p>
                 <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.</p>
             </div>
@@ -325,22 +328,22 @@ export function getScenarioHTML(scenarioNumber) {
                     <input type="text" id="prof-name" value="Alex">
                 </div>
                 <div class="form-group">
-                    <label for="prof-dob">Date of Birth *</label>
+                    <label for="prof-dob">Fecha de cumpleaños *</label>
                     <input type="text" id="prof-dob">
                 </div>
                 <div class="form-group">
-                    <label for="prof-phone">Personal Phone</label>
+                    <label for="prof-phone">Teléfono móvil</label>
                     <input type="text" id="prof-phone">
                 </div>
                 <div class="form-group">
-                    <label for="prof-workplace">Workplace</label>
+                    <label for="prof-workplace">Sitio donde trabaja</label>
                     <input type="text" id="prof-workplace">
                 </div>
                 <div class="form-group">
-                    <label for="prof-city">City of Residence</label>
+                    <label for="prof-city">Ciudad</label>
                     <input type="text" id="prof-city">
                 </div>
-                <button onclick="window.saveProfile()">Save Profile</button>
+                <button onclick="window.saveProfile()">Guardar</button>
             </div>
             <div id="app-task" style="display:none;">
                 <h3>Conectar una Aplicación de Terceros</h3>

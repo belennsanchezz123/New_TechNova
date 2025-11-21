@@ -4,10 +4,9 @@ let currentPage = 'google-home';
 let browserHistory = [];
 let historyIndex = -1;
 
-// Inicializar el navegador cuando se carga el escenario
+// Inicializar el navegador
 export function initBrowser() {
     setupBrowserControls();
-    // Cargar la página de Google inicialmente
     setTimeout(() => {
         loadPage('google-home');
     }, 100);
@@ -20,47 +19,34 @@ function setupBrowserControls() {
     const refreshBtn = document.getElementById('browser-refresh');
     const infoBtn = document.getElementById('browser-info-btn');
 
-    // Búsqueda desde la barra de direcciones
+    // Búsqueda
     urlInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             const query = urlInput.value.trim();
-            if (query) {
-                performSearch(query);
-            }
+            if (query) performSearch(query);
         }
     });
 
-    // Botones de navegación
+    // Navegación
     backBtn.addEventListener('click', () => navigateHistory(-1));
     forwardBtn.addEventListener('click', () => navigateHistory(1));
     refreshBtn.addEventListener('click', () => loadPage(currentPage));
 
-    // Botón de información del sitio
-    if (infoBtn) {
-        infoBtn.addEventListener('click', toggleSiteInfo);
-    }
+    if (infoBtn) infoBtn.addEventListener('click', toggleSiteInfo);
 
-    // Cerrar el panel si se hace clic fuera
+    // Cerrar panel info
     document.addEventListener('click', (e) => {
         const siteInfo = document.getElementById('browser-site-info');
         const infoBtn = document.getElementById('browser-info-btn');
-        if (siteInfo && !siteInfo.contains(e.target) && !infoBtn.contains(e.target)) {
+        if (siteInfo && infoBtn && !siteInfo.contains(e.target) && !infoBtn.contains(e.target)) {
             siteInfo.classList.remove('active');
         }
     });
 }
 
 function performSearch(query) {
-    // MODIFICADO: Palabras clave de búsqueda a contexto corporativo
-    if (query.toLowerCase().includes('cronograma') ||
-        query.toLowerCase().includes('plantilla') ||
-        query.toLowerCase().includes('proyecto') ||
-        query.toLowerCase().includes('template')) {
-        loadPage('search-results');
-    } else {
-        // Búsqueda genérica
-        loadPage('search-results');
-    }
+    // Cualquier búsqueda lleva a los resultados simulados
+    loadPage('search-results');
 }
 
 function loadPage(pageName) {
@@ -70,12 +56,8 @@ function loadPage(pageName) {
     const infoBtn = document.getElementById('browser-info-btn');
     const siteInfo = document.getElementById('browser-site-info');
 
-    // Cerrar el panel de información al cambiar de página
-    if (siteInfo) {
-        siteInfo.classList.remove('active');
-    }
+    if (siteInfo) siteInfo.classList.remove('active');
 
-    // Actualizar historial
     if (currentPage !== pageName) {
         browserHistory = browserHistory.slice(0, historyIndex + 1);
         browserHistory.push(pageName);
@@ -85,17 +67,15 @@ function loadPage(pageName) {
     currentPage = pageName;
     updateNavigationButtons();
 
-switch(pageName) {
+    switch(pageName) {
         case 'google-home':
-            // Simulamos el portal de inicio
             urlInput.value = 'https://portal.technova.internal/home';
-            secureIcon.style.display = 'flex'; // Es seguro porque es interno
+            secureIcon.style.display = 'flex';
             infoBtn.style.display = 'none';
             content.innerHTML = renderGoogleHomepage();
             break;
 
         case 'search-results':
-            // URL de búsqueda interna
             urlInput.value = 'https://search.technova.internal/results?q=Plantilla+Cronograma';
             secureIcon.style.display = 'flex';
             infoBtn.style.display = 'none';
@@ -104,28 +84,34 @@ switch(pageName) {
             break;
 
         case 'official-site':
-            // URL de SharePoint / Intranet
             urlInput.value = 'https://sharepoint.technova.internal/sites/PMO/Templates';
             secureIcon.style.display = 'flex';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderOfficialSite();
-            setupOfficialSiteHandlers();
             updateSiteInfo('official');
             break;
 
         case 'ad-suspicious-site':
-           // URL Externa Genérica
-            urlInput.value = 'https://www.plantillas-pro-gratis.net/descargas/auth';
-            secureIcon.style.display = 'flex'; // HTTPS (común hoy en día incluso en sitios dudosos)
+            // PASO 1: Landing Page Externa
+            urlInput.value = 'https://www.proyectos-manager.net/landing';
+            secureIcon.style.display = 'flex'; 
             infoBtn.style.display = 'flex';
-            content.innerHTML = renderGenericLoginPage(); // <--- CAMBIO AQUÍ
+            content.innerHTML = renderAdSuspiciousSite();
+            updateSiteInfo('ad-suspicious');
+            break;
+        
+        case 'phishing-login':
+            // PASO 2: Login Falso (Trampa)
+            urlInput.value = 'https://www.plantillas-pro-gratis.net/auth/login';
+            secureIcon.style.display = 'flex';
+            infoBtn.style.display = 'flex';
+            content.innerHTML = renderGenericLoginPage();
             updateSiteInfo('ad-suspicious');
             break;
 
         case 'suspicious-site':
-            // MODIFICADO: Sitio externo peligroso (sin HTTPS)
             urlInput.value = 'http://plantillas-gratis-hoy.xyz/proyectos';
-            secureIcon.style.display = 'none'; // No seguro (HTTP)
+            secureIcon.style.display = 'none';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderSuspiciousWarning();
             setupWarningHandlers();
@@ -137,7 +123,6 @@ switch(pageName) {
 function updateNavigationButtons() {
     const backBtn = document.getElementById('browser-back');
     const forwardBtn = document.getElementById('browser-forward');
-
     backBtn.disabled = historyIndex <= 0;
     forwardBtn.disabled = historyIndex >= browserHistory.length - 1;
 }
@@ -151,24 +136,20 @@ function navigateHistory(direction) {
     }
 }
 
-// -------------------------------------------------------
-// FUNCIONES DE RENDERIZADO (HTML)
-// -------------------------------------------------------
+// --- RENDERS ---
 
 function renderGoogleHomepage() {
     setTimeout(() => {
         const searchInput = document.getElementById('google-search-input');
         if (searchInput) {
             searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    loadPage('search-results');
-                }
+                if (e.key === 'Enter') loadPage('search-results');
             });
             searchInput.focus();
         }
     }, 50);
 
-return `
+    return `
         <div class="google-homepage" style="background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
             <div style="text-align: center; margin-bottom: 30px;">
                 <div style="font-size: 40px; font-weight: bold; color: #0056b3; margin-bottom: 10px;">TechNova <span style="color: #555; font-weight: normal;">Workspace</span></div>
@@ -232,15 +213,14 @@ function renderSearchResults() {
 
             <div>
                 <div style="font-size: 12px; text-transform: uppercase; color: #666; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center;">
-                    <span style="background: #e8f0fe; color: #1967d2; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">INTERNO</span>
-                    WEB PÚBLICA RESULTADOS EXTERNOS</span>
-                    
+                    <span style="background: #e8f0fe; color: #1967d2; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">WEB PÚBLICA</span>
+                    RESULTADOS EXTERNOS
                 </div>
 
                 <div class="search-result-item">
                     <div class="result-url">
                         <div class="result-favicon" style="background: #ff6d00;">⚡</div>
-                        <span class="result-breadcrumb">www.plantillas-pro-gratis.net › descargas</span>
+                        <span class="result-breadcrumb">www.proyectos-manager.net › landing</span>
                     </div>
                     <a class="result-title" data-site="ad-suspicious">Plantillas Gantt Premium - Más bonitas y fáciles que Excel</a>
                     <div class="result-description">
@@ -263,7 +243,46 @@ function renderSearchResults() {
         </div>
     `;
 }
-// --- NUEVO: PÁGINA GENÉRICA QUE PIDE CREDENCIALES ---
+
+// PASO 1: LANDING PAGE (Externa)
+function renderAdSuspiciousSite() {
+    return `
+        <div class="official-site" style="background: #fff;">
+            <div style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px;">
+                <h2 style="margin: 0 0 10px 0; font-size: 28px;">Project Manager PRO</h2>
+                <p style="margin: 0; opacity: 0.9;">Soluciones profesionales para la gestión corporativa</p>
+            </div>
+
+            <div style="padding: 20px;">
+                <h3 style="color: #333; margin-bottom: 15px;">Plantilla de Cronograma de Proyectos Q4</h3>
+                
+                <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <strong style="font-size: 18px;">Descarga Plantilla</strong><br>
+                            <span style="color: #888; font-size: 14px;">Formato: XLSX, 1.2 MB</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="text-decoration: line-through; color: #999;">$49.99</span><br>
+                            <strong style="color: #4caf50; font-size: 20px;">GRATIS</strong>
+                        </div>
+                    </div>
+
+                    <button onclick="window.downloadMap('ad-suspicious')"
+                            style="width: 100%; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+                                   color: #333; border: none; padding: 15px; border-radius: 6px;
+                                   cursor: pointer; font-size: 16px; font-weight: bold;">
+                        📥 Obtener Plantilla Gratis Ahora
+                    </button>
+                </div>
+                
+                <p style="font-size: 12px; color: #666;">* Se requiere cuenta activa para validar la licencia.</p>
+            </div>
+        </div>
+    `;
+}
+
+// PASO 2: LOGIN PAGE (Trampa de credenciales)
 function renderGenericLoginPage() {
     return `
         <div style="background-color: #f9f9f9; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif;">
@@ -271,18 +290,13 @@ function renderGenericLoginPage() {
                 
                 <div style="margin-bottom: 20px;">
                    <div style="font-size: 28px; font-weight: bold; color: #333;">Plantillas<span style="color: #ff6d00;">PRO</span></div>
-                   <div style="font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Repositorio Global de Recursos</div>
+                   <div style="font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Portal de Acceso Seguro</div>
                 </div>
 
-                <h3 style="margin-bottom: 15px; color: #333;">Descarga Protegida</h3>
+                <h3 style="margin-bottom: 15px; color: #333;">Verificar Identidad</h3>
                 
-                <div style="background: #fff8e1; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: left; font-size: 13px; border: 1px solid #ffe0b2; color: #8d6e63;">
-                    <strong>Archivo:</strong> Plantilla_Cronograma_Q4_Master.docx<br>
-                    <strong>Requisito:</strong> Verificación de Cuenta Profesional
-                </div>
-
                 <p style="margin-bottom: 20px; color: #555; font-size: 14px; line-height: 1.5;">
-                    Para descargar este recurso premium de forma gratuita, inicie sesión con su <strong>correo corporativo habitual</strong> (ej. empresa.com) para validar su elegibilidad.
+                    Para descargar este recurso premium, inicia sesión con tu <strong>correo corporativo habitual</strong> (ej. empresa.com) para validar tu licencia profesional.
                 </p>
 
                 <input type="email" id="phish-user" placeholder="Correo de trabajo (ej: usuario@technova.com)" 
@@ -291,75 +305,50 @@ function renderGenericLoginPage() {
                 <input type="password" id="phish-pass" placeholder="Contraseña de su correo" 
                     style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
 
-                <button onclick="window.handlePhishingLogin()" 
+                <button onclick="window.handlePhishingLogin()" id="login-btn"
                     style="width: 100%; background: #333; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
                     🔓 Verificar y Descargar
                 </button>
-
-                <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; font-size: 11px; color: #999;">
-                    Al continuar, permite a PlantillasPRO acceder a su perfil básico para fines de marketing.
-                </div>
             </div>
         </div>
     `;
 }
 
-
+// SITIO OFICIAL (Con Banner de Cookies)
 function renderOfficialSite() {
     metrics.scenario4.response_to_browser_warnings = 'N/A (Chose safe site)';
-
     return `
-       <div class="official-site">
+       <div class="official-site" style="padding: 20px;">
             <h4 style="color:#007bff;">Portal Oficial de Recursos - TechNova IT</h4>
-            <p>Bienvenido al portal interno de TechNova. Solo aquí encontrará recursos, plantillas y software
-               verificados para el entorno corporativo.</p>
-            <p>Descargue a continuación la plantilla estándar de Cronograma de Proyectos.</p>
-
+            <p>Bienvenido al portal interno de TechNova. Solo aquí encontrará recursos, plantillas y software verificados.</p>
             <button onclick="window.downloadMap('official')" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">
                 📥 Descargar Plantilla Oficial (DOCX)
             </button>
-            
+
             <div class="cookie-banner" id="cookie-banner-main">
                 <div class="cookie-banner-content">
-                    <p>Este sitio web interno utiliza cookies para mejorar la experiencia del usuario y ofrecer contenidos personalizados.</p>
-                    
+                    <p>Este sitio web interno utiliza cookies para mejorar la experiencia del usuario.</p>
                     <div class="cookie-settings-panel" id="cookie-settings">
                         <h5>Configurar Preferencias</h5>
-                        
                         <div class="cookie-option">
                             <div class="cookie-text">
-                                <strong>Cookies Técnicas (Necesarias)</strong>
-                                <small>Siempre activas. Son esenciales para que el sitio web funcione.</small>
+                                <strong>Cookies Técnicas</strong> <small>Siempre activas.</small>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" checked disabled>
-                                <span class="slider round"></span>
-                            </label>
+                            <label class="switch"><input type="checkbox" checked disabled><span class="slider round"></span></label>
                         </div>
-                        
                         <div class="cookie-option">
                             <div class="cookie-text">
-                                <strong>Cookies Analíticas (Rendimiento)</strong>
-                                <small>Nos permiten medir el tráfico y mejorar el rendimiento del sitio.</small>
+                                <strong>Cookies Analíticas</strong> <small>Medición de tráfico.</small>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" id="cookie-analytics" checked>
-                                <span class="slider round"></span>
-                            </label>
+                            <label class="switch"><input type="checkbox" id="cookie-analytics" checked><span class="slider round"></span></label>
                         </div>
-
                         <div class="cookie-option">
                             <div class="cookie-text">
-                                <strong>Cookies de Publicidad (Marketing)</strong>
-                                <small>Usadas para mostrarte anuncios relevantes para ti.</small>
+                                <strong>Cookies de Publicidad</strong> <small>Anuncios relevantes.</small>
                             </div>
-                            <label class="switch">
-                                <input type="checkbox" id="cookie-marketing">
-                                <span class="slider round"></span>
-                            </label>
+                            <label class="switch"><input type="checkbox" id="cookie-marketing"><span class="slider round"></span></label>
                         </div>
                     </div>
-
                     <div class="cookie-buttons">
                         <button onclick="window.handleCookies('accept')">Aceptar todas</button>
                         <button class="secondary" onclick="window.toggleCookieSettings()">Personalizar</button>
@@ -368,17 +357,103 @@ function renderOfficialSite() {
                     </div>
                 </div>
             </div>
-            </div>
+       </div>
     `;
+}
+
+function renderSuspiciousWarning() {
+    return `
+        <div class="browser-warning">
+            <h2>⚠️ Advertencia de Seguridad</h2>
+            <p><strong>La conexión a este sitio no es privada</strong></p>
+            <button onclick="window.handleWarning('back')" class="secondary">Volver</button>
+            <br><br>
+            <button onclick="window.handleWarning('proceed')" style="background: #d32f2f; font-size: 12px;">Continuar (Peligroso)</button>
+        </div>
+    `;
+}
+
+// --- HANDLERS GLOBALES ---
+
+window.performGoogleSearch = function() {
+    loadPage('search-results');
+};
+
+window.downloadMap = function(source) {
+    if (source === 'official') {
+        alert('✓ Archivo descargado de la Intranet de forma segura.');
+        metrics.scenario4.download_choice = 'Official Site'; 
+        setTimeout(() => {
+            document.getElementById('popup-update').classList.add('active');
+        }, 1500);
+    } else if (source === 'ad-suspicious') {
+        loadPage('phishing-login');
+    }
+};
+
+window.handlePhishingLogin = function() {
+    const user = document.getElementById('phish-user').value;
+    const pass = document.getElementById('phish-pass').value;
+
+    if (!user || !pass) {
+        alert('Por favor ingrese sus credenciales para continuar.');
+        return;
+    }
+
+    metrics.scenario4.download_choice = 'External Site Login (Compromised)';
+    metrics.scenario4.credential_compromise = 'Yes'; 
+
+    const btn = document.getElementById('login-btn');
+    if(btn) {
+        btn.textContent = 'Verificando...';
+        btn.style.backgroundColor = '#666';
+        btn.disabled = true;
+    }
+
+    setTimeout(() => {
+        document.getElementById('popup-update').classList.add('active');
+    }, 1500);
+};
+
+export function navigate(destination) {
+    if (destination === 'official') loadPage('official-site');
+    else loadPage('suspicious-site');
+}
+
+export function handleWarning(action) {
+    if (action === 'proceed') {
+        metrics.scenario4.response_to_browser_warnings = 'Ignored warning and proceeded';
+        metrics.scenario4.clicked_dangerous_link = 'Yes';
+        alert('🛡️ Tu antivirus TechNova ha bloqueado una descarga maliciosa.');
+    } else {
+        metrics.scenario4.response_to_browser_warnings = 'Heeded warning and went back';
+    }
+    setTimeout(() => {
+        document.getElementById('popup-update').classList.add('active');
+    }, 1500);
+}
+
+export function handleCookies(decision) {
+    let consentMetric = `Chose to '${decision}' cookies`;
+    if (decision === 'custom') {
+        const analytics = document.getElementById('cookie-analytics').checked;
+        const marketing = document.getElementById('cookie-marketing').checked;
+        consentMetric = `Chose 'custom': Analytics=${analytics}, Marketing=${marketing}`;
+    }
+    metrics.scenario4.cookie_consent = consentMetric;
+    
+    const banner = document.getElementById('cookie-banner-main');
+    if (banner) banner.style.display = 'none';
+    
+    setTimeout(() => {
+        document.getElementById('popup-update').classList.add('active');
+    }, 1500);
 }
 
 window.toggleCookieSettings = function() {
     const settingsPanel = document.getElementById('cookie-settings');
     const saveBtn = document.getElementById('cookie-save-btn');
-    
-    const style = window.getComputedStyle(settingsPanel);
     const isVisible = settingsPanel.style.display === 'block';
-    
     if (isVisible) {
         settingsPanel.style.display = 'none';
         saveBtn.style.display = 'none';
@@ -388,60 +463,26 @@ window.toggleCookieSettings = function() {
     }
 }
 
-function renderSuspiciousWarning() {
-    return `
-        <div class="browser-warning">
-            <h2>⚠️ Advertencia de Seguridad</h2>
-            <p><strong>La conexión a este sitio no es privada</strong></p>
-            <p>Es posible que atacantes estén intentando robar tu información de <strong>mapas-gratis-rapido.xyz</strong>
-            (por ejemplo, contraseñas, mensajes o tarjetas de crédito).</p>
-            <p>Este sitio no tiene un certificado de seguridad válido y puede ser peligroso.</p>
-
-            <div style="margin: 20px 0;">
-                <button onclick="window.handleWarning('back')" class="secondary" style="padding: 12px 32px; font-size: 16px;">
-                    ← Volver a un lugar seguro
-                </button>
-                <br><br>
-                <button onclick="window.handleWarning('proceed')" style="padding: 8px 16px; font-size: 13px; background: #d32f2f;">
-                    Continuar de todos modos (no recomendado)
-                </button>
-            </div>
-        </div>
-    `;
-}
-
 function setupSearchResultsHandlers() {
     document.querySelectorAll('.result-title[data-site]').forEach(link => {
         link.addEventListener('click', (e) => {
             const site = e.target.getAttribute('data-site');
-            if (site === 'official') {
-                loadPage('official-site');
-            } else if (site === 'suspicious') {
-                loadPage('suspicious-site');
-            } else if (site === 'ad-suspicious') {
-                loadPage('ad-suspicious-site');
-            }
+            if (site === 'official') loadPage('official-site');
+            else if (site === 'suspicious') loadPage('suspicious-site');
+            else if (site === 'ad-suspicious') loadPage('ad-suspicious-site');
         });
     });
 }
 
-function setupOfficialSiteHandlers() {
-    // Ya están definidos los handlers inline en el HTML
-}
-
-function setupWarningHandlers() {
-    // Ya están definidos los handlers inline en el HTML
-}
-
+function setupOfficialSiteHandlers() {}
+function setupWarningHandlers() {}
 function toggleSiteInfo(e) {
     e.stopPropagation();
-    const siteInfo = document.getElementById('browser-site-info');
-    siteInfo.classList.toggle('active');
+    document.getElementById('browser-site-info').classList.toggle('active');
 }
 
 function updateSiteInfo(siteType) {
     const siteInfo = document.getElementById('browser-site-info');
-
     let content = '';
 
     switch(siteType) {
@@ -449,38 +490,22 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">search.technova.com</div>
+                    <div class="site-info-url">portal.technova.internal</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">🔒</div>
                     <div class="site-info-text">
                         <div class="site-info-title">La conexión es segura</div>
-                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
+                        <div class="site-info-desc">Sitio interno de TechNova</div>
                     </div>
                     <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">🍪</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Cookies y datos de sitios</div>
-                        <div class="site-info-desc">En uso</div>
-                    </div>
-                    <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">⚙️</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Configuración del sitio</div>
-                    </div>
-                    <div class="site-info-arrow">↗</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">ℹ️</div>
                     <div class="site-info-text">
-                        <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Buscador interno de TechNova</div>
+                        <div class="site-info-title">Certificado Válido</div>
+                        <div class="site-info-desc">Emitido por TechNova CA</div>
                     </div>
-                    <div class="site-info-arrow">↗</div>
                 </div>
             `;
             break;
@@ -489,36 +514,20 @@ function updateSiteInfo(siteType) {
             content = `
                 <div class="site-info-header">
                     <button class="site-info-close" onclick="document.getElementById('browser-site-info').classList.remove('active')">×</button>
-                    <div class="site-info-url">recursos.technova.com</div>
+                    <div class="site-info-url">sharepoint.technova.internal</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">🔒</div>
                     <div class="site-info-text">
                         <div class="site-info-title">La conexión es segura</div>
-                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
-                    </div>
-                    <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">🍪</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Cookies y datos de sitios</div>
-                        <div class="site-info-desc">En uso</div>
+                        <div class="site-info-desc">Tu información es privada (Intranet)</div>
                     </div>
                     <div class="site-info-arrow">›</div>
                 </div>
                 <div class="site-info-item">
                     <div class="site-info-icon">⚙️</div>
                     <div class="site-info-text">
-                        <div class="site-info-title">Configuración del sitio</div>
-                    </div>
-                    <div class="site-info-arrow">↗</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">ℹ️</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Portal interno de recursos de TechNova</div>
+                        <div class="site-info-title">Permisos del sitio</div>
                     </div>
                     <div class="site-info-arrow">↗</div>
                 </div>
@@ -535,7 +544,7 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">🔒</div>
                     <div class="site-info-text">
                         <div class="site-info-title">La conexión es segura</div>
-                        <div class="site-info-desc">Tu información es privada cuando se envía a este sitio</div>
+                        <div class="site-info-desc">Certificado emitido por Let's Encrypt</div>
                     </div>
                     <div class="site-info-arrow">›</div>
                 </div>
@@ -543,24 +552,9 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">🍪</div>
                     <div class="site-info-text">
                         <div class="site-info-title">Cookies y datos de sitios</div>
-                        <div class="site-info-desc">En uso</div>
+                        <div class="site-info-desc">15 en uso (Rastreo)</div>
                     </div>
                     <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">⚙️</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Configuración del sitio</div>
-                    </div>
-                    <div class="site-info-arrow">↗</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">ℹ️</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Acerca de esta página</div>
-                        <div class="site-info-desc">Sitio web comercial de software de proyectos</div>
-                    </div>
-                    <div class="site-info-arrow">↗</div>
                 </div>
             `;
             break;
@@ -575,141 +569,23 @@ function updateSiteInfo(siteType) {
                     <div class="site-info-icon">⚠️</div>
                     <div class="site-info-text">
                         <div class="site-info-title" style="color: #d32f2f;">La conexión no es segura</div>
-                        <div class="site-info-desc">Los atacantes podrían estar intentando robar tu información</div>
+                        <div class="site-info-desc">No introduzcas información confidencial en este sitio.</div>
                     </div>
                     <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">🍪</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Cookies y datos de sitios</div>
-                        <div class="site-info-desc">Bloqueadas</div>
-                    </div>
-                    <div class="site-info-arrow">›</div>
-                </div>
-                <div class="site-info-item">
-                    <div class="site-info-icon">⚙️</div>
-                    <div class="site-info-text">
-                        <div class="site-info-title">Configuración del sitio</div>
-                    </div>
-                    <div class="site-info-arrow">↗</div>
                 </div>
             `;
             break;
     }
     siteInfo.innerHTML = content;
 }
-// -------------------------------------------------------
-// GLOBAL WINDOW HANDLERS
-// -------------------------------------------------------
-
-window.performGoogleSearch = function() {
-    loadPage('search-results');
-};
-
-window.downloadMap = function(source) {
-    if (source === 'official') {
-        alert('✓ Archivo descargado de la Intranet de forma segura.');
-        metrics.scenario4.download_choice = 'Official Site'; 
-        setTimeout(() => {
-            document.getElementById('popup-update').classList.add('active');
-        }, 1500);
-    }
-};
-
-window.handlePhishingLogin = function() {
-    const user = document.getElementById('phish-user').value;
-    const pass = document.getElementById('phish-pass').value;
-
-    if (!user || !pass) {
-        alert('Por favor ingrese sus credenciales para continuar.');
-        return;
-    }
-
-    // 1. Registrar la métrica (lo más importante)
-    metrics.scenario4.download_choice = 'External Site Login (Compromised)';
-    metrics.scenario4.credential_compromise = 'Yes'; 
-
-    // 2. Simulación de "Procesando..." para dar feedback al usuario sin alertar del error
-    const btn = document.getElementById('login-btn');
-    if(btn) {
-        btn.textContent = 'Verificando identidad...';
-        btn.style.backgroundColor = '#666';
-        btn.disabled = true;
-    }
-
-    // 3. Avanzar silenciosamente al siguiente paso (fin del escenario)
-    setTimeout(() => {
-        // Aquí simulamos que la "descarga" o verificación terminó y saltamos al popup de update
-        // que es la transición natural del escenario
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
-};
-
-export function navigate(destination) {
-    if (destination === 'official') {
-        loadPage('official-site');
-    } else {
-        loadPage('suspicious-site');
-    }
-}
-
-export function handleWarning(action) {
-    if (action === 'proceed') {
-        metrics.scenario4.response_to_browser_warnings = 'Ignored warning and proceeded';
-        metrics.scenario4.clicked_dangerous_link = 'Yes';
-        // MODIFICADO: Antivirus TechNova
-        alert('🛡️ Tu antivirus TechNova ha bloqueado una descarga maliciosa y ha protegido tu equipo.');
-    } else {
-        metrics.scenario4.response_to_browser_warnings = 'Heeded warning and went back';
-    }
-    setTimeout(() => {
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
-}
-
-export function handleCookies(decision) {
-    let consentMetric = `Chose to '${decision}' cookies`;
-
-    // Si el usuario guardó una configuración personalizada
-    if (decision === 'custom') {
-        const analytics = document.getElementById('cookie-analytics').checked;
-        const marketing = document.getElementById('cookie-marketing').checked;
-        
-        consentMetric = `Chose 'custom': Analytics=${analytics}, Marketing=${marketing}`;
-        metrics.scenario4.cookie_consent = consentMetric;
-    
-    } else {
-        metrics.scenario4.cookie_consent = consentMetric;
-    }
-
-    // Oculta el banner principal
-    const banner = document.getElementById('cookie-banner-main');
-    if (banner) {
-        banner.style.display = 'none';
-    }
-
-    // Continúa con el escenario
-    setTimeout(() => {
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
-}
 
 export function handleUpdate(action) {
-    // Esta línea ya funciona: 'install' se guarda como 'Installed immediately', 'postpone' como 'Postponed'.
     metrics.unexpected.update_compliance_rate = (action === 'install') ? 'Installed immediately' : 'Postponed';
-    
-    // Oculta el popup principal
     document.getElementById('popup-update').classList.remove('active');
-
     const notification = document.getElementById('update-notification');
-    const notificationMessage = document.getElementById('notification-message');
-
-    if (action === 'install') {
-        // No mostramos notificación
-    } else if (action === 'postpone') { // (Hemos quitado el 'else if' para 'schedule')
-        notificationMessage.textContent = 'Windows pospondrá esta actualización. Se te recordará de nuevo pronto.';
+    if (action === 'postpone') {
+        document.getElementById('notification-message').textContent = 'Windows pospondrá esta actualización.';
         notification.style.display = 'block';
-        setTimeout(() => notification.style.display = 'none', 5000); // Ocultar después de 5 segundos
+        setTimeout(() => notification.style.display = 'none', 5000);
     }
 }
