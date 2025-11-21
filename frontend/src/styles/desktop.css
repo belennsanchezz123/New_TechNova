@@ -1,0 +1,115 @@
+
+/* --- Virtual Desktop Styles --- */
+.virtual-desktop {
+    background-color: #2d4356; /* Fondo tipo escritorio */
+    height: 500px;
+    position: relative;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+
+.desktop-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.d-icon {
+    width: 70px;
+    text-align: center;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.d-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.d-icon span {
+    font-size: 40px;
+    display: block;
+}
+
+.d-icon label {
+    font-size: 12px;
+    text-shadow: 1px 1px 2px black;
+    margin-top: 5px;
+    display: block;
+    color: white;
+}
+
+/* Ventana del Explorador */
+.window-frame {
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    width: 600px;
+    height: 400px;
+    background: #fff;
+    color: #333;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.window-header {
+    background: #e1e1e1;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    border-radius: 6px 6px 0 0;
+}
+
+.window-body {
+    flex: 1;
+    display: flex;
+}
+
+.window-sidebar {
+    width: 150px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+}
+
+.window-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.file-list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.file-list-item:hover {
+    background-color: #e8f0fe;
+}
+
+.file-icon { margin-right: 10px; font-size: 1.2em; }
+
+/* Save Dialog Specifics */
+.save-dialog-footer {
+    padding: 15px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+}
+
+.save-options {
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #666;
+}

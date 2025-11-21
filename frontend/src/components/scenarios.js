@@ -319,32 +319,39 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
         `,
         5: `
-            <h2>Scenario 5: Social Media & Personal Information</h2>
+            <h2>Escenario 5: Redes Sociales y Privacidad</h2>
             <div id="profile-task">
-                <h3>Complete Your Events Profile</h3>
-                <p><strong>Instrucción:</strong> Por favor, completa tu perfil en Tech Nova Events.</p>
+                <h3>Completa tu Perfil en TechNova Events</h3>
+                <p><strong>Instrucción:</strong> Para conectar mejor con tus compañeros en la fiesta de bienvenida, completa tu perfil público. <br><em>(Recuerda: Solo los campos con * son obligatorios por el sistema).</em></p>
+                
                 <div class="form-group">
-                    <label for="prof-name">Name *</label>
-                    <input type="text" id="prof-name" value="Alex">
+                    <label for="prof-name">Nombre Completo *</label>
+                    <input type="text" id="prof-name" value="Alex" readonly style="background-color: #e9ecef;">
                 </div>
+
                 <div class="form-group">
-                    <label for="prof-dob">Fecha de cumpleaños *</label>
-                    <input type="text" id="prof-dob">
+                    <label for="prof-dob">Fecha de Nacimiento (Opcional - Para felicitaciones de equipo)</label>
+                    <input type="date" id="prof-dob">
                 </div>
+
                 <div class="form-group">
-                    <label for="prof-phone">Teléfono móvil</label>
-                    <input type="text" id="prof-phone">
+                    <label for="prof-phone">Teléfono Móvil Personal (Opcional - Para alertas SMS)</label>
+                    <input type="tel" id="prof-phone" placeholder="+34 600...">
                 </div>
+
                 <div class="form-group">
-                    <label for="prof-workplace">Sitio donde trabaja</label>
-                    <input type="text" id="prof-workplace">
+                    <label for="prof-social">Instagram / LinkedIn / Twitter (Opcional)</label>
+                    <input type="text" id="prof-social" placeholder="@usuario">
                 </div>
+
                 <div class="form-group">
-                    <label for="prof-city">Ciudad</label>
-                    <input type="text" id="prof-city">
+                    <label for="prof-city">Ciudad de Residencia (Opcional - Para carpooling)</label>
+                    <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
                 </div>
-                <button onclick="window.saveProfile()">Guardar</button>
+
+                <button onclick="window.saveProfile()">Guardar Perfil Público</button>
             </div>
+
             <div id="app-task" style="display:none;">
                 <h3>Conectar una Aplicación de Terceros</h3>
                 <p><strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.</p>
@@ -352,28 +359,40 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
         `,
         6: `
-            <h2>Scenario 6: Finalization and Cleanup</h2>
-            <p>You have finished planning the excursion! The last steps are to save the final plan and securely delete drafts with sensitive data.</p>
-            <div id="encrypt-task">
-                <h3>Save Final Plan</h3>
-                <p>You are saving the final plan: 'Plan_Maestro_Excursion.docx'.</p>
-                <input type="checkbox" id="encryption-checkbox"> <label for="encryption-checkbox">Encrypt this file with a password</label>
-                <br>
-                <button onclick="window.saveFinalPlan()">Save File</button>
-            </div>
-            <div id="delete-task" style="display:none;">
-                <h3>Securely Delete Drafts</h3>
-                <p>For privacy reasons, you must now delete 'Lista_Participantes_Excursion.docx'.</p>
-                <button class="secondary" onclick="window.deleteFile('trash')">Move to Trash</button>
-                <button class="danger" onclick="window.deleteFile('secure')">Secure Permanent Deletion</button>
+            <h2>Escenario 7: Cierre del Día - Política de Escritorio Limpio</h2>
+            <p><strong>Instrucción:</strong> Has terminado el informe final. Tu objetivo es guardarlo en el servidor seguro y dejar tu escritorio limpio de archivos temporales.</p>
+            <p>Interactúa con el <strong>Escritorio Virtual</strong> a continuación para completar tus tareas.</p>
+
+            <div id="virtual-desktop" class="virtual-desktop">
+                
+                <div class="desktop-icons">
+                    <div class="d-icon" onclick="window.openMyPC()">
+                        <span>💻</span>
+                        <label>Este Equipo</label>
+                    </div>
+                    <div class="d-icon" onclick="window.openWordDocs()">
+                        <span>📄</span>
+                        <label>Informe_Final.docx</label> </div>
+                    <div class="d-icon" onclick="window.openTempFolder()">
+                        <span>📂</span>
+                        <label>Descargas (Temp)</label>
+                    </div>
+                    <div class="d-icon">
+                        <span>🗑️</span>
+                        <label>Papelera</label>
+                    </div>
+                </div>
+
+                <div id="desktop-window-container"></div>
+
             </div>
         `,
         7: `
-            <h2>Optional Final Phase: Data Breach Check</h2>
-            <p>As part of our research, we are studying how public data exposure relates to cybersecurity behavior. This is <strong>100% voluntary</strong>.</p>
-            <p>If you consent, you can provide your personal email address. We will use an automated tool to check if it has appeared in any known public data breaches. Your email will be anonymized and stored securely for research purposes only.</p>
+            <h2>Fase final opcional: Verificación de filtración de datos</h2>
+            <p>Como parte de nuestra investigación, estamos estudiando cómo la exposición de datos públicos se relaciona con el comportamiento en ciberseguridad. Esta fase es <strong>100% voluntaria</strong>.</p>
+            <p>Si das tu consentimiento, puedes proporcionar tu dirección de correo electrónico personal. Usaremos una herramienta automatizada para comprobar si ha aparecido en alguna filtración de datos pública conocida.Tu correo será anonimizado y almacenado de forma segura únicamente con fines de investigación.</p>
             <div class="form-group">
-                <label for="consent-email">Your Email Address (Optional)</label>
+                <label for="consent-email">Tu dirección de correo electrónico (opcional)</label>
                 <input type="email" id="consent-email" placeholder="Leave blank to decline">
             </div>
 

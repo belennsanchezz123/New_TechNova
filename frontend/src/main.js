@@ -7,7 +7,15 @@ import { handleInterruption } from './handlers/scenario2.js';
 import { openEmail, openComposeEmail, handlePhishingClick, reportEmail, useAI, sendDocument, openLocalFileExplorer, openDriveFileExplorer, selectAttachment, removeAttachment, closeFileExplorer, sendComposedEmail, cancelCompose } from './handlers/scenario3.js';
 import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
-import { saveFinalPlan, deleteFile } from './handlers/scenario6.js';
+import { 
+    openWordDocs, 
+    openSaveDialog, 
+    finalizeSave, 
+    openTempFolder, 
+    showContextMenu, 
+    performDelete, 
+    openMyPC 
+} from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
 import { submitTaxonomy } from './handlers/scenario8.js';
 import { startSession } from './services/api.js';
@@ -165,8 +173,13 @@ window.handleUpdate = handleUpdate;
 window.saveProfile = saveProfile;
 window.connectApp = connectApp;
 window.handleAppPerms = handleAppPerms;
-window.saveFinalPlan = saveFinalPlan;
-window.deleteFile = deleteFile;
+window.openWordDocs = openWordDocs;
+window.openSaveDialog = openSaveDialog;
+window.finalizeSave = finalizeSave;
+window.openTempFolder = openTempFolder;
+window.showContextMenu = showContextMenu;
+window.performDelete = performDelete;
+window.openMyPC = openMyPC;
 window.finishSimulation = finishSimulation;
 window.submitTaxonomy = submitTaxonomy;
 

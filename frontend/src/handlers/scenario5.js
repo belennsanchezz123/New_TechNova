@@ -1,12 +1,50 @@
 import { metrics } from '../utils/metrics.js';
 
 export function saveProfile() {
-    let filledFields = 0;
-    if (document.getElementById('prof-dob').value) filledFields++;
-    if (document.getElementById('prof-phone').value) filledFields++;
-    if (document.getElementById('prof-city').value) filledFields++;
-    metrics.scenario5.personal_data_disclosure_rate = `${filledFields} out of 3 optional fields filled`;
+    // Array para guardar los nombres de los datos sensibles revelados
+    const disclosedData = [];
+    
+    // 1. Fecha de Nacimiento (Riesgo: Ingeniería Social / Contraseñas)
+    const dobInput = document.getElementById('prof-dob');
+    if (dobInput && dobInput.value.trim() !== '') {
+        disclosedData.push('Fecha de Nacimiento');
+    }
 
+    // 2. Teléfono Personal (Riesgo: Smishing / Contacto no deseado)
+    const phoneInput = document.getElementById('prof-phone');
+    if (phoneInput && phoneInput.value.trim() !== '') {
+        disclosedData.push('Teléfono Personal');
+    }
+
+    // 3. Ciudad de Residencia (Riesgo: Ubicación física)
+    const cityInput = document.getElementById('prof-city');
+    if (cityInput && cityInput.value.trim() !== '') {
+        disclosedData.push('Ciudad de Residencia');
+    }
+
+    // 4. Redes Sociales (Riesgo: Perfilado externo / Scraping)
+    // (Este campo reemplaza al antiguo 'Workplace' para más realismo)
+    const socialInput = document.getElementById('prof-social');
+    if (socialInput && socialInput.value.trim() !== '') {
+        disclosedData.push('Redes Sociales Externas');
+    }
+
+    // Cálculo de la métrica
+    const totalOptionalFields = 4; // Ahora son 4 campos opcionales
+    const count = disclosedData.length;
+
+    // Guardamos una cadena descriptiva en lugar de solo un número
+    // Ej: "2/4 (Teléfono Personal, Redes Sociales Externas)"
+    if (count === 0) {
+        metrics.scenario5.personal_data_disclosure_rate = '0 (Minimización de datos correcta)';
+    } else {
+        metrics.scenario5.personal_data_disclosure_rate = 
+            `${count}/${totalOptionalFields} Revelados: [${disclosedData.join(', ')}]`;
+    }
+
+    console.log('Métrica de Privacidad:', metrics.scenario5.personal_data_disclosure_rate);
+
+    // Continuar con el flujo
     document.getElementById('profile-task').style.display = 'none';
     document.getElementById('app-task').style.display = 'block';
 }
