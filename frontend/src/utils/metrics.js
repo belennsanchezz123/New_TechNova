@@ -66,3 +66,5 @@ export function displayResults() {
         }
     }
 }
+
+window.misMetricas = metrics; 

@@ -269,7 +269,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
                 <h3>Task: Mandar documento sensible</h3>
-                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@tech_nova'.</p>
+                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@technova.com'.</p>
                 <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.</p>
             </div>
         `,
