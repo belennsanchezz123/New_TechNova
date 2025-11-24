@@ -2,9 +2,27 @@ import './styles/main.css';
 import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
-import { registerService, handleMFA, handlePasskey, toggleProfileDropdown, closeRegistrationComplete } from './handlers/scenario1.js';
+import { registerService, 
+        handleMFA, 
+        handlePasskey, 
+        toggleProfileDropdown, 
+        closeRegistrationComplete } from './handlers/scenario1.js';
 import { handleInterruption } from './handlers/scenario2.js';
-import { openEmail, openComposeEmail, handlePhishingClick, reportEmail, useAI, sendDocument, openLocalFileExplorer, openDriveFileExplorer, selectAttachment, removeAttachment, closeFileExplorer, sendComposedEmail, cancelCompose } from './handlers/scenario3.js';
+import { openEmail, 
+        openComposeEmail, 
+        handlePhishingClick, 
+        reportEmail, 
+        useAI, 
+        sendDocument, 
+        openLocalFileExplorer, 
+        openDriveFileExplorer, 
+        selectAttachment, 
+        removeAttachment, 
+        closeFileExplorer, 
+        sendComposedEmail, 
+        cancelCompose,
+        //openConfidentialDoc 
+        } from './handlers/scenario3.js';
 import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 import { 
@@ -14,7 +32,10 @@ import {
     openTempFolder, 
     showContextMenu, 
     performDelete, 
-    openMyPC 
+    openMyPC,
+    drag,
+    drop,
+    allowDrop
 } from './handlers/scenario6.js';
 import { finishSimulation } from './handlers/scenario7.js';
 import { submitTaxonomy } from './handlers/scenario8.js';
@@ -154,6 +175,7 @@ window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
 window.openEmail = openEmail;
+//window.openConfidentialDoc = openConfidentialDoc;
 window.openComposeEmail = openComposeEmail;
 window.handlePhishingClick = handlePhishingClick;
 window.reportEmail = reportEmail;
@@ -182,5 +204,7 @@ window.performDelete = performDelete;
 window.openMyPC = openMyPC;
 window.finishSimulation = finishSimulation;
 window.submitTaxonomy = submitTaxonomy;
-
+window.drag = drag;
+window.drop = drop;
+window.allowDrop = allowDrop;
 initApp();

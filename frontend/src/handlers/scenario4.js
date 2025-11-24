@@ -385,7 +385,7 @@ window.downloadMap = function(source) {
         metrics.scenario4.download_choice = 'Official Site'; 
         setTimeout(() => {
             document.getElementById('popup-update').classList.add('active');
-        }, 1500);
+        }, 5000);
     } else if (source === 'ad-suspicious') {
         loadPage('phishing-login');
     }

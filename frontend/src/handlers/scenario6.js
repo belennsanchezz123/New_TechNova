@@ -198,36 +198,31 @@ export function openMyPC() {
 
 // --- LÓGICA DE DRAG & DROP ---
 
-// Se ejecuta cuando el usuario empieza a arrastrar el archivo
+// 1. SE EJECUTA AL EMPEZAR A ARRASTRAR
 export function drag(ev) {
-    // Guardamos el ID del elemento que se está arrastrando
+    // "Guarda" el ID del elemento que estamos arrastrando ("file-temp-csv")
     ev.dataTransfer.setData("text", ev.target.id);
-    ev.dataTransfer.effectAllowed = "move";
 }
 
-// Se ejecuta cuando el archivo pasa por encima de la papelera
+// 2. SE EJECUTA MIENTRAS PASAS POR ENCIMA DE LA PAPELERA
 export function allowDrop(ev) {
-    ev.preventDefault(); // Necesario para permitir soltar
-    // Efecto visual opcional: resaltar la papelera
-    ev.currentTarget.style.transform = "scale(1.2)";
+    // ¡ESTA LÍNEA ES OBLIGATORIA!
+    // Le dice al navegador: "Tranquilo, sí permito que suelten cosas aquí"
+    ev.preventDefault();
 }
 
-// Se ejecuta cuando el usuario suelta el archivo en la papelera
+// 3. SE EJECUTA AL SOLTAR
 export function drop(ev) {
     ev.preventDefault();
-    ev.currentTarget.style.transform = "scale(1)"; // Restaurar tamaño
-    
+    // Recuperamos el ID que guardamos en el paso 1
     const data = ev.dataTransfer.getData("text");
-    
-    // Verificamos que sea el archivo correcto
+
+    // Verificamos que lo que soltaron sea el archivo correcto
     if (data === "file-temp-csv") {
-        // Llamamos a la función de borrado (pero marcando que fue por papelera insegura)
+        // Ejecutamos la lógica de borrado
         performDelete('trash');
-        
-        // Opcional: Eliminar visualmente el archivo de la ventana si sigue abierta
-        const fileElement = document.getElementById(data);
-        if (fileElement) {
-            fileElement.remove();
-        }
+        // (Opcional) Borramos visualmente el elemento original
+        const element = document.getElementById(data);
+        if (element) element.remove();
     }
 }
