@@ -377,7 +377,9 @@ export function getScenarioHTML(scenarioNumber) {
                         <span>📂</span>
                         <label>Descargas (Temp)</label>
                     </div>
-                    <div class="d-icon">
+                    <div class="d-icon" 
+                        ondrop="window.drop(event)" 
+                        ondragover="window.allowDrop(event)">
                         <span>🗑️</span>
                         <label>Papelera</label>
                     </div>

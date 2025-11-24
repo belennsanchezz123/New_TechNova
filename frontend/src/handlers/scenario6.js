@@ -121,21 +121,25 @@ export function openTempFolder() {
                     <div style="padding: 5px; cursor: pointer;">🌐 Servidor TechNova</div>
                 </div>
                 <div class="window-content">
-                    <div class="file-list-item" style="background: #fff3cd; border: 1px solid #ffeeba;" oncontextmenu="window.showContextMenu(event)">
+                    
+                    <div class="file-list-item" 
+                         id="file-temp-csv" 
+                         draggable="true" 
+                         ondragstart="window.drag(event)"
+                         style="background: #fff3cd; border: 1px solid #ffeeba; cursor: grab;" 
+                         oncontextmenu="window.showContextMenu(event)">
                         <span class="file-icon">📊</span>
                         <span>Extracto_Bancario_TEMP.csv</span>
                         <span style="margin-left: auto; color: #666; font-size: 12px;">Hoy, 10:30 AM</span>
                     </div>
+                    
                     <div class="file-list-item">
                         <span class="file-icon">🖼️</span>
                         <span>logo_technova.png</span>
                     </div>
                 </div>
             </div>
-            <div style="padding: 10px; background: #f9f9f9; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
-                💡 Pista: Haz clic derecho sobre el archivo sensible para ver opciones de borrado.
             </div>
-        </div>
     `;
 }
 
@@ -167,15 +171,21 @@ export function showContextMenu(e) {
 
 // Lógica de borrado
 export function performDelete(method) {
+    // 1. Registrar la métrica internamente (Invisible para el usuario)
     if (method === 'secure') {
         metrics.scenario6.secure_data_disposal = 'Secure (Shredder)';
-        alert('🛡️ Archivo triturado digitalmente. Imposible de recuperar. ¡Buen trabajo!');
     } else {
         metrics.scenario6.secure_data_disposal = 'Insecure (Recycle Bin)';
-        alert('🗑️ Archivo enviado a la papelera. (Recuerda: Esto no es seguro para datos bancarios).');
     }
 
-    // Finalizar Escenario
+    // 2. Feedback Visual Genérico (Opcional)
+    // Eliminamos el archivo de la vista si aún existe (por si se usó el menú contextual)
+    const fileIcon = document.getElementById('file-temp-csv');
+    if (fileIcon) {
+        fileIcon.style.display = 'none'; // Simplemente desaparece
+    }
+
+    // 3. Avanzar al siguiente escenario sin dar feedback de éxito/fracaso
     setTimeout(() => {
         window.startScenario(7);
     }, 1000);
@@ -184,4 +194,40 @@ export function performDelete(method) {
 // Funciones dummy para otros iconos
 export function openMyPC() {
     alert('Acceso denegado por política de administrador local.');
+}
+
+// --- LÓGICA DE DRAG & DROP ---
+
+// Se ejecuta cuando el usuario empieza a arrastrar el archivo
+export function drag(ev) {
+    // Guardamos el ID del elemento que se está arrastrando
+    ev.dataTransfer.setData("text", ev.target.id);
+    ev.dataTransfer.effectAllowed = "move";
+}
+
+// Se ejecuta cuando el archivo pasa por encima de la papelera
+export function allowDrop(ev) {
+    ev.preventDefault(); // Necesario para permitir soltar
+    // Efecto visual opcional: resaltar la papelera
+    ev.currentTarget.style.transform = "scale(1.2)";
+}
+
+// Se ejecuta cuando el usuario suelta el archivo en la papelera
+export function drop(ev) {
+    ev.preventDefault();
+    ev.currentTarget.style.transform = "scale(1)"; // Restaurar tamaño
+    
+    const data = ev.dataTransfer.getData("text");
+    
+    // Verificamos que sea el archivo correcto
+    if (data === "file-temp-csv") {
+        // Llamamos a la función de borrado (pero marcando que fue por papelera insegura)
+        performDelete('trash');
+        
+        // Opcional: Eliminar visualmente el archivo de la ventana si sigue abierta
+        const fileElement = document.getElementById(data);
+        if (fileElement) {
+            fileElement.remove();
+        }
+    }
 }
