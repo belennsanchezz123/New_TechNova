@@ -1,5 +1,5 @@
 import { createRegistration, completeRegistration } from '../services/api.js';
-import { getPasswordStrength } from '../utils/validation.js';
+import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
 
 
@@ -198,4 +198,18 @@ export function connectWifi(type) {
         }
 
     }, 1500);
+}
+export function getMinPasswordDistance(candidatePassword) {
+    if (passwords.length === 0) return 100; // Si no hay historial, es totalmente nueva (distancia alta)
+
+    let minDistance = 100;
+
+    passwords.forEach(oldPass => {
+        const dist = getLevenshteinDistance(oldPass, candidatePassword);
+        if (dist < minDistance) {
+            minDistance = dist;
+        }
+    });
+
+    return minDistance;
 }

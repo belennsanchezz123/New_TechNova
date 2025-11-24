@@ -2,14 +2,19 @@ import './styles/main.css';
 import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
+import { metrics } from './utils/metrics.js'; 
+
 import { registerService, 
         handleMFA, 
         handlePasskey, 
         toggleProfileDropdown, 
         closeRegistrationComplete,
         toggleWifiMenu,
-        connectWifi } from './handlers/scenario1.js';
+        connectWifi, 
+        getMinPasswordDistance } from './handlers/scenario1.js';
+
 import { handleInterruption } from './handlers/scenario2.js';
+
 import { openEmail, 
         openComposeEmail, 
         handlePhishingClick, 
@@ -23,10 +28,12 @@ import { openEmail,
         closeFileExplorer, 
         sendComposedEmail, 
         cancelCompose,
-        //openConfidentialDoc 
+        // openConfidentialDoc // <--- COMENTADO (No se usa todavía)
         } from './handlers/scenario3.js';
+
 import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
+
 import { 
     openWordDocs, 
     openSaveDialog, 
@@ -39,6 +46,7 @@ import {
     drop,
     allowDrop
 } from './handlers/scenario6.js';
+
 import { finishSimulation } from './handlers/scenario7.js';
 import { submitTaxonomy } from './handlers/scenario8.js';
 import { startSession } from './services/api.js';
@@ -48,6 +56,13 @@ let currentScenario = 0;
 let sessionId = null;
 const TOTAL_SCENARIOS = 9;
 
+// --- FUNCIONES GLOBALES ---
+
+function triggerTeamsIncident() {
+    const popup = document.getElementById('popup-teams-alert');
+    if (popup) popup.classList.add('active');
+}
+
 function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
@@ -55,6 +70,12 @@ function startScenario(scenarioNumber) {
 
     if (scenarioNumber === 3) {
         renderEmails();
+        
+        // Alerta de Teams al iniciar Escenario 3
+        console.log('⚡ Iniciando interrupción de Teams...');
+        setTimeout(() => {
+            triggerTeamsIncident();
+        }, 1000);
     }
 
     if (scenarioNumber === 4) {
@@ -70,7 +91,6 @@ function updateNavigationButtons() {
     const currentNum = document.getElementById('current-num');
 
     if (prevBtn && nextBtn) {
-        //botones para desactivarlos a través de los escenarios
         prevBtn.disabled = currentScenario <= 0;
         nextBtn.disabled = (currentScenario === 0) || (currentScenario >= TOTAL_SCENARIOS);
     }
@@ -116,15 +136,7 @@ async function initApp() {
     scenariosHTML += '</div>';
     scenariosHTML += getPopupsHTML();
 
-    console.log('🟢 INYECTANDO HTML');
     app.innerHTML = scenariosHTML;
-
-    console.log('🟢 VERIFICANDO BOTONES EN DOM:', {
-        prevBtn: document.getElementById('prev-scenario-btn'),
-        nextBtn: document.getElementById('next-scenario-btn'),
-        counter: document.getElementById('scenario-counter')
-    });
-
     updateNavigationButtons();
 }
 
@@ -155,7 +167,6 @@ function validateAndStart() {
     }
 }
 
-
 function showPolicyPopup() {
     document.getElementById('popup-policy-rules').classList.add('active');
 }
@@ -164,6 +175,37 @@ function acceptPolicyAndStart() {
     document.getElementById('popup-policy-rules').classList.remove('active');
     startScenario(1);
 }
+
+function handleTeamsAlert() {
+    const passInput = document.getElementById('teams-new-pass');
+    const newPass = passInput.value;
+
+    if (!newPass) {
+        alert("Por favor, introduce una contraseña.");
+        return;
+    }
+
+    const distance = getMinPasswordDistance(newPass);
+    
+    if (metrics && metrics.unexpected) {
+        metrics.unexpected.teams_password_distance = distance;
+    }
+
+    console.log(`Distancia de contraseña Teams: ${distance}`);
+
+    if (distance === 0) {
+        console.log("RIESGO CRÍTICO: Contraseña idéntica.");
+    } else if (distance <= 3) {
+        console.log("RIESGO ALTO: Contraseña muy similar.");
+    } else {
+        console.log("BUEN COMPORTAMIENTO: Contraseña diferente.");
+    }
+
+    alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
+    document.getElementById('popup-teams-alert').classList.remove('active');
+}
+
+// --- ASIGNACIONES A WINDOW ---
 window.toggleWifiMenu = toggleWifiMenu;
 window.connectWifi = connectWifi;
 window.validateAndStart = validateAndStart;
@@ -178,7 +220,7 @@ window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
 window.openEmail = openEmail;
-//window.openConfidentialDoc = openConfidentialDoc;
+// window.openConfidentialDoc = openConfidentialDoc; // <--- COMENTADO (No se usa todavía)
 window.openComposeEmail = openComposeEmail;
 window.handlePhishingClick = handlePhishingClick;
 window.reportEmail = reportEmail;
@@ -210,4 +252,6 @@ window.submitTaxonomy = submitTaxonomy;
 window.drag = drag;
 window.drop = drop;
 window.allowDrop = allowDrop;
+window.handleTeamsAlert = handleTeamsAlert;
+
 initApp();

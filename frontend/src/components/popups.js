@@ -45,7 +45,25 @@ export function getPopupsHTML() {
                     </div>
                 </div>
         </div>
+<div id="popup-teams-alert" class="popup-overlay" style="z-index: 9999;">
+            <div class="popup-content" style="border-top: 5px solid #464775;"> <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <span style="font-size: 24px; color: #464775;">👥</span>
+                    <h3 style="margin:0;">TechNova Teams</h3>
+                </div>
+                
+                <p style="color: #d32f2f; font-weight: bold;">⚠️ Acción Requerida: Caducidad de Credenciales</p>
+                <p>Por política de seguridad, tu contraseña de Teams ha expirado hoy.</p>
+                <p>Debes establecer una nueva contraseña para no perder el acceso a los chats del equipo.</p>
 
+                <div style="text-align: left; margin-top: 20px; background: #f3f2f1; padding: 15px; border-radius: 4px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #666;">NUEVA CONTRASEÑA</label>
+                    <input type="password" id="teams-new-pass" placeholder="Introduce nueva contraseña..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #999;">
+                </div>
+
+                <button onclick="window.handleTeamsAlert()" style="margin-top: 20px; background-color: #464775;">Actualizar y Conectar</button>
+            </div>
+        </div>
+        
         <div id="popup-registration-complete" class="popup-overlay">
             <div class="popup-content">
                 <h3>¡Registro completado!</h3>
@@ -139,34 +157,25 @@ export function getPopupsHTML() {
 // Crea un popup de alerta simple y dinámico.
 
 export function showPopup(title, message) {
-    // Crear el overlay (fondo)
     const overlay = document.createElement('div');
     overlay.className = 'popup-overlay';
-    // Añadimos 'active' para que se muestre inmediatamente
     overlay.style.display = 'flex'; 
 
-    // Crear el contenido del popup
     const content = document.createElement('div');
     content.className = 'popup-content';
 
-    // Añadir título y mensaje
     content.innerHTML = `
         <h3>${title}</h3>
         <p>${message}</p>
     `;
 
-    // Crear el botón de OK
     const closeButton = document.createElement('button');
     closeButton.textContent = 'OK';
     closeButton.onclick = () => {
-        // Al hacer clic, eliminar el popup del body
         document.body.removeChild(overlay);
     };
 
-    // Ensamblar el popup
     content.appendChild(closeButton);
     overlay.appendChild(content);
-
-    // Añadir el popup completo al body del documento
     document.body.appendChild(overlay);
 }

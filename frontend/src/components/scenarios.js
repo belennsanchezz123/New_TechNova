@@ -87,7 +87,7 @@ export function getScenarioHTML(scenarioNumber) {
                     <div class="form-group" id="technova-mail-form">
                         <h3>📧 1. Registrarse en TechNova Mail</h3>
                         <label for="mail-user">Usuario:</label>
-                        <input type="text" id="mail-user" placeholder="e.g., alex.nuevo">
+                        <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
                         <input type="password" id="mail-pass">
                         <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
@@ -97,7 +97,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <h3>💾 2. Registrarse en TechNova Drive</h3>
                         <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
                          <label for="drive-user">Usuario:</label>
-                        <input type="text" id="drive-user" placeholder="e.g., alex.nuevo">
+                        <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
                         <input type="password" id="drive-pass">
                         <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive</button>
@@ -107,7 +107,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <h3>👥 3. Registrarse en TechNova Events</h3>
                         <p>Finalmente, crea tu perfil en TechNova Events, la red social interna.</p>
                         <label for="events-user">Usuario:</label>
-                        <input type="text" id="events-user" placeholder="e.g., alex.nuevo">
+                        <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
                         <input type="password" id="events-pass">
                         <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events</button>
