@@ -1,5 +1,6 @@
 export const metrics = {
     scenario1: {
+        wifi_network_choice: 'Not Set',
         mail_password_strength: 'Not Set',
         drive_password_strength: 'Not Set',
         events_password_strength: 'Not Set',

@@ -6,7 +6,9 @@ import { registerService,
         handleMFA, 
         handlePasskey, 
         toggleProfileDropdown, 
-        closeRegistrationComplete } from './handlers/scenario1.js';
+        closeRegistrationComplete,
+        toggleWifiMenu,
+        connectWifi } from './handlers/scenario1.js';
 import { handleInterruption } from './handlers/scenario2.js';
 import { openEmail, 
         openComposeEmail, 
@@ -162,7 +164,8 @@ function acceptPolicyAndStart() {
     document.getElementById('popup-policy-rules').classList.remove('active');
     startScenario(1);
 }
-
+window.toggleWifiMenu = toggleWifiMenu;
+window.connectWifi = connectWifi;
 window.validateAndStart = validateAndStart;
 window.startScenario = startScenario;
 window.previousScenario = previousScenario;

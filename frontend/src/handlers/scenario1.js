@@ -145,3 +145,57 @@ export function closeRegistrationComplete() {
     document.getElementById('popup-registration-complete').classList.remove('active');
     window.startScenario(2);
 }
+export function toggleWifiMenu() {
+    const menu = document.getElementById('wifi-menu');
+    if (menu) menu.classList.toggle('active');
+}
+
+export function connectWifi(type) {
+    const menu = document.getElementById('wifi-menu');
+    const icon = document.getElementById('wifi-icon-status');
+
+    // ---------------------------------------------------------
+    // NUEVO: Validación de contraseña para la red segura
+    // ---------------------------------------------------------
+    if (type === 'secure') {
+        // Pedimos la contraseña al usuario
+        const password = prompt("🔐 TechNova_Corp_Secure está protegida.\n\nPor favor, introduce la clave de seguridad de la red:");
+        
+        // Verificamos si es correcta (Exacta, incluyendo mayúsculas)
+        if (password !== "UniversidadMurcia2026!") {
+            alert("❌ Contraseña incorrecta.\n\nNo se ha podido conectar a la red corporativa. Inténtalo de nuevo.");
+            return; // ¡IMPORTANTE! Detenemos la función aquí para que no conecte.
+        }
+    }
+    
+    // Si la contraseña es correcta (o si es la red pública que no pide clave), procedemos:
+    menu.innerHTML = `
+        <div style="padding: 20px; text-align: center;">
+            <div class="spinner" style="margin: 0 auto 10px;"></div>
+            <p>Verificando y conectando...</p>
+        </div>
+    `;
+
+    setTimeout(() => {
+        // 1. Registrar Métrica
+        if (type === 'public') {
+            metrics.scenario2.wifi_network_choice = 'Insecure (Public)'; 
+        } else {
+            metrics.scenario2.wifi_network_choice = 'Secure (Corporate)';
+        }
+
+        // 2. Actualizar UI (Icono de conectado)
+        if(icon) icon.textContent = '📶'; 
+        menu.classList.remove('active'); 
+
+        // 3. Transición: Ocultar Wi-Fi -> Mostrar Formularios
+        document.getElementById('wifi-task-container').style.display = 'none';
+        document.getElementById('registration-content').style.display = 'block';
+
+        // Feedback opcional de éxito
+        if (type === 'secure') {
+            // alert("✅ Conexión segura establecida con éxito.");
+        }
+
+    }, 1500);
+}

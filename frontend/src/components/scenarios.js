@@ -40,44 +40,81 @@ export function getScenarioHTML(scenarioNumber) {
             <button onclick="window.validateAndStart()">Comenzar Simulación</button>
         `,
         1: `
-            <h2>Escenario 1: Configuración de Cuentas</h2>
-            <p>Tu primera tarea es crear tus cuentas de usuario en las plataformas internas de TechNova.</p>
-            <div id="registration-forms">
-
-                <div class="form-group" id="technova-mail-form">
-                <h3>📧 1. Registrarse en TechNova Mail</h3>
-    
-                <label for="mail-user">Usuario:</label>
-                <input type="text" id="mail-user">
-    
-                <label for="mail-pass">Contraseña:</label>
-                <input type="password" id="mail-pass">
-    
-                <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
-            </div>
+            <h2>Escenario 1: Conectividad y Configuración de Cuentas</h2>
+            
+            <div id="wifi-task-container">
+                <p><strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.</p>
+                <p>Antes de poder registrarte en los servicios, debes conectarte a la red corporativa.</p>
                 
-            <div class="form-group" id="technova-drive-form" style="display:none;">
-                <h3>☁️ 2. Registrarse en TechNova Drive</h3>
-                <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
-                <label for="drive-user">Usuario:</label>
-                <input type="text" id="drive-user">
-                <label for="drive-pass">Contraseña:</label>
-                <input type="password" id="drive-pass">
-                <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive</button>
+                <div style="height: 350px; background: linear-gradient(135deg, #0060a9 0%, #0078d7 100%); position: relative; border: 1px solid #333; margin-top: 20px; border-radius: 4px;">
+                    
+                    <div id="wifi-menu" class="wifi-menu">
+                        <div class="wifi-header">Redes disponibles</div>
+                        <div class="wifi-list">
+                            <div class="wifi-item" onclick="window.connectWifi('public')">
+                                <span class="wifi-signal">📶</span>
+                                <div class="wifi-details">
+                                    <div class="wifi-name">Free_Coffee_Guest</div>
+                                    <div class="wifi-status">Abierta</div>
+                                </div>
+                            </div>
+                            <div class="wifi-item" onclick="window.connectWifi('secure')">
+                                <span class="wifi-signal">🔒</span>
+                                <div class="wifi-details">
+                                    <div class="wifi-name">TechNova_Corp_Secure</div>
+                                    <div class="wifi-status">Segura (WPA2-Ent)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="taskbar">
+                        <span style="margin-right: auto; color: white; padding-left: 10px; font-size: 12px;">9:00 AM</span>
+                        <div class="taskbar-icon" onclick="window.toggleWifiMenu()">
+                            <span id="wifi-icon-status">🌐</span>
+                        </div>
+                        <div class="taskbar-icon">🔋</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group" id="technova-events-form" style="display:none;">
-                <h3>👥 3. Registrarse en TechNova Events</h3>
-                <p>Finalmente, crea tu perfil en TechNova Events, la red social interna de la compañía.</p>
-                <label for="events-user">Usuario:</label>
-                <input type="text" id="events-user">
-                <label for="events-pass">Contraseña:</label>
-                <input type="password" id="events-pass">
-                <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events</button>
+            <div id="registration-content" style="display: none;">
+                <p style="background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                    ✅ <strong>Conexión Establecida.</strong> Ahora tienes acceso a la intranet para crear tus cuentas.
+                </p>
+
+                <div id="registration-forms">
+                    <div class="form-group" id="technova-mail-form">
+                        <h3>📧 1. Registrarse en TechNova Mail</h3>
+                        <label for="mail-user">Usuario:</label>
+                        <input type="text" id="mail-user" placeholder="e.g., alex.nuevo">
+                        <label for="mail-pass">Contraseña:</label>
+                        <input type="password" id="mail-pass">
+                        <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
+                    </div>
+                    
+                    <div class="form-group" id="technova-drive-form" style="display:none;">
+                        <h3>💾 2. Registrarse en TechNova Drive</h3>
+                        <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
+                         <label for="drive-user">Usuario:</label>
+                        <input type="text" id="drive-user" placeholder="e.g., alex.nuevo">
+                        <label for="drive-pass">Contraseña:</label>
+                        <input type="password" id="drive-pass">
+                        <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive</button>
+                    </div>
+
+                    <div class="form-group" id="technova-events-form" style="display:none;">
+                        <h3>👥 3. Registrarse en TechNova Events</h3>
+                        <p>Finalmente, crea tu perfil en TechNova Events, la red social interna.</p>
+                        <label for="events-user">Usuario:</label>
+                        <input type="text" id="events-user" placeholder="e.g., alex.nuevo">
+                        <label for="events-pass">Contraseña:</label>
+                        <input type="password" id="events-pass">
+                        <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events</button>
+                    </div>
+                </div>
             </div>
-        </div>
         `,
-
         2:
             `
             <h2>Scenario 2: Dispositivos Externos</h2>
@@ -359,7 +396,7 @@ export function getScenarioHTML(scenarioNumber) {
             </div>
         `,
         6: `
-            <h2>Escenario 7: Cierre del Día - Política de Escritorio Limpio</h2>
+            <h2>Escenario 6: Cierre del Día - Política de Escritorio Limpio</h2>
             <p><strong>Instrucción:</strong> Has terminado el informe final. Tu objetivo es guardarlo en el servidor seguro y dejar tu escritorio limpio de archivos temporales.</p>
             <p>Interactúa con el <strong>Escritorio Virtual</strong> a continuación para completar tus tareas.</p>
 

@@ -29,6 +29,8 @@ export function reportEmail(id, type) {
     document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
 }
 
+// No olvidar hacer una funcion export function openConfidentialDoc() 
+
 export function useAI() {
     const rawText = document.getElementById('ai-input').value;
     metrics.scenario3.ai_prompt_text = rawText;
@@ -222,36 +224,54 @@ export function closeFileExplorer() {
 }
 
 export function sendComposedEmail() {
-    const to = document.getElementById('compose-to')?.value;
+    const to = document.getElementById('compose-to')?.value.trim().toLowerCase();
     const subject = document.getElementById('compose-subject')?.value;
-    const body = document.getElementById('compose-body')?.value;
-
+    
     if (!to || !subject) {
-        alert('Please fill in the recipient and subject fields.');
+        alert('Por favor completa el destinatario y el asunto.');
         return;
     }
 
+    // 1. LÓGICA PARA EL CORREO DE LAURA (Micro-tarea de "Interacción")
+    if (to.includes('laura.perez@technova.com')) {
+        // Feedback positivo inmediato
+        alert('✅ Mensaje enviado a Laura Pérez.\n\n(Has respondido correctamente a una solicitud interna legítima. Puedes continuar con el resto de tareas).');
+        
+        // Limpiamos el formulario y volvemos a la vista de lista
+        composedEmailAttachments = [];
+        document.getElementById('email-view').innerHTML = '<p>Selecciona un correo para leerlo.</p>';
+        
+        // Opcional: Aquí podrías registrar una métrica de "Interacción Correcta" si quisieras
+        return; 
+    }
+
+    // 2. LÓGICA PARA EL ENVÍO DEL DOCUMENTO SENSIBLE (Tarea Final)
     const hasSensitiveDoc = composedEmailAttachments.some(att =>
-        att.filename === 'Lista_Participantes_Excursion.docx'
+        att.filename === 'Presupuesto_Interno_Q3.xlsx' || att.filename === 'Lista_Participantes_Excursion.docx'
     );
 
     const usedSecureMethod = composedEmailAttachments.some(att =>
-        att.filename === 'Lista_Participantes_Excursion.docx' && att.method === 'drive'
+        (att.filename === 'Presupuesto_Interno_Q3.xlsx' || att.filename === 'Lista_Participantes_Excursion.docx') 
+        && att.method === 'drive'
     );
 
+    // Si está enviando el documento sensible (a contabilidad o colaborador)
     if (hasSensitiveDoc) {
+        // Métrica clave del escenario
         metrics.scenario3.secure_data_transmission = usedSecureMethod ?
             'Used Secure Channel (Lynx Drive)' :
             'Used Insecure Channel (Direct Attachment)';
-    }
-
-    alert(`Email sent to ${to}!`);
-    composedEmailAttachments = [];
-
-    if (to.includes('colaborador@lynx-mail.sim') && hasSensitiveDoc) {
+            
+        alert(`📨 Documento enviado a ${to}.`);
+        
+        // Transición al siguiente escenario (Escenario 4)
         setTimeout(() => window.startScenario(4), 1000);
+        
     } else {
-        document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
+        // Envío genérico (cualquier otro correo)
+        alert(`Correo enviado a ${to}.`);
+        composedEmailAttachments = [];
+        document.getElementById('email-view').innerHTML = '<p>Selecciona un correo para leerlo.</p>';
     }
 }
 
