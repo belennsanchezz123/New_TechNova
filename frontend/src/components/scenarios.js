@@ -28,26 +28,60 @@ function generateQuestionGroup(title, questions, groupIndex) {
 export function getScenarioHTML(scenarioNumber) {
     const scenarios = {
         0: `
-            <h2>¡Bienvenido a TechNova!</h2>
-            <p>Este laboratorio virtual simula tu primer día laboral en la empresa tecnológica TechNova.</p>
-            <p>A lo largo de tu jornada, deberás completar varias tareas típicas de incorporación digital.</p>
+            <h2>
+                ¡Bienvenido a TechNova!
+                <span class="translation">Welcome to TechNova!</span>
+            </h2>
+            <p>
+                Este laboratorio virtual simula tu primer día laboral en la empresa tecnológica TechNova.
+                <span class="translation">This virtual lab simulates your first working day at the tech company TechNova.</span>
+            </p>
             
+            <p>A lo largo de tu jornada, deberás completar varias tareas típicas de incorporación digital.
+                <span class="translation">Throughout your day, you will need to complete several typical digital onboarding tasks.</span>
+            </p>
+
             <div class="participant-id-form" style="margin: 30px 0;">
-                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">ID de Participante (proporcionado por el investigador):</label>
+                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">
+                    ID de Participante (proporcionado por el investigador):
+                    <span class="translation">Participant ID (provided by the researcher):</span>
+                </label>
                 <input type="text" id="participant-id-input" placeholder="e.g., P001" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
-                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">Por favor, introduce un ID de Participante válido</p>
+                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">
+                    Por favor, introduce un ID de Participante válido
+                    <span class="translation">Please enter a valid Participant ID</span>
+                </p>
             </div>
-            <button onclick="window.validateAndStart()">Comenzar Simulación</button>
+            <button onclick="window.validateAndStart()" style="color:white;">
+            Comenzar Simulación
+            <span class="translation" style="display:block; font-size:0.8em; font-style:normal; color:white;">
+            Begin Simulation
+            </span>
+            </button>
         `,
         1: `
-            <h2>Escenario 1: Conectividad y Configuración de Cuentas</h2>
-            
+            <h2>
+            Escenario 1: Conectividad y Configuración de Cuentas
+            <span class="translation">Scenario 1: Connectivity and Account Setup</span>
+            </h2>
+
             <div id="wifi-task-container">
-                <p><strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.</p>
-                <p>Antes de poder registrarte en los servicios, debes conectarte a la red corporativa.</p>
-                
-                <div style="height: 350px; background: linear-gradient(135deg, #0060a9 0%, #0078d7 100%); position: relative; border: 1px solid #333; margin-top: 20px; border-radius: 4px;">
-                    
+            <p>
+                <strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.
+                <span class="translation">
+                <strong>Instruction:</strong> It’s your first day. You turn on your laptop but <strong>you have no internet connection</strong>.
+                </span>
+            </p>
+
+            <p>
+                Antes de poder registrarte en los servicios, debes conectarte a la red corporativa.
+                <span class="translation">
+                Before you can sign up for the services, you must connect to the corporate network.
+                </span>
+            </p>
+
+            <div style="height: 350px; background: linear-gradient(135deg, #0060a9 0%, #0078d7 100%); position: relative; border: 1px solid #333; margin-top: 20px; border-radius: 4px;">
+
                     <div id="wifi-menu" class="wifi-menu">
                         <div class="wifi-header">Redes disponibles</div>
                         <div class="wifi-list">
@@ -85,69 +119,120 @@ export function getScenarioHTML(scenarioNumber) {
 
                 <div id="registration-forms">
                     <div class="form-group" id="technova-mail-form">
-                        <h3>📧 1. Registrarse en TechNova Mail</h3>
+                        <h3>📧 1. Registrarse en TechNova Mail
+                        <span class="translation"> Register in TechNova Mail</span>
+                        </h3>
                         <label for="mail-user">Usuario:</label>
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
                         <input type="password" id="mail-pass">
-                        <button onclick="window.registerService('mail')">Crear Cuenta de TechNova Mail</button>
+                        <button onclick="window.registerService('mail')">
+                        Crear Cuenta de TechNova Mail
+                        <span class="translation" style="color:white;">Create TechNova Mail Account</span>
+                        </button>
                     </div>
                     
                     <div class="form-group" id="technova-drive-form" style="display:none;">
-                        <h3>💾 2. Registrarse en TechNova Drive</h3>
-                        <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.</p>
+                        <h3>💾 2. Registrarse en TechNova Drive
+                        <span class="translation">Register in TechNova Drive</span></h3>
+                        <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.
+                         <span class="translation">
+                        Now, register in TechNova Drive, our cloud storage system.
+                        </span>
+                        </p>
                          <label for="drive-user">Usuario:</label>
                         <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
                         <input type="password" id="drive-pass">
-                        <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive</button>
+                        <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive
+                        <span class="translation" style="color:white;">Create TechNova Drive Account</span>
+                        </button>
                     </div>
 
                     <div class="form-group" id="technova-events-form" style="display:none;">
-                        <h3>👥 3. Registrarse en TechNova Events</h3>
-                        <p>Finalmente, crea tu perfil en TechNova Events, la red social interna.</p>
+                        <h3>👥 3. Registrarse en TechNova Events
+                        <span class="translation">Register in TechNova Events</span>
+                        </h3>
+                        <p>Finalmente, crea tu perfil en TechNova Events, la red social interna.
+                        <span class="translation">
+                        Finally, create your profile in TechNova Events, the internal social network.
+                        </span>
+                        </p>
                         <label for="events-user">Usuario:</label>
                         <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
                         <input type="password" id="events-pass">
-                        <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events</button>
+                        <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events
+                        <span class="translation" style="color:white;">Create TechNova Events Account</span>
+                        </button>
                     </div>
                 </div>
             </div>
         `,
         2:
             `
-            <h2>Scenario 2: Dispositivos Externos</h2>
+            <h2>
+    Escenario 2: Dispositivos Externos
+    <span class="translation">Scenario 2: External Devices</span>
+</h2>
 
-            <div id="simulated-lock-screen">
-                <div class="lock-screen-content">
-                    <div class="lock-screen-icon">🖥️</div>
-                    <h1>Sesión Suspendida</h1>
-                    <p>(Simulación de Bloqueo de Pantalla)</p>
-                    <div class="lock-screen-prompt">
-                        Presiona la tecla <strong>'v'</strong> para volver y continuar.
-                    </div>
-                </div>
-            </div>
+<div id="simulated-lock-screen">
+    <div class="lock-screen-content">
+        <div class="lock-screen-icon">🖥️</div>
 
-            <div id="task-interruption">
-                <p><strong>Intrucción:</strong>Necesitas encontrar y descargar una plantilla de cronograma de proyectos para su equipo, que debe presentar en la reunión del lunes. Para eso usa el navegador asociado.'</strong>.</p>
-                
-                <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
-                    
-                    <button onclick="window.handleInterruption(true)" style="flex: 1; background: #6c757d; color: white;">
-                        🖥️ Suspender sesión
-                    </button>
-                    
-                    <button onclick="window.handleInterruption(false)" style="flex: 1;">
-                        Continuar ➡️
-                    </button>
-                </div>
-            </div>
+        <h1>
+            Sesión Suspendida
+            <span class="translation">Session Suspended</span>
+        </h1>
+
+        <p>
+            (Simulación de Bloqueo de Pantalla)
+            <span class="translation">(Simulated Lock Screen)</span>
+        </p>
+
+        <div class="lock-screen-prompt">
+            Presiona la tecla <strong>'v'</strong> para volver y continuar.
+            <span class="translation">Press the <strong>'v'</strong> key to return and continue.</span>
+        </div>
+    </div>
+</div>
+
+<div id="task-interruption">
+    <p>
+        <strong>Instrucción:</strong> Necesitas encontrar y descargar una plantilla de cronograma de proyectos 
+        para tu equipo, que debe presentarse en la reunión del lunes. Para eso, usa el navegador asociado.
+        <span class="translation">
+            <strong>Instruction:</strong> You need to find and download a project schedule template for your team, 
+            which must be presented at Monday’s meeting. To do this, use the assigned browser.
+        </span>
+    </p>
+
+    <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
+
+        <button onclick="window.handleInterruption(true)" style="flex: 1; background: #6c757d; color: white;">
+            🖥️ Suspender sesión
+             <span class="translation" style="color:white;">Suspend Session</span>
+        </button>
+
+        <button onclick="window.handleInterruption(false)" style="flex: 1; color: white;">
+            Continuar ➡️
+             <span class="translation" style="color:white;">Continue</span>
+        </button>
+
+    </div>
+</div>
+
 
             <div id="task-usb" style="display:none;">
-                <h3>Manejo de Dispositivos Externos</h3>
-                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Bienvenida_Equipo_TechNova.docx'</strong>.</p>
+                <h3>Manejo de Dispositivos Externos
+                <span class="translation">Handling External Devices</span>
+                </h3>
+                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Bienvenida_Equipo_TechNova.docx'</strong>.
+                <span class="translation">
+                <strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file 
+                <strong>'Welcome_TechNova_Team.docx'</strong>.
+                </span>
+                </p>
     
                 <div class="file-explorer-window">
                     <div class="fe-header">

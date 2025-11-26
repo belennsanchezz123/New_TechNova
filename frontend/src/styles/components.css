@@ -66,12 +66,14 @@ button.danger:hover {
 
 .popup-content {
     background: white;
-    padding: 30px;
     border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    padding: 20px;
     width: 90%;
-    max-width: 450px;
+    max-width: 650px;
+
+    /* Esto evita que se salga de la pantalla */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 #results-table {

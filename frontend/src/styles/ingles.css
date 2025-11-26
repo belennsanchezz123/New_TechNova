@@ -1,0 +1,14 @@
+.translation {
+    display: block;
+    margin-top: 4px;
+    padding: 3px 0 3px 10px;
+    border-left: 3px solid #ccc;
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+    font-family: "Georgia", serif;
+}
+
+button .translation {
+    color: white !important;
+}
