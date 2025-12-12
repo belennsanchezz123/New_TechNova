@@ -2,8 +2,8 @@ export const emails = [
     {
       id: 1,
       from: 'Laura Pérez (Gerente) <laura.perez@technova.com>',  //Legítimo
-      subject: 'Bienvenido al Equipo de Ventas, Alex', 
-      body: 'Hola Alex, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.', // MODIFICADO
+      subject: 'Bienvenido al Equipo de Ventas', 
+      body: 'Hola, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.', // MODIFICADO
       read: false,
       type: 'legit'
     },
@@ -19,15 +19,15 @@ export const emails = [
       id: 3,
       from: 'Equipo de IT TechNova <it-compliance@technova.com>', // Legítimo de IT
       subject: 'Actualización de Protocolo de MFA – TechNova IT', 
-      body: 'Estimado Alex, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre `portal.technova.com`) para realizar la actualización. Gracias por tu cooperación.', // MODIFICADO
+      body: 'Estimado usuario, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre `portal.technova.com`) para realizar la actualización. Gracias por tu cooperación.', // MODIFICADO
       read: false,
       type: 'legit'
     },
     {
       id: 4,
       from: 'Departamento de Cuentas por Pagar <contabilidad-no-reply@cuentas-corporativas.com>', //Phishing (Factura/Malware)
-      subject: 'Factura Pendiente: Compra de Software - [Adjunto/Enlace Malicioso]', 
-      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado Alex, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, revise el documento adjunto (FACTURA_873321.zip) y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b>', // MODIFICADO
+      subject: 'Factura Pendiente: Compra de Software', 
+      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, revise el documento adjunto (FACTURA_873321.zip) y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b>', // MODIFICADO
       read: false,
       type: 'phishing-malware'
     },

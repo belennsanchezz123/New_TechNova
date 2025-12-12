@@ -66,36 +66,79 @@ export function getPopupsHTML() {
     </div>
 </div>
 
-        <div id="popup-update" class="popup-overlay">
-                <div class="popup-content">
-                    <h3>La actualización de características más reciente de Windows ya está disponible</h3>
-                    <p>Está lista para instalarse. Con las nuevas características y aplicaciones, esta actualización podría tardar un poco más que las otras.</p>
-                    <p style="margin-top: 20px;">Puedes reiniciar ahora o posponer la actualización.</p>
-                    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
-                        
-                        <button onclick="window.handleUpdate('install')">Reiniciar ahora</button>
-                        
-                        <button class="secondary" onclick="window.handleUpdate('postpone')">Posponer</button>
-                    
-                    </div>
-                </div>
+<div id="popup-update" class="popup-overlay">
+    <div class="popup-content">
+
+        <h3>
+            La actualización de características más reciente de Windows ya está disponible
+            <span class="translation">The latest Windows feature update is now available</span>
+        </h3>
+
+        <p>
+            Está lista para instalarse. Con las nuevas características y aplicaciones, esta actualización podría tardar un poco más que las otras.
+            <span class="translation">
+                It is ready to install. With the new features and applications, this update may take a bit longer than previous ones.
+            </span>
+        </p>
+
+        <p style="margin-top: 20px;">
+            Puedes reiniciar ahora o posponer la actualización.
+            <span class="translation">
+                You can restart now or postpone the update.
+            </span>
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+
+            <button onclick="window.handleUpdate('install')" style="color:white;">
+                Reiniciar ahora
+                <span class="translation" style="color:white;">Restart Now</span>
+            </button>
+
+            <button class="secondary" onclick="window.handleUpdate('postpone')" style="color:white;">
+                Posponer
+                <span class="translation" style="color:white;">Postpone</span>
+            </button>
+
         </div>
+
+    </div>
+</div>
 <div id="popup-teams-alert" class="popup-overlay" style="z-index: 9999;">
             <div class="popup-content" style="border-top: 5px solid #464775;"> <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <span style="font-size: 24px; color: #464775;">👥</span>
                     <h3 style="margin:0;">TechNova Teams</h3>
                 </div>
                 
-                <p style="color: #d32f2f; font-weight: bold;">⚠️ Acción Requerida: Caducidad de Credenciales</p>
-                <p>Por política de seguridad, tu contraseña de Teams ha expirado hoy.</p>
-                <p>Debes establecer una nueva contraseña para no perder el acceso a los chats del equipo.</p>
+                <p style="color: #d32f2f; font-weight: bold;">
+                ⚠️ Acción Requerida: Caducidad de Credenciales
+                <span class="translation">Action Required: Credential Expiration</span>
+                </p>
+                
+                <p>
+                Por política de seguridad, tu contraseña de Teams ha expirado hoy.
+                <span class="translation">
+                Due to security policy, your Teams password has expired today.
+                </span>
+                </p>
+                
+                <p>
+                Debes establecer una nueva contraseña para no perder el acceso a los chats del equipo.
+                <span class="translation">
+                You must set a new password to avoid losing access to the team chats.
+                </span>
+                </p>
 
                 <div style="text-align: left; margin-top: 20px; background: #f3f2f1; padding: 15px; border-radius: 4px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #666;">NUEVA CONTRASEÑA</label>
+                    <label style="font-size: 12px; font-weight: bold; color: #666;">NUEVA CONTRASEÑA
+                    </label>
                     <input type="password" id="teams-new-pass" placeholder="Introduce nueva contraseña..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #999;">
                 </div>
 
-                <button onclick="window.handleTeamsAlert()" style="margin-top: 20px; background-color: #464775;">Actualizar y Conectar</button>
+                <button onclick="window.handleTeamsAlert()" style="margin-top: 20px; background-color: #464775;">
+                Actualizar y Conectar
+                <span class="translation" style="color:white;">Update and Connect</span>
+                </button>
             </div>
         </div>
 

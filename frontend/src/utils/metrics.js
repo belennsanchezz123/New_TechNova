@@ -35,7 +35,8 @@ export const metrics = {
         secure_data_disposal: 'Not Used'
     },
     unexpected: {
-        update_compliance_rate: 'Not prompted'
+        update_compliance_rate: 'Not prompted',
+        teams_password_reused: 'Not Set'
     }
 };
 

@@ -1,9 +1,8 @@
 function generateQuestionGroup(title, questions, groupIndex) {
-    
-    // Genera el HTML para una sola pregunta (fila)
-    const generateQuestionHTML = (question, qIndex) => {
-        const questionName = `q_${groupIndex}_${qIndex}`;
-        return `
+  // Genera el HTML para una sola pregunta (fila)
+  const generateQuestionHTML = (question, qIndex) => {
+    const questionName = `q_${groupIndex}_${qIndex}`;
+    return `
             <div class="question-row">
                 <div class="question-label">${question}</div>
                 <div class="radio-group-horizontal">
@@ -15,19 +14,19 @@ function generateQuestionGroup(title, questions, groupIndex) {
                 </div>
             </div>
         `;
-    };
+  };
 
-    // Crea el bloque completo del grupo
-    return `
+  // Crea el bloque completo del grupo
+  return `
         <div class="question-section-taxonomy">
             <h3>${title}</h3>
-            ${questions.map((q, i) => generateQuestionHTML(q, i)).join('')}
+            ${questions.map((q, i) => generateQuestionHTML(q, i)).join("")}
         </div>
     `;
 }
 export function getScenarioHTML(scenarioNumber) {
-    const scenarios = {
-        0: `
+  const scenarios = {
+    0: `
             <h2>
                 ¡Bienvenido a TechNova!
                 <span class="translation">Welcome to TechNova!</span>
@@ -59,7 +58,7 @@ export function getScenarioHTML(scenarioNumber) {
             </span>
             </button>
         `,
-        1: `
+    1: `
             <h2>
             Escenario 1: Conectividad y Configuración de Cuentas
             <span class="translation">Scenario 1: Connectivity and Account Setup</span>
@@ -169,8 +168,7 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </div>
         `,
-        2:
-            `
+    2: `
             <h2>
     Escenario 2: Dispositivos Externos
     <span class="translation">Scenario 2: External Devices</span>
@@ -367,12 +365,35 @@ export function getScenarioHTML(scenarioNumber) {
         </div>
         </div>
         `,
-        3: `
-            <h2>Scenario 3: Communications Management</h2>
-            <p><strong>Instrucción:</strong> Es hora de revisar tu bandeja de entrada de <strong> TechNova Mail</strong></p>
-            <p>Tu gerente te ha enviado mensajes importantes sobre tu incorporación.</p>
-            <p>Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. <strong> Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong></p>
-            
+    3: `
+            <h2>
+                Escenario 3: Gestión de Comunicaciones
+                <span class="translation">Scenario 3: Communications Management</span>
+            </h2>
+
+            <p>
+            <strong>Instrucción:</strong> Es hora de revisar tu bandeja de entrada de <strong>TechNova Mail</strong>.
+            <span class="translation">
+            <strong>Instruction:</strong> It’s time to check your <strong>TechNova Mail</strong> inbox.
+            </span>
+            </p>
+
+            <p>
+            Tu gerente te ha enviado mensajes importantes sobre tu incorporación.
+            <span class="translation">
+            Your manager has sent you important messages regarding your onboarding.
+            </span>
+            </p>
+
+            <p>
+            Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. 
+            <strong>Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong>
+            <span class="translation">
+            Read and handle them as you would in a professional environment, paying special attention to the sender and the content. 
+            <strong>To interact with an email (reply, report, etc.), right-click on it in the inbox.</strong>
+            </span>
+            </p>
+
             <div style="margin-bottom: 10px;">
                 <button onclick="window.openComposeEmail()">Nuevo Correo</button>
             </div>
@@ -385,19 +406,51 @@ export function getScenarioHTML(scenarioNumber) {
             <hr>
             <div id="ai-task" style="margin-top:20px;">
                  <h3>Task: Usar el Asistente IA</h3>
-                 <p><strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a tu jefa en una reunión estratégica.</p>
+                 <p>
+                    <strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a tu jefa en una reunión estratégica.
+                    <span class="translation">
+                    <strong>Instruction:</strong> You must now review two internal documents to support your manager in a strategic meeting.
+                    </span>
+                </p>
                  <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Pega el contenido aquí para el Asistente de IA..."></textarea>
                  <button onclick="window.useAI()">Enviar</button>
             </div>
              <div id="send-doc-task" style="margin-top:20px;">
-                <h3>Task: Mandar documento sensible</h3>
-                <p><strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe via email 'elena_sanchezr@technova.com'.</p>
-                <p> Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.</p>
+             <h3>
+                Tarea: Mandar documento sensible
+                <span class="translation">Task: Send Sensitive Document</span>
+            </h3>
+
+            <p>
+                <strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe vía email a 
+                <strong>'elena_sanchezr@technova.com'</strong>.
+                 <span class="translation">
+                <strong>Instruction:</strong> Now send the summarized document to your manager via email at 
+                <strong>'elena_sanchezr@technova.com'</strong>.
+                </span>
+            </p>
+
+            <p>
+                Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.
+                <span class="translation">
+                Use the email client above to compose a new message and attach the document.
+                </span>
+            </p>
             </div>
+
         `,
-        4: `
-            <h2>Scenario 4: Resource Search & Download</h2>
-            <p><strong>Instruction:</strong> Use the  Browser to find and download a 'Topographic Map of the Sierra'.</p>
+    4: `
+<h2>
+    Escenario 4: Búsqueda y Descarga de Recursos
+    <span class="translation">Scenario 4: Resource Search & Download</span>
+</h2>
+
+<p>
+    <strong>Instrucción:</strong> Usa el navegador para buscar en Internet y descargar una <strong>plantilla de cronograma de proyectos</strong>.
+    <span class="translation">
+        <strong>Instruction:</strong> Use the browser to search online and download a <strong>project schedule template</strong>.
+    </span>
+</p>
             <div class="browser-container">
                 <div class="browser-header">
                     <div class="browser-tabs">
@@ -440,51 +493,117 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </div>
         `,
-        5: `
-            <h2>Escenario 5: Redes Sociales y Privacidad</h2>
-            <div id="profile-task">
-                <h3>Completa tu Perfil en TechNova Events</h3>
-                <p><strong>Instrucción:</strong> Para conectar mejor con tus compañeros en la fiesta de bienvenida, completa tu perfil público. <br><em>(Recuerda: Solo los campos con * son obligatorios por el sistema).</em></p>
-                
-                <div class="form-group">
-                    <label for="prof-name">Nombre Completo *</label>
-                    <input type="text" id="prof-name" value="Alex" readonly style="background-color: #e9ecef;">
-                </div>
+    5: `
+            <h2>
+    Escenario 5: Redes Sociales y Privacidad
+    <span class="translation">Scenario 5: Social Media and Privacy</span>
+</h2>
 
-                <div class="form-group">
-                    <label for="prof-dob">Fecha de Nacimiento (Opcional - Para felicitaciones de equipo)</label>
-                    <input type="date" id="prof-dob">
-                </div>
+<div id="profile-task">
 
-                <div class="form-group">
-                    <label for="prof-phone">Teléfono Móvil Personal (Opcional - Para alertas SMS)</label>
-                    <input type="tel" id="prof-phone" placeholder="+34 600...">
-                </div>
+    <h3>
+        Completa tu Perfil en TechNova Events
+        <span class="translation">Complete Your Profile on TechNova Events</span>
+    </h3>
 
-                <div class="form-group">
-                    <label for="prof-social">Instagram / LinkedIn / Twitter (Opcional)</label>
-                    <input type="text" id="prof-social" placeholder="@usuario">
-                </div>
+    <p>
+        <strong>Instrucción:</strong> Para conectar mejor con tus compañeros en la fiesta de bienvenida, completa tu perfil público.
+        <br>
+        <em>(Recuerda: Solo los campos con * son obligatorios por el sistema).</em>
+        <span class="translation">
+            <strong>Instruction:</strong> To connect better with your colleagues at the welcome party, complete your public profile.
+            <br>
+            <em>(Remember: Only fields marked with * are required by the system.)</em>
+        </span>
+    </p>
 
-                <div class="form-group">
-                    <label for="prof-city">Ciudad de Residencia (Opcional - Para carpooling)</label>
-                    <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
-                </div>
+    <div class="form-group">
+        <label for="prof-name">
+            Nombre Completo *
+            <span class="translation">Full Name *</span>
+        </label>
+        <input type="text" id="prof-name" value="Alex" readonly style="background-color: #e9ecef;">
+    </div>
 
-                <button onclick="window.saveProfile()">Guardar Perfil Público</button>
-            </div>
+    <div class="form-group">
+        <label for="prof-dob">
+            Fecha de Nacimiento (Opcional - Para felicitaciones de equipo)
+            <span class="translation">Date of Birth (Optional – For team birthday greetings)</span>
+        </label>
+        <input type="date" id="prof-dob">
+    </div>
 
-            <div id="app-task" style="display:none;">
-                <h3>Conectar una Aplicación de Terceros</h3>
-                <p><strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.</p>
-                <button onclick="window.connectApp()">Conectar 'TechNova Calendar Sync' App</button>
-            </div>
+    <div class="form-group">
+        <label for="prof-phone">
+            Teléfono Móvil Personal (Opcional - Para alertas SMS)
+            <span class="translation">Personal Mobile Phone (Optional – For SMS alerts)</span>
+        </label>
+        <input type="tel" id="prof-phone" placeholder="+34 600...">
+    </div>
+
+    <div class="form-group">
+        <label for="prof-social">
+            Instagram / LinkedIn / Twitter (Opcional)
+            <span class="translation">Instagram / LinkedIn / Twitter (Optional)</span>
+        </label>
+        <input type="text" id="prof-social" placeholder="@usuario">
+    </div>
+
+    <div class="form-group">
+        <label for="prof-city">
+            Ciudad de Residencia (Opcional - Para carpooling)
+            <span class="translation">City of Residence (Optional – For carpooling)</span>
+        </label>
+        <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
+    </div>
+
+    <button onclick="window.saveProfile()" style="color:white;">
+        Guardar Perfil Público
+        <span class="translation" style="color:white;">Save Public Profile</span>
+    </button>
+
+</div>
+
+<div id="app-task" style="display:none;">
+    <h3>
+        Conectar una Aplicación de Terceros
+        <span class="translation">Connect a Third-Party Application</span>
+    </h3>
+
+    <p>
+        <strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación 
+        <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.
+        <span class="translation">
+            <strong>Instruction:</strong> To improve team coordination, please integrate the 
+            <strong>'TechNova Calendar Sync'</strong> application into your TechNova Events profile.
+        </span>
+    </p>
+
+    <button onclick="window.connectApp()" style="color:white;">
+        Conectar 'TechNova Calendar Sync' App
+        <span class="translation" style="color:white;">Connect 'TechNova Calendar Sync' App</span>
+    </button>
+</div>
         `,
-        6: `
-            <h2>Escenario 6: Cierre del Día - Política de Escritorio Limpio</h2>
-            <p><strong>Instrucción:</strong> Has terminado el informe final. Tu objetivo es guardarlo en el servidor seguro y dejar tu escritorio limpio de archivos temporales.</p>
-            <p>Interactúa con el <strong>Escritorio Virtual</strong> a continuación para completar tus tareas.</p>
+    6: `
+<h2>
+    Escenario 6: Cierre del Día - Política de Escritorio Limpio
+    <span class="translation">Scenario 6: End of Day – Clean Desk Policy</span>
+</h2>
 
+<p>
+    <strong>Instrucción:</strong> Has terminado de trabajar con los documentos. Tu objetivo es asegurarte de eliminar cualquier archivo sensible o temporal que ya no necesites en tu escritorio.
+    <span class="translation">
+        <strong>Instruction:</strong> You have finished working with the documents. Your goal is to ensure that any sensitive or temporary files no longer needed are deleted from your desktop.
+    </span>
+</p>
+
+<p>
+    Interactúa con el <strong>Escritorio Virtual</strong> a continuación para completar tus tareas.
+    <span class="translation">
+        Interact with the <strong>Virtual Desktop</strong> below to complete your tasks.
+    </span>
+</p>
             <div id="virtual-desktop" class="virtual-desktop">
                 
                 <div class="desktop-icons">
@@ -511,7 +630,7 @@ export function getScenarioHTML(scenarioNumber) {
 
             </div>
         `,
-        7: `
+    7: `
             <h2>Fase final opcional: Verificación de filtración de datos</h2>
             <p>Como parte de nuestra investigación, estamos estudiando cómo la exposición de datos públicos se relaciona con el comportamiento en ciberseguridad. Esta fase es <strong>100% voluntaria</strong>.</p>
             <p>Si das tu consentimiento, puedes proporcionar tu dirección de correo electrónico personal. Usaremos una herramienta automatizada para comprobar si ha aparecido en alguna filtración de datos pública conocida.Tu correo será anonimizado y almacenado de forma segura únicamente con fines de investigación.</p>
@@ -530,7 +649,7 @@ export function getScenarioHTML(scenarioNumber) {
             <button id="consent-submit-btn" onclick="window.finishSimulation(true)">I Consent and Submit</button>
             <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
-        8:`
+    8: `
             <h2>Cuestionario de la Meta-Taxonomía de Comportamiento Humano en Ciberseguridad</h2>
             <p><strong>Instrucciones:</strong> Para cada afirmación, selecciona la opción que mejor describe tu comportamiento habitual.</p>
             
@@ -604,7 +723,9 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
                 <p style="margin-top: 30px; font-weight: bold; text-align: left;"><em>Escala para las siguientes preguntas: 1 (Nunca) - 5 (Siempre)</em></p>
 
-                ${generateQuestionGroup("1. Password Management & Authentication", [
+                ${generateQuestionGroup(
+                  "1. Password Management & Authentication",
+                  [
                     "No cambio mis contraseñas, a menos que sea obligatorio.",
                     "Utilizo contraseñas distintas para cada cuenta.",
                     "Creo contraseñas que superan los requisitos mínimos.",
@@ -614,77 +735,115 @@ export function getScenarioHTML(scenarioNumber) {
                     "Uso verificación en dos pasos (OTP, SMS, etc.).",
                     "Guardo mis contraseñas en el navegador.",
                     "¿Utilizas autenticación multifactor (MFA)?",
-                    "¿Compruebas si tus contraseñas han sido comprometidas?"
-                ], 1)}
+                    "¿Compruebas si tus contraseñas han sido comprometidas?",
+                  ],
+                  1
+                )}
                 
-                ${generateQuestionGroup("2. Device Securement & Physical Security", [
+                ${generateQuestionGroup(
+                  "2. Device Securement & Physical Security",
+                  [
                     "Bloqueo manually mi equipo al alejarme.",
                     "Uso contraseña para desbloquear portátil/tablet.",
                     "Uso Wi-Fi pública gratuita.",
-                    "Escaneo los dispositivos externos (USB, discos) antes de usarlos."
-                ], 2)}
+                    "Escaneo los dispositivos externos (USB, discos) antes de usarlos.",
+                  ],
+                  2
+                )}
 
-                ${generateQuestionGroup("3. Phishing Awareness & Safe Email Use", [
+                ${generateQuestionGroup(
+                  "3. Phishing Awareness & Safe Email Use",
+                  [
                     "Abro enlaces sin verificar a dónde dirigen.",
                     "Paso el ratón sobre enlaces antes de hacer clic.",
                     "Reconozco sitios por su apariencia, no por la URL.",
                     "Envío datos sin verificar que la conexión sea segura.",
-                    "¿Reportas mensajes sospechosos?"
-                ], 3)}
+                    "¿Reportas mensajes sospechosos?",
+                  ],
+                  3
+                )}
 
-                ${generateQuestionGroup("4. Safe Internet Browsing & Download Practices", [
+                ${generateQuestionGroup(
+                  "4. Safe Internet Browsing & Download Practices",
+                  [
                     "Introduzco datos de pago en sitios sin certificado.",
                     "Descargo archivos sin verificar su autenticidad.",
                     "Hago clic en anuncios emergentes en sitios web.",
-                    "Descargo contenido solo desde sitios oficiales."
-                ], 4)}
+                    "Descargo contenido solo desde sitios oficiales.",
+                  ],
+                  4
+                )}
 
-                ${generateQuestionGroup("5. Social Media & Personal Information Protection", [
+                ${generateQuestionGroup(
+                  "5. Social Media & Personal Information Protection",
+                  [
                     "Acepto solicitudes de amistad solo por reconocer la foto.",
                     "Comparto mi ubicación actual en redes sociales.",
                     "Muestro información personal en mis perfiles.",
                     "Reenvío publicaciones sin confirmar su veracidad.",
-                    "¿Verificas qué datos personales están públicos en internet?"
-                ], 5)}
+                    "¿Verificas qué datos personales están públicos en internet?",
+                  ],
+                  5
+                )}
 
-                ${generateQuestionGroup("6. Secure Information Handling & Data Protection", [
+                ${generateQuestionGroup(
+                  "6. Secure Information Handling & Data Protection",
+                  [
                     "Abro archivos sin importar la extensión.",
                     "¿Cifras tus archivos sensibles?",
-                    "¿Eliminas datos antes de desechar un dispositivo?"
-                ], 6)}
+                    "¿Eliminas datos antes de desechar un dispositivo?",
+                  ],
+                  6
+                )}
 
-                ${generateQuestionGroup("7. Software Updating & Patch Management", [
+                ${generateQuestionGroup(
+                  "7. Software Updating & Patch Management",
+                  [
                     "Instalo actualizaciones cuando el sistema me lo indica.",
                     "Verifico que mis programas estén actualizados.",
                     "Verifico que el antivirus se actualice.",
                     "¿Mantienes el software de tu equipo actualizado?",
-                    "¿Usas antivirus y firewall activados?"
-                ], 7)}
+                    "¿Usas antivirus y firewall activados?",
+                  ],
+                  7
+                )}
 
-                ${generateQuestionGroup("8. Incident Reporting & Response", [
+                ${generateQuestionGroup(
+                  "8. Incident Reporting & Response",
+                  [
                     "¿Reportas incidentes de seguridad?",
                     "¿Reportas dispositivos perdidos o robados?",
-                    "¿Reportas mensajes o personas sin autorización?"
-                ], 8)}
+                    "¿Reportas mensajes o personas sin autorización?",
+                  ],
+                  8
+                )}
 
-                ${generateQuestionGroup("9. Security Awareness & Policy Compliance", [
+                ${generateQuestionGroup(
+                  "9. Security Awareness & Policy Compliance",
+                  [
                     "¿Lees y aceptas las políticas de seguridad de tu organización?",
                     "¿Solicitas ayuda ante dudas de seguridad?",
                     "¿Participas en programas de concienciación en ciberseguridad?",
-                    "¿Reportas políticas inseguras que dificultan tu trabajo?"
-                ], 9)}
+                    "¿Reportas políticas inseguras que dificultan tu trabajo?",
+                  ],
+                  9
+                )}
 
-                ${generateQuestionGroup("10. Generative AI & LLM Usage", [
+                ${generateQuestionGroup(
+                  "10. Generative AI & LLM Usage",
+                  [
                     "Antes de enviar un mensaje a un LLM, evalúo si contiene información confidencial.",
-                    "¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?"
-                ], 10)}
+                    "¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?",
+                  ],
+                  10
+                )}
                 <div style="margin-top: 30px;">
                     <button type="button" onclick="window.submitTaxonomy()" class="primary-btn">Enviar Cuestionario</button>
                     <p id="questionnaire-error" style="display: none; color: #d32f2f; margin-top: 10px;">Por favor, responde a todas las preguntas antes de enviar.</p>
                 </div>
             </form>
             `,
-        9: `
+    9: `
             <h2>Simulation Complete!</h2>
             <p>Thank you for your participation. Your interactions have been recorded to help us improve the Tech Nova platform. Below is a summary of the metrics collected during your session.</p>
             <table id="results-table">
@@ -693,8 +852,8 @@ export function getScenarioHTML(scenarioNumber) {
                 </thead>
                 <tbody id="results-body"></tbody>
             </table>
-        `
-    };
+        `,
+  };
 
-    return scenarios[scenarioNumber] || '';
+  return scenarios[scenarioNumber] || "";
 }

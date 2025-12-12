@@ -57,7 +57,7 @@ export function sendDocument(method) {
 }
 
 export function openLocalFileExplorer() {
-    const localFiles = `
+  const localFiles = `
         <div style="padding: 20px; background: white; border: 1px solid #ccc; border-radius: 8px; max-width: 600px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">
                 <h3 style="margin: 0; font-size: 16px;">📂 Explorador de Archivos - Local</h3>
@@ -102,11 +102,12 @@ export function openLocalFileExplorer() {
         </div>
     `;
 
-    const modal = document.createElement('div');
-    modal.id = 'file-explorer-modal';
-    modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
-    modal.innerHTML = localFiles;
-    document.body.appendChild(modal);
+  const modal = document.createElement("div");
+  modal.id = "file-explorer-modal";
+  modal.style.cssText =
+    "position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;";
+  modal.innerHTML = localFiles;
+  document.body.appendChild(modal);
 }
 
 export function openDriveFileExplorer() {
