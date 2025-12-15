@@ -54,6 +54,7 @@ import { setParticipantId, getParticipantId } from './utils/participant.js';
 
 let currentScenario = 0;
 let sessionId = null;
+let teamsIncidentResolved = false;
 const TOTAL_SCENARIOS = 9;
 
 // --- FUNCIONES GLOBALES ---
@@ -64,6 +65,13 @@ function triggerTeamsIncident() {
 }
 
 function startScenario(scenarioNumber) {
+    console.log(`🎬 Intentando iniciar Escenario: ${scenarioNumber}`);
+    if (scenarioNumber === 6) {
+        console.log("🚀 BIENVENIDO AL ESCENARIO 6");
+        console.log("🔍 Comprobando funciones globales:");
+        console.log("   - window.drag:", window.drag ? "✅ OK" : "❌ INDEFINIDO");
+        console.log("   - window.drop:", window.drop ? "✅ OK" : "❌ INDEFINIDO");
+    }
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
@@ -72,10 +80,12 @@ function startScenario(scenarioNumber) {
         renderEmails();
         
         // Alerta de Teams al iniciar Escenario 3
-        console.log('⚡ Iniciando interrupción de Teams...');
-        setTimeout(() => {
-            triggerTeamsIncident();
-        }, 1000);
+        if (!teamsIncidentResolved) {
+            console.log('⚡ Iniciando interrupción de Teams...');
+            setTimeout(() => {
+                triggerTeamsIncident();
+            }, 1000);
+        }
     }
 
     if (scenarioNumber === 4) {
@@ -203,6 +213,7 @@ function handleTeamsAlert() {
 
     alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
     document.getElementById('popup-teams-alert').classList.remove('active');
+    teamsIncidentResolved = true;
 }
 
 // --- ASIGNACIONES A WINDOW ---

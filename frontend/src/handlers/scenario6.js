@@ -3,6 +3,10 @@ import { metrics } from '../utils/metrics.js';
 // Estado interno del "Mini Sistema Operativo"
 let currentTask = 'save'; // 'save' (guardar doc) o 'delete' (borrar temp)
 
+// ----------------------------------------------------------------------
+// 1. FUNCIONES DE INTERFAZ (Abrir ventanas)
+// ----------------------------------------------------------------------
+
 // Función para abrir el documento de Word (Simulación)
 export function openWordDocs() {
     if (currentTask !== 'save') return;
@@ -76,37 +80,15 @@ export function openSaveDialog() {
     `;
 }
 
-// Lógica al hacer clic en "Guardar"
-export function finalizeSave() {
-    const isEncrypted = document.getElementById('encryption-check').checked;
-    
-    // MÉTRICA 1: Uso de Cifrado
-    metrics.scenario6.encryption_use = isEncrypted ? 'Yes' : 'No';
-
-    const container = document.getElementById('desktop-window-container');
-    
-    if (isEncrypted) {
-        alert('🔒 Archivo cifrado y subido al servidor correctamente.');
-    } else {
-        alert('⚠️ Archivo guardado sin cifrar. (Has incumplido la política de datos financieros).');
-    }
-
-    container.innerHTML = ''; // Cerrar ventana
-    currentTask = 'delete'; // Cambiar fase
-    
-    // Mostrar aviso para la siguiente tarea
-    setTimeout(() => {
-        alert('✅ Tarea 1 Completada.\n\nTAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de "Descargas".');
-    }, 500);
-}
-
 // Función para abrir la carpeta de Descargas (Tarea de borrado)
 export function openTempFolder() {
+    console.log(`📂 openTempFolder llamado. Estado actual: ${currentTask}`);
     if (currentTask !== 'delete') {
+        console.warn("⛔ Bloqueado: El usuario aún no ha terminado la tarea 'save'.");
         alert('Primero debes terminar de trabajar con el Informe Final.');
         return;
     }
-
+    console.log("✅ Abriendo carpeta de descargas con Drag & Drop...");
     const container = document.getElementById('desktop-window-container');
     container.innerHTML = `
         <div class="window-frame">
@@ -137,21 +119,63 @@ export function openTempFolder() {
                         <span class="file-icon">🖼️</span>
                         <span>logo_technova.png</span>
                     </div>
+                    
+                    <div id="recycle-bin-droppable" 
+                         ondrop="window.drop(event)" 
+                         ondragover="window.allowDrop(event)" 
+                         style="margin-top: 20px; border: 2px dashed #ccc; padding: 15px; border-radius: 8px; text-align: center; color: #666; background: #f9f9f9;">
+                        <span style="font-size: 24px; display: block;">🗑️</span>
+                        <span>Arrastra aquí para eliminar (Papelera)</span>
+                    </div>
+
                 </div>
             </div>
-            </div>
+        </div>
     `;
 }
 
-// Menú contextual (Click derecho) para borrar
+export function openMyPC() {
+    alert('Acceso denegado por política de administrador local.');
+}
+
+// ----------------------------------------------------------------------
+// 2. LÓGICA DE ACCIONES (Guardar, Borrar, Menú Contextual)
+// ----------------------------------------------------------------------
+
+export function finalizeSave() {
+    const isEncrypted = document.getElementById('encryption-check').checked;
+    
+    // MÉTRICA 1: Uso de Cifrado
+    metrics.scenario6.encryption_use = isEncrypted ? 'Yes' : 'No';
+
+    const container = document.getElementById('desktop-window-container');
+    
+    if (isEncrypted) {
+        alert('🔒 Archivo cifrado y subido al servidor correctamente.');
+    } else {
+        alert('⚠️ Archivo guardado sin cifrar. (Has incumplido la política de datos financieros).');
+    }
+
+    container.innerHTML = ''; // Cerrar ventana
+    currentTask = 'delete'; // Cambiar fase
+    
+    setTimeout(() => {
+        alert('✅ Tarea 1 Completada.\n\nTAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de "Descargas".');
+    }, 500);
+}
+
 export function showContextMenu(e) {
     e.preventDefault();
+    // Eliminar cualquier menú previo
+    const existingMenu = document.querySelector('.context-menu-windows');
+    if (existingMenu) existingMenu.remove();
+
     const menu = document.createElement('div');
-    menu.className = 'context-menu-windows'; // Usamos la clase que ya tienes en CSS
+    menu.className = 'context-menu-windows';
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
     menu.style.position = 'fixed';
-    menu.style.zIndex = 1000;
+    menu.style.zIndex = 9999;
     menu.style.background = 'white';
     menu.style.border = '1px solid #ccc';
     menu.style.boxShadow = '2px 2px 5px rgba(0,0,0,0.2)';
@@ -164,65 +188,79 @@ export function showContextMenu(e) {
 
     document.body.appendChild(menu);
 
-    // Cerrar menú al hacer clic fuera
-    const removeMenu = () => menu.remove();
+    const removeMenu = () => {
+        if(menu.parentNode) menu.parentNode.removeChild(menu);
+    };
     document.addEventListener('click', removeMenu, { once: true });
 }
 
-// Lógica de borrado
 export function performDelete(method) {
-    // 1. Registrar la métrica internamente (Invisible para el usuario)
+    // MÉTRICA 2: Eliminación Segura vs Insegura
     if (method === 'secure') {
+        console.log("Métrica: Borrado Seguro");
         metrics.scenario6.secure_data_disposal = 'Secure (Shredder)';
     } else {
+        console.log("Métrica: Borrado Inseguro (Papelera)");
         metrics.scenario6.secure_data_disposal = 'Insecure (Recycle Bin)';
     }
 
-    // 2. Feedback Visual Genérico (Opcional)
-    // Eliminamos el archivo de la vista si aún existe (por si se usó el menú contextual)
     const fileIcon = document.getElementById('file-temp-csv');
     if (fileIcon) {
-        fileIcon.style.display = 'none'; // Simplemente desaparece
+        fileIcon.style.opacity = '0.5';
+        fileIcon.innerHTML = '<span>Eliminando...</span>';
     }
 
-    // 3. Avanzar al siguiente escenario sin dar feedback de éxito/fracaso
+    // Avanzar al siguiente escenario
     setTimeout(() => {
+        const container = document.getElementById('desktop-window-container');
+        if(container) container.innerHTML = ''; 
         window.startScenario(7);
     }, 1000);
 }
 
-// Funciones dummy para otros iconos
-export function openMyPC() {
-    alert('Acceso denegado por política de administrador local.');
-}
 
-// --- LÓGICA DE DRAG & DROP ---
+// ----------------------------------------------------------------------
+// 3. LÓGICA DE DRAG & DROP (ROBUSTA)
+// ----------------------------------------------------------------------
 
-// 1. SE EJECUTA AL EMPEZAR A ARRASTRAR
 export function drag(ev) {
-    // "Guarda" el ID del elemento que estamos arrastrando ("file-temp-csv")
-    ev.dataTransfer.setData("text", ev.target.id);
+    console.log('🔵 DRAG START');
+    // Usamos closest para asegurar que cogemos el ID del contenedor (d-icon o file-list-item)
+    // aunque el usuario arrastre desde el texto o el emoji.
+    const target = ev.target.closest('[draggable="true"]');
+    
+    if (target && target.id) {
+        ev.dataTransfer.setData("text", target.id);
+        ev.dataTransfer.effectAllowed = "move";
+        console.log('   📦 Arrastrando:', target.id);
+    } else {
+        console.warn('   ⚠️ No se pudo detectar el elemento arrastrable');
+    }
 }
 
-// 2. SE EJECUTA MIENTRAS PASAS POR ENCIMA DE LA PAPELERA
 export function allowDrop(ev) {
-    // ¡ESTA LÍNEA ES OBLIGATORIA!
-    // Le dice al navegador: "Tranquilo, sí permito que suelten cosas aquí"
     ev.preventDefault();
+    ev.dataTransfer.dropEffect = "move";
 }
 
-// 3. SE EJECUTA AL SOLTAR
 export function drop(ev) {
     ev.preventDefault();
-    // Recuperamos el ID que guardamos en el paso 1
     const data = ev.dataTransfer.getData("text");
+    console.log('🟢 DROP:', data);
 
-    // Verificamos que lo que soltaron sea el archivo correcto
+    // CASO 1: Archivo temporal (CSV) de la carpeta Descargas
     if (data === "file-temp-csv") {
-        // Ejecutamos la lógica de borrado
         performDelete('trash');
-        // (Opcional) Borramos visualmente el elemento original
+    } 
+    // CASO 2: Informe Final del Escritorio (NUEVO)
+    else if (data === "desktop-final-report") {
         const element = document.getElementById(data);
-        if (element) element.remove();
+        if (element) {
+            element.style.display = 'none'; // Lo ocultamos visualmente
+        }
+        alert("⚠️ Has enviado el 'Informe Final' a la papelera.");
+        
+        // Opcional: Si quieres que esto cuente como métrica o error, añádelo aquí
+        // metrics.scenario6.deleted_final_report = true;
     }
 }
