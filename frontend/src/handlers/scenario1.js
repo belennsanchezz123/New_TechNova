@@ -1,6 +1,7 @@
 import { createRegistration, completeRegistration } from '../services/api.js';
 import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
+import { getParticipantId } from '../utils/participant.js';
 
 
 const passwords = [];
@@ -36,6 +37,13 @@ function goNext(service) {
 }
 
 export async function registerService(service) {
+    // Require participant id (P00x) to be set in localStorage before registration
+    const pid = getParticipantId();
+    if (!pid) {
+        alert('Por favor, introduce el ID de Participante (p.ej. P001) en la pantalla inicial antes de crear cuentas.');
+        return;
+    }
+
     const userInput = document.getElementById(`${service}-user`);
     const passInput = document.getElementById(`${service}-pass`);
     const username = userInput.value.trim();

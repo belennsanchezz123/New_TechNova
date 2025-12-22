@@ -8,6 +8,10 @@ console.log('\n=== BREACH CHECKS TABLE ===\n');
 const breaches = db.prepare('SELECT * FROM breach_checks ORDER BY checked_at DESC').all();
 console.table(breaches);
 
+console.log('\n=== SESSION METRICS ===\n');
+const metrics = db.prepare('SELECT * FROM session_metrics ORDER BY recorded_at DESC').all();
+console.table(metrics);
+
 console.log('\n=== STATISTICS ===');
 const stats = db.prepare(`
     SELECT

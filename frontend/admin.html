@@ -307,6 +307,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Participant ID</th>
                             <th>Usuario</th>
                             <th>Inicio</th>
                             <th>Completada</th>
@@ -317,9 +318,10 @@
                     <tbody>
                         ${sessions.map(session => `
                             <tr>
-                                <td>${session.user_identifier}</td>
-                                <td>${new Date(session.started_at).toLocaleString()}</td>
-                                <td>${session.completed_at ? new Date(session.completed_at).toLocaleString() : '-'}</td>
+                                <td>${session.user_identifier || session.username || '-'}</td>
+                                <td>${session.participant_id || '-'}</td>
+                                <td>${(function(d){try{const t=new Date(d);return isNaN(t.getTime())? (d||'-') : t.toLocaleString()}catch(e){return d||'-'}})(session.started_at)}</td>
+                                <td>${(function(d){try{const t=new Date(d);return isNaN(t.getTime())? (d?d:'-') : t.toLocaleString()}catch(e){return d?d:'-'}})(session.completed_at)}</td>
                                 <td>
                                     <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
                                         ${session.completed_at ? 'Completada' : 'Activa'}

@@ -23,7 +23,8 @@ const initDB = () => {
             mfa_enabled INTEGER DEFAULT 0,
             participant_id TEXT NOT NULL UNIQUE,
             password_reuse_count INTEGER DEFAULT 0,
-            created_at TEXT DEFAULT (datetime('now'))
+            created_at TEXT DEFAULT (datetime('now')),
+            completed_at TEXT
         );
 
         CREATE INDEX IF NOT EXISTS idx_username_service ON registrations(username, service);
@@ -57,6 +58,19 @@ const initDB = () => {
             q5_2 TEXT,
             submitted_at TEXT DEFAULT (datetime('now'))
         );
+        
+        -- Tabla para almacenar métricas por sesión
+        CREATE TABLE IF NOT EXISTS session_metrics (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            scenario TEXT,
+            metric_name TEXT NOT NULL,
+            metric_value TEXT,
+            recorded_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY(session_id) REFERENCES registrations(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_metrics_session ON session_metrics(session_id);
 
         CREATE INDEX IF NOT EXISTS idx_questionnaire_participant ON questionnaire_responses(participant_id);
     `);
