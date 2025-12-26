@@ -1,7 +1,8 @@
-import { createRegistration, completeRegistration } from '../services/api.js';
+import { createRegistration, completeRegistration, registerServiceMetrics, saveMetrics } from '../services/api.js';
 import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
+import { getSessionId, setSessionId } from '../utils/session.js';
 
 
 const passwords = [];
@@ -82,6 +83,18 @@ export async function registerService(service) {
         mfa_enabled: false
     };
 
+    // Persist a lightweight metric for this service registration
+    try {
+        await registerServiceMetrics(session.id, { service, username, password_strength: strength });
+    } catch (err) {
+        console.warn('registerServiceMetrics failed:', err);
+    }
+
+    // If we don't have a global session id yet, set it to this session (used by later scenarios)
+    if (!getSessionId()) {
+        setSessionId(session.id);
+    }
+
     goNext(service);
 }
 
@@ -151,7 +164,16 @@ export function toggleProfileDropdown() {
 
 export function closeRegistrationComplete() {
     document.getElementById('popup-registration-complete').classList.remove('active');
-    window.startScenario(2);
+    // Persist scenario1 metrics when user finishes registration flow
+    (async () => {
+        try {
+            const sid = getSessionId() || Object.values(registrations)[0]?.id;
+            if (sid) await saveMetrics(sid, metrics.scenario1);
+        } catch (err) {
+            console.warn('Failed saving scenario1 metrics:', err);
+        }
+        window.startScenario(2);
+    })();
 }
 export function toggleWifiMenu() {
     const menu = document.getElementById('wifi-menu');

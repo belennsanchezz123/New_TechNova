@@ -1,4 +1,6 @@
 import { metrics } from '../utils/metrics.js';
+import { saveMetrics } from '../services/api.js';
+import { getSessionId } from '../utils/session.js';
 
 export function saveProfile() {
     // Array para guardar los nombres de los datos sensibles revelados
@@ -45,8 +47,16 @@ export function saveProfile() {
     console.log('Métrica de Privacidad:', metrics.scenario5.personal_data_disclosure_rate);
 
     // Continuar con el flujo
-    document.getElementById('profile-task').style.display = 'none';
-    document.getElementById('app-task').style.display = 'block';
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, { 'scenario5.personal_data_disclosure_rate': metrics.scenario5.personal_data_disclosure_rate });
+        } catch (err) {
+            console.warn('Failed saving scenario5 metric:', err);
+        }
+        document.getElementById('profile-task').style.display = 'none';
+        document.getElementById('app-task').style.display = 'block';
+    })();
 }
 
 export function connectApp() {
@@ -56,5 +66,13 @@ export function connectApp() {
 export function handleAppPerms(accepted) {
     metrics.scenario5.third_party_app_authorization = accepted ? 'Accepted excessive permissions' : 'Denied excessive permissions';
     document.getElementById('popup-app-perms').classList.remove('active');
-    setTimeout(() => window.startScenario(6), 1000);
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, { 'scenario5.third_party_app_authorization': metrics.scenario5.third_party_app_authorization });
+        } catch (err) {
+            console.warn('Failed saving scenario5 app perms metric:', err);
+        }
+        setTimeout(() => window.startScenario(6), 1000);
+    })();
 }

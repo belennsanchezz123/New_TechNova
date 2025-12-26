@@ -1,4 +1,6 @@
 import { metrics } from '../utils/metrics.js';
+import { saveMetrics } from '../services/api.js';
+import { getSessionId } from '../utils/session.js';
 import { emails, renderEmails, openEmail, openComposeEmail } from '../utils/emails.js';
 
 export { openEmail, openComposeEmail };
@@ -53,7 +55,15 @@ export function useAI() {
 export function sendDocument(method) {
     metrics.scenario3.secure_data_transmission = (method === 'secure') ? 'Used Secure Channel (Lynx Drive)' : 'Used Insecure Channel (Direct Attachment)';
     alert(`Document will be sent via ${method === 'secure' ? 'Lynx Drive' : 'email attachment'}.`);
-    setTimeout(() => window.startScenario(4), 1000);
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, { 'scenario3.secure_data_transmission': metrics.scenario3.secure_data_transmission });
+        } catch (err) {
+            console.warn('Failed saving scenario3 metric:', err);
+        }
+        setTimeout(() => window.startScenario(4), 1000);
+    })();
 }
 
 export function openLocalFileExplorer() {

@@ -51,9 +51,9 @@ import { finishSimulation } from './handlers/scenario7.js';
 import { submitTaxonomy } from './handlers/scenario8.js';
 import { startSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
+import { getSessionId, setSessionId } from './utils/session.js';
 
 let currentScenario = 0;
-let sessionId = null;
 let teamsIncidentResolved = false;
 const TOTAL_SCENARIOS = 9;
 
@@ -150,9 +150,7 @@ async function initApp() {
     updateNavigationButtons();
 }
 
-export function getSessionId() {
-    return sessionId;
-}
+export { getSessionId, setSessionId };
 
 function validateAndStart() {
     const input = document.getElementById('participant-id-input');

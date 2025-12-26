@@ -42,6 +42,12 @@ export const metrics = {
 
 export function displayResults() {
     const tbody = document.getElementById('results-body');
+    if (!tbody) {
+        // Results table is not in the DOM yet (we're likely on an earlier scenario).
+        // Avoid throwing — caller should render results when the results view is active.
+        console.warn('displayResults: #results-body not found in DOM, skipping render');
+        return;
+    }
     tbody.innerHTML = '';
 
     const friendlyNames = {

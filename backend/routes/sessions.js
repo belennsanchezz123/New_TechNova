@@ -213,5 +213,33 @@ export function setupSessionRoutes() {
         }
     });
 
+    // Obtener métricas de todas las sesiones de un participante (por participant_id)
+    router.get('/participant/:participantId/metrics', async (req, res) => {
+        try {
+            const { participantId } = req.params;
+            if (!participantId) return res.status(400).json({ success: false, error: 'participantId requerido' });
+
+            // Obtener sesiones asociadas al participant_id
+            const sessions = db.prepare('SELECT id, username, participant_id, created_at AS started_at, completed_at, COALESCE(participant_id, username) AS user_identifier FROM registrations WHERE participant_id = ? ORDER BY created_at DESC').all(participantId);
+
+            if (!sessions || sessions.length === 0) {
+                return res.status(404).json({ success: false, error: 'participant not found' });
+            }
+
+            // Obtener métricas uniendo por session_id -> devolver todas las métricas relacionadas
+            const metrics = db.prepare(`
+                SELECT sm.* FROM session_metrics sm
+                JOIN registrations r ON r.id = sm.session_id
+                WHERE r.participant_id = ?
+                ORDER BY sm.recorded_at DESC
+            `).all(participantId);
+
+            res.json({ success: true, participant: { participant_id: participantId }, sessions, metrics });
+        } catch (error) {
+            console.error('Error fetching participant metrics:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
     return router;
 }

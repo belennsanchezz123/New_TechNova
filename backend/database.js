@@ -56,6 +56,7 @@ const initDB = () => {
             q4_2 TEXT,
             q5_1 TEXT,
             q5_2 TEXT,
+            answers_json TEXT,
             submitted_at TEXT DEFAULT (datetime('now'))
         );
         

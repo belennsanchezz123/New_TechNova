@@ -1,4 +1,6 @@
 import { metrics } from '../utils/metrics.js';
+import { saveMetrics } from '../services/api.js';
+import { getSessionId } from '../utils/session.js';
 
 let hasScannedDrive = false;
 
@@ -91,7 +93,15 @@ function openDriveView() {
     // Añade el evento para que al hacer clic en el PDF, se avance de escenario
     document.getElementById('file-mapa').addEventListener('click', () => {
         alert("Abriendo 'Bienvenida_Equipo_TechNova.docx'...");
-        setTimeout(() => window.startScenario(3), 1000);
+        (async () => {
+            try {
+                const sid = getSessionId();
+                if (sid) await saveMetrics(sid, metrics.scenario2);
+            } catch (err) {
+                console.warn('Failed saving scenario2 metrics before scenario transition:', err);
+            }
+            setTimeout(() => window.startScenario(3), 1000);
+        })();
     });
 }
 
@@ -145,6 +155,16 @@ function setupFileExplorer() {
         hasScannedDrive = true;
         metrics.scenario2.usb_antivirus_scan = 'Yes, scanned drive first';
         contextMenu.style.display = 'none';
+
+        // Persist this scenario metric immediately
+        (async () => {
+            try {
+                const sid = getSessionId();
+                if (sid) await saveMetrics(sid, { 'scenario2.usb_antivirus_scan': metrics.scenario2.usb_antivirus_scan });
+            } catch (err) {
+                console.warn('Failed saving scenario2 scan metric:', err);
+            }
+        })();
 
         // Mostrar el modal de escaneo
         const modal = document.getElementById('antivirus-scanning-modal');

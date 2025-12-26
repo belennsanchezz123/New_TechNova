@@ -1,4 +1,6 @@
 import { metrics } from '../utils/metrics.js';
+import { saveMetrics } from '../services/api.js';
+import { getSessionId } from '../utils/session.js';
 
 let currentPage = 'google-home';
 let browserHistory = [];
@@ -383,9 +385,17 @@ window.downloadMap = function(source) {
     if (source === 'official') {
         alert('✓ Archivo descargado de la Intranet de forma segura.');
         metrics.scenario4.download_choice = 'Official Site'; 
-        setTimeout(() => {
-            document.getElementById('popup-update').classList.add('active');
-        }, 5000);
+        (async () => {
+            try {
+                const sid = getSessionId();
+                if (sid) await saveMetrics(sid, { 'scenario4.download_choice': metrics.scenario4.download_choice });
+            } catch (err) {
+                console.warn('Failed saving scenario4 download metric:', err);
+            }
+            setTimeout(() => {
+                document.getElementById('popup-update').classList.add('active');
+            }, 5000);
+        })();
     } else if (source === 'ad-suspicious') {
         loadPage('phishing-login');
     }
@@ -410,9 +420,17 @@ window.handlePhishingLogin = function() {
         btn.disabled = true;
     }
 
-    setTimeout(() => {
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, metrics.scenario4);
+        } catch (err) {
+            console.warn('Failed saving scenario4 phishing login metric:', err);
+        }
+        setTimeout(() => {
+            document.getElementById('popup-update').classList.add('active');
+        }, 1500);
+    })();
 };
 
 export function navigate(destination) {

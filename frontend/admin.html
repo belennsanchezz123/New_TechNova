@@ -307,10 +307,9 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Participant ID</th>
-                            <th>Usuario</th>
-                            <th>Inicio</th>
-                            <th>Completada</th>
+                            <th>Created At</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -318,19 +317,14 @@
                     <tbody>
                         ${sessions.map(session => `
                             <tr>
-                                <td>${session.user_identifier || session.username || '-'}</td>
+                                <td>${session.id || '-'}</td>
                                 <td>${session.participant_id || '-'}</td>
-                                <td>${(function(d){try{const t=new Date(d);return isNaN(t.getTime())? (d||'-') : t.toLocaleString()}catch(e){return d||'-'}})(session.started_at)}</td>
-                                <td>${(function(d){try{const t=new Date(d);return isNaN(t.getTime())? (d?d:'-') : t.toLocaleString()}catch(e){return d?d:'-'}})(session.completed_at)}</td>
+                                <td>${(function(d){try{const t=new Date(d||session.created_at||session.started_at);return isNaN(t.getTime())? (d||session.created_at||session.started_at||'-') : t.toLocaleString()}catch(e){return d||session.created_at||session.started_at||'-'}})(session.created_at || session.started_at)}</td>
                                 <td>
-                                    <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
-                                        ${session.completed_at ? 'Completada' : 'Activa'}
-                                    </span>
+                                    <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">${session.completed_at ? 'Completada' : 'Activa'}</span>
                                 </td>
                                 <td>
-                                    <button class="view-btn" onclick="window.viewMetrics('${session.id}')">
-                                        Ver Métricas
-                                    </button>
+                                    <button class="view-btn" onclick="window.viewParticipantMetrics('${session.participant_id || session.id}')">Ver Métricas</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -352,6 +346,70 @@
             } catch (error) {
                 console.error('Error loading metrics:', error);
             }
+        }
+
+        // Mostrar métricas agrupadas por participante
+        async function viewParticipantMetrics(identifier) {
+            // identifier may be a participant_id (e.g. 'P001') or a sessionId (numeric)
+            try {
+                const participantResp = await fetch(`${API_URL}/sessions/participant/${encodeURIComponent(identifier)}/metrics`);
+
+                if (participantResp.ok) {
+                    const data = await participantResp.json();
+                    if (data.success && data.metrics && data.metrics.length > 0) {
+                        displayParticipantMetricsModal(data.participant, data.sessions, data.metrics);
+                        return;
+                    }
+                    // no metrics found for participant -> fallthrough to try session endpoint
+                }
+
+                // Try session-level metrics assuming identifier was a sessionId
+                const sessionResp = await fetch(`${API_URL}/sessions/${encodeURIComponent(identifier)}/metrics`);
+                if (sessionResp.ok) {
+                    const sdata = await sessionResp.json();
+                    if (sdata.success && sdata.metrics && sdata.metrics.length > 0) {
+                        // display with session info
+                        displayMetricsModal(sdata.session, sdata.metrics);
+                        return;
+                    }
+                }
+
+                // If we reach here, no metrics available
+                document.getElementById('session-details').innerHTML = `<div style="padding:20px;background:var(--light);border-radius:6px;">No hay métricas registradas para este participante/sesión.</div>`;
+                document.getElementById('metrics-details').innerHTML = '';
+                document.getElementById('metrics-modal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading participant/session metrics:', error);
+                document.getElementById('session-details').innerHTML = `<div style="padding:20px;background:#fee;border-radius:6px;">Error al cargar métricas: ${error.message}</div>`;
+                document.getElementById('metrics-details').innerHTML = '';
+                document.getElementById('metrics-modal').classList.add('active');
+            }
+        }
+
+        function displayParticipantMetricsModal(participant, sessions, metrics) {
+            const sessionDetails = `
+                <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
+                    <p><strong>Participant ID:</strong> ${participant.participant_id}</p>
+                    <p><strong>Sesiones:</strong> ${sessions.length}</p>
+                </div>
+            `;
+
+            const metricsHTML = `
+                <h3>Métricas del Participante</h3>
+                <div class="metrics-grid">
+                    ${metrics.map(m => `
+                        <div class="metric-row">
+                            <div class="metric-category">${formatScenarioName(m.scenario)}</div>
+                            <div class="metric-name">${formatMetricName(m.metric_name)}</div>
+                            <div class="metric-value">${m.metric_value}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('session-details').innerHTML = sessionDetails;
+            document.getElementById('metrics-details').innerHTML = metricsHTML;
+            document.getElementById('metrics-modal').classList.add('active');
         }
 
         function displayMetricsModal(session, metrics) {
@@ -404,6 +462,7 @@
         }
 
         window.viewMetrics = viewMetrics;
+        window.viewParticipantMetrics = viewParticipantMetrics;
         window.closeModal = closeModal;
 
         loadSessions();

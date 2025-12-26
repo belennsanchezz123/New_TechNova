@@ -1,5 +1,5 @@
 import { metrics } from '../utils/metrics.js';
-import { getSessionId } from '../main.js';
+import { getSessionId } from '../utils/session.js';
 import { getParticipantId } from '../utils/participant.js';
 import { saveQuestionnaire } from '../services/api.js';
 
@@ -49,8 +49,10 @@ export async function submitTaxonomy() {
         answeredCount++; // Suma cada respuesta encontrada
     }
 
-    // 3. Compara con el total de preguntas que acordamos (53)
-    const totalQuestions = 53; // 45 tax + 5 demo + 2 perc + 1 redes
+    // 3. Determina el total de preguntas dinámicamente (evita desajustes cuando editemos el formulario)
+    const inputEls = form.querySelectorAll('input[name^="q_"]');
+    const questionNames = new Set(Array.from(inputEls).map(i => i.name));
+    const totalQuestions = questionNames.size;
 
     if (answeredCount < totalQuestions) {
         errorEl.textContent = `Por favor, responde a todas las ${totalQuestions} preguntas. (Faltan ${totalQuestions - answeredCount})`;

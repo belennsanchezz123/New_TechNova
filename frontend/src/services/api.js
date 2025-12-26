@@ -79,7 +79,7 @@ export async function saveMetrics(sessionId, metrics) {
 }
 export async function saveQuestionnaire(questionnaireData) {
     try {
-        const response = await fetch('/api/questionnaire', {
+        const response = await fetch(`${API_URL}/questionnaire/submit`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

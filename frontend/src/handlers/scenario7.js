@@ -1,6 +1,6 @@
 import { metrics, displayResults } from '../utils/metrics.js';
 import { saveMetrics, completeSession } from '../services/api.js';
-import { getSessionId } from '../main.js';
+import { getSessionId } from '../utils/session.js';
 import { checkEmailBreach } from '../services/breach-checker.js';
 
 export async function finishSimulation(consented) {
@@ -59,7 +59,7 @@ export async function finishSimulation(consented) {
     }
 
     setTimeout(() => {
-        displayResults();
+        // Move to the questionnaire (scenario 8). Results will be rendered after questionnaire submission (scenario 9).
         window.startScenario(8);
     }, consented && consentEmail ? 3000 : 0);
 }

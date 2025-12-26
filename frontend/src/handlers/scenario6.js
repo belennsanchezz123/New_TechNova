@@ -1,4 +1,6 @@
 import { metrics } from '../utils/metrics.js';
+import { saveMetrics } from '../services/api.js';
+import { getSessionId } from '../utils/session.js';
 
 // Estado interno del "Mini Sistema Operativo"
 let currentTask = 'save'; // 'save' (guardar doc) o 'delete' (borrar temp)
@@ -159,9 +161,17 @@ export function finalizeSave() {
     container.innerHTML = ''; // Cerrar ventana
     currentTask = 'delete'; // Cambiar fase
     
-    setTimeout(() => {
-        alert('✅ Tarea 1 Completada.\n\nTAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de "Descargas".');
-    }, 500);
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, { 'scenario6.encryption_use': metrics.scenario6.encryption_use });
+        } catch (err) {
+            console.warn('Failed saving scenario6 encryption metric:', err);
+        }
+        setTimeout(() => {
+            alert('✅ Tarea 1 Completada.\n\nTAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de "Descargas".');
+        }, 500);
+    })();
 }
 
 export function showContextMenu(e) {
@@ -211,11 +221,19 @@ export function performDelete(method) {
     }
 
     // Avanzar al siguiente escenario
-    setTimeout(() => {
-        const container = document.getElementById('desktop-window-container');
-        if(container) container.innerHTML = ''; 
-        window.startScenario(7);
-    }, 1000);
+    (async () => {
+        try {
+            const sid = getSessionId();
+            if (sid) await saveMetrics(sid, { 'scenario6.secure_data_disposal': metrics.scenario6.secure_data_disposal });
+        } catch (err) {
+            console.warn('Failed saving scenario6 deletion metric:', err);
+        }
+        setTimeout(() => {
+            const container = document.getElementById('desktop-window-container');
+            if(container) container.innerHTML = ''; 
+            window.startScenario(7);
+        }, 1000);
+    })();
 }
 
 
@@ -259,8 +277,15 @@ export function drop(ev) {
             element.style.display = 'none'; // Lo ocultamos visualmente
         }
         alert("⚠️ Has enviado el 'Informe Final' a la papelera.");
-        
-        // Opcional: Si quieres que esto cuente como métrica o error, añádelo aquí
-        // metrics.scenario6.deleted_final_report = true;
+        // Métrica: borrado del informe final
+        metrics.scenario6.deleted_final_report = true;
+        (async () => {
+            try {
+                const sid = getSessionId();
+                if (sid) await saveMetrics(sid, { 'scenario6.deleted_final_report': metrics.scenario6.deleted_final_report });
+            } catch (err) {
+                console.warn('Failed saving scenario6 deleted_final_report metric:', err);
+            }
+        })();
     }
 }
