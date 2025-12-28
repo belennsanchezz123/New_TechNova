@@ -79,6 +79,7 @@ export async function saveMetrics(sessionId, metrics) {
 }
 export async function saveQuestionnaire(questionnaireData) {
     try {
+        console.log('API: saveQuestionnaire payload:', questionnaireData);
         const response = await fetch(`${API_URL}/questionnaire/submit`, {
             method: 'POST',
             headers: {
@@ -88,7 +89,9 @@ export async function saveQuestionnaire(questionnaireData) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const text = await response.text();
+            console.error('API: saveQuestionnaire failed', response.status, text);
+            throw new Error(`HTTP error! status: ${response.status} - ${text}`);
         }
 
         const result = await response.json();

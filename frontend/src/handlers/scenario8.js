@@ -66,7 +66,15 @@ export async function submitTaxonomy() {
     try {
         const participantId = getParticipantId();
         const sessionId = getSessionId();
-        
+
+        console.log('Submitting questionnaire', {
+            participantId,
+            sessionId,
+            totalQuestions,
+            answeredCount,
+            answersPreview: Object.keys(answers).slice(0,10)
+        });
+
         await saveQuestionnaire({
             participantId,
             sessionId,
