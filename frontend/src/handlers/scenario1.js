@@ -75,27 +75,44 @@ export async function registerService(service) {
         alert('Error al crear la cuenta. Por favor, intenta de nuevo.');
         return;
     }
+
+    // Obtenemos el ID correcto (usando el fallback que ya tenías)
+    const sid = session.sessionId || session.id;
     
     registrations[service] = {
-        id: session.sessionId || session.id,
+        id: sid,
         username: username,
         service: serviceName,
         password_strength: strength,
         mfa_enabled: false
     };
 
-    // Persist a lightweight metric for this service registration
+    // --- NUEVO: Enviar métrica de Wi-Fi y Registro de Servicio ---
     try {
-        await registerServiceMetrics(session.id, { service, username, password_strength: strength });
+        // 1. Si es la primera vez que obtenemos un ID de sesión, enviamos la métrica de la red Wi-Fi
+        if (!getSessionId()) {
+            console.log("Detectado primer registro. Enviando métrica de Wi-Fi...");
+            await registerServiceMetrics(sid, { 
+                step: 'initial_connection',
+                wifi_network_choice: metrics.scenario2.wifi_network_choice 
+            });
+        }
+
+        // 2. Enviamos la métrica del registro actual
+        await registerServiceMetrics(sid, { 
+            service, 
+            username, 
+            password_strength: strength 
+        });
+
     } catch (err) {
         console.warn('registerServiceMetrics failed:', err);
     }
 
-    // If we don't have a global session id yet, set it to this session (used by later scenarios)
+    // Guardar el ID de sesión globalmente si no existe
     if (!getSessionId()) {
-        const idToSave = session.sessionId || session.id;
-        setSessionId(idToSave);
-        console.log("ID de sesión guardado globalmente:", idToSave);
+        setSessionId(sid);
+        console.log("ID de sesión guardado globalmente:", sid);
     }
 
     goNext(service);
