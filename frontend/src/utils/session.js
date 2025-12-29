@@ -1,11 +1,11 @@
-let _sessionId = null;
-
 export function setSessionId(id) {
-    _sessionId = id;
+    if (id) {
+        localStorage.setItem('lynx_session_id', id);
+    }
 }
 
 export function getSessionId() {
-    return _sessionId;
+    return localStorage.getItem('lynx_session_id');
 }
 
 export default {

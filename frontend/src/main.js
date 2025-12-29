@@ -128,7 +128,7 @@ async function initApp() {
 
     let scenariosHTML = '<div id="simulation-container"><header>Simulación del Primer Día - TechNova</header><main>';
 
-    for (let i = 0; i <= 8; i++) {
+    for (let i = 0; i <= 9; i++) {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
     }
 

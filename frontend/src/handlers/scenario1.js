@@ -66,6 +66,7 @@ export async function registerService(service) {
     const reuseCount = passwords.filter(p => p === password).length;
     
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
+
     metrics.scenario1[`${service}_password_strength`] = strength;
     passwords.push(password);
     
@@ -76,7 +77,7 @@ export async function registerService(service) {
     }
     
     registrations[service] = {
-        id: session.id,
+        id: session.sessionId || session.id,
         username: username,
         service: serviceName,
         password_strength: strength,
@@ -92,7 +93,9 @@ export async function registerService(service) {
 
     // If we don't have a global session id yet, set it to this session (used by later scenarios)
     if (!getSessionId()) {
-        setSessionId(session.id);
+        const idToSave = session.sessionId || session.id;
+        setSessionId(idToSave);
+        console.log("ID de sesión guardado globalmente:", idToSave);
     }
 
     goNext(service);
