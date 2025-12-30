@@ -67,7 +67,7 @@ export async function registerService(service) {
     
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
 
-    metrics.scenario1[`${service}_password_strength`] = strength;
+    metrics.scenario1[`scenario1.${service}_password_strength`] = strength;
     passwords.push(password);
     
     if (!success || !session) {
@@ -92,18 +92,18 @@ export async function registerService(service) {
         // 1. Si es la primera vez que obtenemos un ID de sesión, enviamos la métrica de la red Wi-Fi
         if (!getSessionId()) {
             console.log("Detectado primer registro. Enviando métrica de Wi-Fi...");
-            await registerServiceMetrics(sid, { 
-                step: 'initial_connection',
-                wifi_network_choice: metrics.scenario2.wifi_network_choice 
-            });
+            await saveMetrics(sid, { 
+            'scenario1.wifi_network_choice': metrics.scenario2.wifi_network_choice,
+            'scenario1.initial_step': 'initial_connection'
+    });
         }
 
         // 2. Enviamos la métrica del registro actual
-        await registerServiceMetrics(sid, { 
-            service, 
-            username, 
-            password_strength: strength 
-        });
+        //await registerServiceMetrics(sid, { 
+        //    service, 
+        //    username, 
+        //    password_strength: strength 
+       // });
 
     } catch (err) {
         console.warn('registerServiceMetrics failed:', err);
@@ -119,7 +119,7 @@ export async function registerService(service) {
 }
 
 export async function handleMFA(activated) {
-    metrics.scenario1.mfa_usage = activated ? 'Yes' : 'No';
+    metrics.scenario1['scenario1.mfa_usage'] = activated ? 'Yes' : 'No';
 
     // Si el usuario activa MFA y ya tenemos un registro para 'drive'
     if (activated && registrations['drive']) {
@@ -142,7 +142,7 @@ export async function handleMFA(activated) {
 }
 
 export function handlePasskey(activated) {
-    metrics.scenario1.passkey_adoption_rate = activated ? 'Accepted' : 'Rejected';
+    metrics.scenario1['scenario1.passkey_adoption_rate'] = activated ? 'Accepted' : 'Rejected';
     document.getElementById('popup-passkey').classList.remove('active');
 
     showRegistrationComplete();
@@ -184,11 +184,21 @@ export function toggleProfileDropdown() {
 
 export function closeRegistrationComplete() {
     document.getElementById('popup-registration-complete').classList.remove('active');
-    // Persist scenario1 metrics when user finishes registration flow
+    
     (async () => {
         try {
             const sid = getSessionId() || Object.values(registrations)[0]?.id;
-            if (sid) await saveMetrics(sid, metrics.scenario1);
+            if (sid) {
+                // Preparamos un objeto con prefijos para que el admin lo lea bien
+                const formattedMetrics = {};
+                for (const key in metrics.scenario1) {
+                    // Si la clave ya tiene el punto, la dejamos, si no, se lo ponemos
+                    const newKey = key.startsWith('scenario1.') ? key : `scenario1.${key}`;
+                    formattedMetrics[newKey] = metrics.scenario1[key];
+                }
+                
+                await saveMetrics(sid, formattedMetrics);
+            }
         } catch (err) {
             console.warn('Failed saving scenario1 metrics:', err);
         }

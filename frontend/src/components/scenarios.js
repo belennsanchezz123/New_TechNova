@@ -607,24 +607,31 @@ export function getScenarioHTML(scenarioNumber) {
             <div id="virtual-desktop" class="virtual-desktop">
                 
                 <div class="desktop-icons">
-                    <div class="d-icon" onclick="window.openMyPC()">
-                        <span>💻</span>
-                        <label>Este Equipo</label>
-                    </div>
-                    <div class="d-icon" onclick="window.openWordDocs()">
-                        <span>📄</span>
-                        <label>Informe_Final.docx</label> </div>
-                    <div class="d-icon" onclick="window.openTempFolder()">
-                        <span>📂</span>
-                        <label>Descargas (Temp)</label>
-                    </div>
-                    <div class="d-icon" 
-                        ondrop="window.drop(event)" 
-                        ondragover="window.allowDrop(event)">
-                        <span>🗑️</span>
-                        <label>Papelera</label>
-                    </div>
-                </div>
+    <div class="d-icon" onclick="window.openMyPC()">
+        <span>💻</span>
+        <label>Este Equipo</label>
+    </div>
+
+    <div class="d-icon" 
+         id="desktop-final-report" 
+         draggable="true" 
+         ondragstart="window.drag(event)" 
+         onclick="window.openWordDocs()">
+        <span>📄</span>
+        <label>Informe_Final.docx</label> 
+    </div>
+    <div class="d-icon" onclick="window.openTempFolder()">
+        <span>📂</span>
+        <label>Descargas (Temp)</label>
+    </div>
+    
+    <div class="d-icon" 
+        ondrop="window.drop(event)" 
+        ondragover="window.allowDrop(event)">
+        <span>🗑️</span>
+        <label>Papelera</label>
+    </div>
+</div>
 
                 <div id="desktop-window-container"></div>
 
@@ -844,16 +851,13 @@ export function getScenarioHTML(scenarioNumber) {
             </form>
             `,
     9: `
-            <h2>Simulation Complete!</h2>
-            <p>Thank you for your participation. Your interactions have been recorded to help us improve the Tech Nova platform. Below is a summary of the metrics collected during your session.</p>
-            <table id="results-table">
-                <thead>
-                    <tr><th>Metric Category</th><th>Metric</th><th>Your Result</th></tr>
-                </thead>
-                <tbody id="results-body"></tbody>
-            </table>
+    <div class="simulation-end-container">
+    <h2>¡Simulación Completada!</h2>
+    <p>Gracias por tu participación. Tus respuestas y acciones han sido registradas correctamente para nuestro estudio sobre ciberseguridad.</p>
+            <p>Ya puedes cerrar esta ventana o informar al investigador.</p>
+            <button class="btn-primary" onclick="location.reload()">Finalizar Sesión</button>
+        </div>   
         `,
   };
-
   return scenarios[scenarioNumber] || "";
 }

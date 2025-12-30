@@ -87,7 +87,7 @@ export async function submitTaxonomy() {
         window.startScenario(9); 
         
         // 6. Rellena la tabla de resultados
-        setTimeout(showResults, 100); 
+        //setTimeout(showResults, 100); 
 
     } catch (err) {
         console.error('Error saving questionnaire:', err);
