@@ -164,15 +164,19 @@ function validateAndStart() {
     }
 
     try {
+        localStorage.removeItem('lynx_session_id');
         setParticipantId(participantId);
         error.style.display = 'none';
         input.style.borderColor = '';
         showPolicyPopup(); 
-    } catch (err) {
+    } 
+    
+    catch (err) {
         error.textContent = err.message;
         error.style.display = 'block';
         input.style.borderColor = '#d32f2f';
     }
+
 }
 
 function showPolicyPopup() {
@@ -184,7 +188,7 @@ function acceptPolicyAndStart() {
     startScenario(1);
 }
 
-function handleTeamsAlert() {
+async function handleTeamsAlert() {
     const passInput = document.getElementById('teams-new-pass');
     const newPass = passInput.value;
 
@@ -193,14 +197,32 @@ function handleTeamsAlert() {
         return;
     }
 
-    const distance = getMinPasswordDistance(newPass);
-    
-    if (metrics && metrics.unexpected) {
-        metrics.unexpected.teams_password_distance = distance;
+    // Solo procedemos si el usuario se ha logueado previamente en Events
+    if (!isEventsRegistrationComplete) {
+        console.log("Bloqueado: Intento de actualizar Teams sin haber completado el registro de Events.");
+        document.getElementById('popup-teams-alert').classList.remove('active');
+        return;
     }
 
-    console.log(`Distancia de contraseña Teams: ${distance}`);
+    const distance = getMinPasswordDistance(newPass);
+    const sid = getSessionId();
+    
+    if (metrics && metrics.scenario1) {
+        metrics.scenario1['scenario1.teams_password_distance'] = distance;
+    }
 
+    try {
+        if (sid) {
+            await saveMetrics(sid, { 
+                'scenario1.teams_password_distance': distance 
+            });
+            console.log(`Métrica enviada - Distancia: ${distance}`);
+        }
+    } catch (err) {
+        console.warn('Error al guardar métrica de Teams:', err);
+    }
+
+    // Lógica de logs de seguridad
     if (distance === 0) {
         console.log("RIESGO CRÍTICO: Contraseña idéntica.");
     } else if (distance <= 3) {
@@ -210,8 +232,18 @@ function handleTeamsAlert() {
     }
 
     alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
-    document.getElementById('popup-teams-alert').classList.remove('active');
-    teamsIncidentResolved = true;
+    // Cerrar el popup usando el ID definido en popups.js
+    // Cerrar el popup (ID proveniente de popups.js)
+    const teamsPopup = document.getElementById('popup-teams-alert');
+    if (teamsPopup) {
+        teamsPopup.classList.remove('active');
+    }
+    // Reseteamos la variable para que no se vuelva a ejecutar accidentalmente
+    isEventsRegistrationComplete = false;
+
+    if (typeof teamsIncidentResolved !== 'undefined') {
+        teamsIncidentResolved = true;
+    }
 }
 
 // --- ASIGNACIONES A WINDOW ---

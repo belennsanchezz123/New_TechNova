@@ -4,7 +4,7 @@ import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
 import { getSessionId, setSessionId } from '../utils/session.js';
 
-
+let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
 
@@ -37,7 +37,10 @@ function goNext(service) {
     }
 }
 
-export async function registerService(service) {
+export async function /* `registerService` is a function that handles the registration process for a
+specific service in the TechNova application. Here is a breakdown of what it
+does: */
+registerService(service) {
     // Require participant id (P00x) to be set in localStorage before registration
     const pid = getParticipantId();
     if (!pid) {
@@ -69,7 +72,6 @@ export async function registerService(service) {
 
     metrics.scenario1[`scenario1.${service}_password_strength`] = strength;
     passwords.push(password);
-    
     if (!success || !session) {
         console.error('createRegistration error:', error);
         alert('Error al crear la cuenta. Por favor, intenta de nuevo.');
@@ -112,7 +114,13 @@ export async function registerService(service) {
     // Guardar el ID de sesión globalmente si no existe
     if (!getSessionId()) {
         setSessionId(sid);
-        console.log("ID de sesión guardado globalmente:", sid);
+    }
+
+    // Si el servicio que acabamos de registrar es 'events', 
+    // permitimos que el popup de Teams se pueda ejecutar.
+    if (service === 'events') {
+        isEventsRegistrationComplete = true;
+        console.log("Registro de Events detectado. Permiso concedido para popup de Teams.");
     }
 
     goNext(service);

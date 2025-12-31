@@ -27,35 +27,48 @@ function showUsbTask() {
 
 // Función 'onclick' para los botones de interrupción
 // La exportamos a 'window' para que el 'onclick' del HTML la encuentre
-export function handleInterruption(didLock) {
+export async function handleInterruption(didLock) {
+    const sid = getSessionId(); 
     if (didLock) {
         // Opción Correcta: El usuario suspende la sesión
-        metrics.scenario2.manual_lock_screen = 'Yes, locked screen';
+        const valorMétrica = 'Yes, locked screen';
+        metrics.scenario2.manual_lock_screen = valorMétrica;
         
+        // CAMBIO AQUÍ: Usamos saveMetrics con el prefijo 'scenario2.'
+        // Esto hace que el Admin lo lea bien y NO guarda 'event' ni 'username'
+        try {
+            await saveMetrics(sid, { 
+                'scenario2.manual_lock_screen': valorMétrica 
+            });
+        } catch (err) {
+            console.warn('Error al guardar métrica:', err);
+        }
+
         // Muestra la pantalla de bloqueo
         const lockScreen = document.getElementById('simulated-lock-screen');
         if (lockScreen) {
             lockScreen.style.display = 'flex';
         }
 
-        // Añade el 'listener' que espera a que el usuario pulse la tecla 'v'
         document.addEventListener('keydown', handleKeyUnlock);
         
     } else {
         // Opción Incorrecta: El usuario continúa
-        metrics.scenario2.manual_lock_screen = 'No, left screen unlocked';
+        const valorMétrica = 'No, left screen unlocked';
+        metrics.scenario2.manual_lock_screen = valorMétrica;
+
+        // CAMBIO AQUÍ: Lo mismo, prefijo 'scenario2.'
+        try {
+            await saveMetrics(sid, { 
+                'scenario2.manual_lock_screen': valorMétrica 
+            });
+        } catch (err) {
+            console.warn('Error al guardar métrica:', err);
+        }
         
-        // (No mostramos alert, como pediste)
-        
-        // Muestra la tarea del USB inmediatamente
         showUsbTask();
     }
 }
-
-// --- FIN DE LA NUEVA LÓGICA ---
-
-
-// ===== TU CÓDIGO ORIGINAL (SIN CAMBIOS) =====
 
 // Función para cambiar entre vistas del explorador
 function navigateToView(viewId, pathText, sidebarActiveId) {
