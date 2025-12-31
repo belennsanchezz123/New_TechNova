@@ -200,7 +200,8 @@ async function handleTeamsAlert() {
     // Solo procedemos si el usuario se ha logueado previamente en Events
     if (!isEventsRegistrationComplete) {
         console.log("Bloqueado: Intento de actualizar Teams sin haber completado el registro de Events.");
-        document.getElementById('popup-teams-alert').classList.remove('active');
+        const teamsPopup = document.getElementById('popup-teams-alert');
+        if (teamsPopup) teamsPopup.classList.remove('active');
         return;
     }
 
@@ -234,7 +235,8 @@ async function handleTeamsAlert() {
     alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
     // Cerrar el popup usando el ID definido en popups.js
     // Cerrar el popup (ID proveniente de popups.js)
-    const teamsPopup = document.getElementById('popup-teams-alert');
+
+    const teamsPopup = document.getElementById('popup-teams-alert');  
     if (teamsPopup) {
         teamsPopup.classList.remove('active');
     }
