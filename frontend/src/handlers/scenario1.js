@@ -1,4 +1,4 @@
-import { createRegistration, completeRegistration, registerServiceMetrics, saveMetrics } from '../services/api.js';
+import { createRegistration, completeRegistration, saveMetrics } from '../services/api.js';
 import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
@@ -11,40 +11,29 @@ const registrations = {};
 function goNext(service) {
     const currentForm = document.getElementById(`technova-${service}-form`);
 
-    // Si encontramos el formulario, lo ocultamos.
     if (currentForm) {
         currentForm.style.display = 'none';
     } else {
-        console.error(`Error: No se encontró el formulario con ID: technova-${service}-form. Verifica scenarios.js`);
+        console.error(`Error: No se encontró el formulario con ID: technova-${service}-form.`);
     }
 
     if (service === 'mail') {
-        // Mostrar el formulario de Drive
         const driveForm = document.getElementById('technova-drive-form');
-        if (driveForm) {
-            driveForm.style.display = 'block';
-        }
+        if (driveForm) driveForm.style.display = 'block';
     } else if (service === 'drive') {
-        // Mostrar popup de MFA
         document.getElementById('popup-mfa').classList.add('active');
-        
-        // Métrica: ¿reutilizó la contraseña? (Comparar Mail y Drive)
         metrics.scenario1.password_reused =
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
-            
     } else if (service === 'events') {
+        localStorage.setItem('sc1_completed', 'true');
         document.getElementById('popup-passkey').classList.add('active');
     }
 }
 
-export async function /* `registerService` is a function that handles the registration process for a
-specific service in the TechNova application. Here is a breakdown of what it
-does: */
-registerService(service) {
-    // Require participant id (P00x) to be set in localStorage before registration
+export async function registerService(service) {
     const pid = getParticipantId();
     if (!pid) {
-        alert('Por favor, introduce el ID de Participante (p.ej. P001) en la pantalla inicial antes de crear cuentas.');
+        alert('Por favor, introduce el ID de Participante antes de empezar.');
         return;
     }
 
@@ -53,74 +42,66 @@ registerService(service) {
     const username = userInput.value.trim();
     const password = passInput.value;
 
-    if (!username) {
-        alert('Por favor ingresa un nombre de usuario');
-        return;
-    }
-    if (!password) {
-        alert('Por favor ingresa una contraseña');
+    if (!username || !password) {
+        alert('Por favor ingresa usuario y contraseña');
         return;
     }
 
-    // MODIFICADO: Nombre del servicio actualizado a TechNova
     const serviceName = `technova_${service}`;
-
     const strength = getPasswordStrength(password);
     const reuseCount = passwords.filter(p => p === password).length;
     
+    // 1. Crear registro en DB
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
 
-    metrics.scenario1[`scenario1.${service}_password_strength`] = strength;
-    passwords.push(password);
     if (!success || !session) {
         console.error('createRegistration error:', error);
-        alert('Error al crear la cuenta. Por favor, intenta de nuevo.');
+        alert('Error al crear la cuenta.');
         return;
     }
 
-    // Obtenemos el ID correcto (usando el fallback que ya tenías)
     const sid = session.sessionId || session.id;
+    passwords.push(password);
     
     registrations[service] = {
         id: sid,
         username: username,
         service: serviceName,
-        password_strength: strength,
-        mfa_enabled: false
+        password_strength: strength
     };
 
-    // --- NUEVO: Enviar métrica de Wi-Fi y Registro de Servicio ---
+    // --- ENVÍO DE MÉTRICAS UNIFICADO ---
     try {
-        // 1. Si es la primera vez que obtenemos un ID de sesión, enviamos la métrica de la red Wi-Fi
-        if (!getSessionId()) {
-            console.log("Detectado primer registro. Enviando métrica de Wi-Fi...");
-            await saveMetrics(sid, { 
-            'scenario1.wifi_network_choice': metrics.scenario2.wifi_network_choice,
-            'scenario1.initial_step': 'initial_connection'
-    });
+        const currentSid = getSessionId() || sid;
+
+        // A. Enviar Wi-Fi solo una vez
+        if (!localStorage.getItem('wifi_sent')) {
+            await saveMetrics(currentSid, { 
+                'scenario1.wifi_network_choice': metrics.scenario2.wifi_network_choice,
+                'scenario1.initial_step': 'initial_connection'
+            });
+            localStorage.setItem('wifi_sent', 'true');
         }
 
-        // 2. Enviamos la métrica del registro actual
-        //await registerServiceMetrics(sid, { 
-        //    service, 
-        //    username, 
-        //    password_strength: strength 
-       // });
+        // B. Enviar datos del servicio actual (Mail, Drive o Events)
+        await saveMetrics(currentSid, { 
+            [`scenario1.${service}_user`]: username, 
+            [`scenario1.${service}_password_strength`]: strength 
+        });
+
+        console.log(`✅ Métricas de ${service} enviadas.`);
 
     } catch (err) {
-        console.warn('registerServiceMetrics failed:', err);
+        console.warn('Error al guardar las métricas:', err);
     }
 
-    // Guardar el ID de sesión globalmente si no existe
+    // Asegurar que el ID de sesión esté guardado globalmente
     if (!getSessionId()) {
         setSessionId(sid);
     }
 
-    // Si el servicio que acabamos de registrar es 'events', 
-    // permitimos que el popup de Teams se pueda ejecutar.
     if (service === 'events') {
         isEventsRegistrationComplete = true;
-        console.log("Registro de Events detectado. Permiso concedido para popup de Teams.");
     }
 
     goNext(service);
@@ -129,30 +110,20 @@ registerService(service) {
 export async function handleMFA(activated) {
     metrics.scenario1['scenario1.mfa_usage'] = activated ? 'Yes' : 'No';
 
-    // Si el usuario activa MFA y ya tenemos un registro para 'drive'
     if (activated && registrations['drive']) {
         const sessionId = registrations['drive'].id;
         await completeRegistration(sessionId, { mfaEnabled: true });
-        console.log('MFA state updated for TechNova Drive via API.');
     }
 
-    // Oculta el popup de MFA
     document.getElementById('popup-mfa').classList.remove('active');
     
-    // --- CORRECCIÓN CLAVE AQUÍ ---
-    // Mostrar el formulario de Events usando el ID correcto 'technova-events-form'
     const eventsForm = document.getElementById('technova-events-form');
-    if (eventsForm) {
-        eventsForm.style.display = 'block';
-    } else {
-        console.error('Error Crítico: No se encontró el elemento "technova-events-form" en el DOM.');
-    }
+    if (eventsForm) eventsForm.style.display = 'block';
 }
 
 export function handlePasskey(activated) {
     metrics.scenario1['scenario1.passkey_adoption_rate'] = activated ? 'Accepted' : 'Rejected';
     document.getElementById('popup-passkey').classList.remove('active');
-
     showRegistrationComplete();
 }
 
@@ -166,16 +137,13 @@ function showRegistrationComplete() {
     document.getElementById('events-username').textContent = eventsUsername;
 
     const firstUsername = mailUsername !== '-' ? mailUsername : (driveUsername !== '-' ? driveUsername : eventsUsername);
-    const firstInitial = firstUsername !== '-' ? firstUsername[0].toUpperCase() : 'U';
-
-    document.getElementById('profile-display-name').textContent = firstUsername;
     
-    // MODIFICADO: Dominio de correo actualizado a TechNova
+    document.getElementById('profile-display-name').textContent = firstUsername;
     document.getElementById('profile-display-email').textContent = `${firstUsername}@technova.com`;
 
     const avatar = document.querySelector('.profile-avatar');
-    if (avatar) {
-        avatar.textContent = firstInitial;
+    if (avatar && firstUsername !== '-') {
+        avatar.textContent = firstUsername[0].toUpperCase();
     }
 
     document.getElementById('popup-registration-complete').classList.add('active');
@@ -183,11 +151,7 @@ function showRegistrationComplete() {
 
 export function toggleProfileDropdown() {
     const dropdown = document.getElementById('profile-dropdown-menu');
-    if (dropdown.style.display === 'none') {
-        dropdown.style.display = 'block';
-    } else {
-        dropdown.style.display = 'none';
-    }
+    dropdown.style.display = (dropdown.style.display === 'none' || !dropdown.style.display) ? 'block' : 'none';
 }
 
 export function closeRegistrationComplete() {
@@ -195,24 +159,22 @@ export function closeRegistrationComplete() {
     
     (async () => {
         try {
-            const sid = getSessionId() || Object.values(registrations)[0]?.id;
+            const sid = getSessionId();
             if (sid) {
-                // Preparamos un objeto con prefijos para que el admin lo lea bien
                 const formattedMetrics = {};
                 for (const key in metrics.scenario1) {
-                    // Si la clave ya tiene el punto, la dejamos, si no, se lo ponemos
                     const newKey = key.startsWith('scenario1.') ? key : `scenario1.${key}`;
                     formattedMetrics[newKey] = metrics.scenario1[key];
                 }
-                
                 await saveMetrics(sid, formattedMetrics);
             }
         } catch (err) {
-            console.warn('Failed saving scenario1 metrics:', err);
+            console.warn('Failed saving final scenario1 metrics:', err);
         }
         window.startScenario(2);
     })();
 }
+
 export function toggleWifiMenu() {
     const menu = document.getElementById('wifi-menu');
     if (menu) menu.classList.toggle('active');
@@ -222,62 +184,31 @@ export function connectWifi(type) {
     const menu = document.getElementById('wifi-menu');
     const icon = document.getElementById('wifi-icon-status');
 
-    // ---------------------------------------------------------
-    // NUEVO: Validación de contraseña para la red segura
-    // ---------------------------------------------------------
     if (type === 'secure') {
-        // Pedimos la contraseña al usuario
-        const password = prompt("🔐 TechNova_Corp_Secure está protegida.\n\nPor favor, introduce la clave de seguridad de la red:");
-        
-        // Verificamos si es correcta (Exacta, incluyendo mayúsculas)
+        const password = prompt("🔐 TechNova_Corp_Secure está protegida.\n\nClave:");
         if (password !== "UniversidadMurcia2026!") {
-            alert("❌ Contraseña incorrecta.\n\nNo se ha podido conectar a la red corporativa. Inténtalo de nuevo.");
-            return; // ¡IMPORTANTE! Detenemos la función aquí para que no conecte.
+            alert("❌ Contraseña incorrecta.");
+            return;
         }
     }
     
-    // Si la contraseña es correcta (o si es la red pública que no pide clave), procedemos:
-    menu.innerHTML = `
-        <div style="padding: 20px; text-align: center;">
-            <div class="spinner" style="margin: 0 auto 10px;"></div>
-            <p>Verificando y conectando...</p>
-        </div>
-    `;
+    menu.innerHTML = `<div style="padding: 20px; text-align: center;"><div class="spinner"></div><p>Conectando...</p></div>`;
 
     setTimeout(() => {
-        // 1. Registrar Métrica
-        if (type === 'public') {
-            metrics.scenario2.wifi_network_choice = 'Insecure (Public)'; 
-        } else {
-            metrics.scenario2.wifi_network_choice = 'Secure (Corporate)';
-        }
-
-        // 2. Actualizar UI (Icono de conectado)
+        metrics.scenario2.wifi_network_choice = (type === 'public') ? 'Insecure (Public)' : 'Secure (Corporate)';
         if(icon) icon.textContent = '📶'; 
         menu.classList.remove('active'); 
-
-        // 3. Transición: Ocultar Wi-Fi -> Mostrar Formularios
         document.getElementById('wifi-task-container').style.display = 'none';
         document.getElementById('registration-content').style.display = 'block';
-
-        // Feedback opcional de éxito
-        if (type === 'secure') {
-            // alert("✅ Conexión segura establecida con éxito.");
-        }
-
     }, 1500);
 }
+
 export function getMinPasswordDistance(candidatePassword) {
-    if (passwords.length === 0) return 100; // Si no hay historial, es totalmente nueva (distancia alta)
-
+    if (passwords.length === 0) return 100;
     let minDistance = 100;
-
     passwords.forEach(oldPass => {
         const dist = getLevenshteinDistance(oldPass, candidatePassword);
-        if (dist < minDistance) {
-            minDistance = dist;
-        }
+        if (dist < minDistance) minDistance = dist;
     });
-
     return minDistance;
 }
