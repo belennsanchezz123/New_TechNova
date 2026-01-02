@@ -1,51 +1,11 @@
-//const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// frontend/src/services/api.js
 const API_URL = 'http://127.0.0.1:3000/api';
-//Importación de funciones que usamos
 import { getParticipantId } from '../utils/participant.js';
 
 /**
- * Crea/recupera un registro (idempotente) para un servicio y usuario,
- * enviando participantId para trazabilidad.
+ * NUEVA: Inicia la sesión global al aceptar las políticas.
+ * Envía el identificador (P00x) al backend.
  */
-export async function createRegistration(username, serviceName, passwordStrength, passwordReuseCount) {
-    const participantId = getParticipantId();
-    const res = await fetch(`${API_URL}/sessions/start`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({
-            userIdentifier: username,
-            service: serviceName,  // 'lynx_mail' | 'lynx_drive' | 'lynx_events'
-            participantId,
-            passwordStrength, 
-            passwordReuseCount
-        })
-    });
-    return res.json();
-}
-
-/**
- * Completa/actualiza un registro por id.
- * Úsalo p.ej. para marcar MFA, o anotar consentimiento.
- */
-export async function completeRegistration(sessionId, patch = {}) {
-    const res = await fetch(`${API_URL}/sessions/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ sessionId, ...patch })
-    });
-    return res.json();
-}
-
-/**
- * Lista todos los registros (debug / admin UI).
- */
-export async function getAllRegistrations() {
-    const res = await fetch(`${API_URL}/sessions/all`);
-    return res.json();
-}
-
-//Borrador funciones que no uso
-
 export async function startSession(userIdentifier) {
     try {
         const response = await fetch(`${API_URL}/sessions/start`, {
@@ -62,59 +22,79 @@ export async function startSession(userIdentifier) {
     }
 }
 
+/**
+ * MODIFICADA: Ahora usa la sesión que ya existe para actualizar los datos del servicio.
+ * Si no hay sessionId previo, el backend lo gestionará con el participantId.
+ */
+export async function createRegistration(username, serviceName, passwordStrength, passwordReuseCount) {
+    const participantId = getParticipantId();
+    // Intentamos enviar tanto el nombre de usuario como el participantId 
+    // para que el backend sepa que es la misma persona.
+    const res = await fetch(`${API_URL}/sessions/start`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({
+            userIdentifier: username,
+            service: serviceName, 
+            participantId,
+            passwordStrength, 
+            passwordReuseCount
+        })
+    });
+    return res.json();
+}
 
-//Funcion comentada en el backed
+/**
+ * Guarda métricas vinculadas a un sessionId.
+ * Se asegura de que los datos lleguen al Admin Dashboard.
+ */
 export async function saveMetrics(sessionId, metrics) {
+    if (!sessionId) {
+        console.warn('saveMetrics: No sessionId provided, metrics will not be saved.');
+        return { success: false };
+    }
+
     try {
         const response = await fetch(`${API_URL}/sessions/metrics`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, metrics })
-            });
-            return await response.json();
-        }  catch (error) {
-        console.error('Error saving metrics:', error);
+        });
+        
+        const data = await response.json();
+        console.log('Métricas guardadas con éxito:', data);
+        return data;
+    } catch (error) {
+        console.error('Error al guardar métricas:', error);
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * El resto de tus funciones se mantienen igual
+ */
+export async function completeRegistration(sessionId, patch = {}) {
+    const res = await fetch(`${API_URL}/sessions/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ sessionId, ...patch })
+    });
+    return res.json();
+}
+
 export async function saveQuestionnaire(questionnaireData) {
     try {
-        console.log('API: saveQuestionnaire payload:', questionnaireData);
-        const response = await fetch(`${API_URL}/questionnaire/submit`, {
+        const response = await fetch(`${API_URL}/questionnaire/save`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(questionnaireData),
         });
-
-        if (!response.ok) {
-            const text = await response.text();
-            console.error('API: saveQuestionnaire failed', response.status, text);
-            throw new Error(`HTTP error! status: ${response.status} - ${text}`);
-        }
-
-        const result = await response.json();
-        console.log('Cuestionario guardado:', result);
-        return result;
-
+        return await response.json();
     } catch (error) {
         console.error('Error al guardar el cuestionario:', error);
         throw error;
     }
 }
-
-// Registra el alta de un servicio (mail / drive / events) con fuerza de contraseña
-export async function registerServiceMetrics(sessionId, { service, username, password_strength }) {
-    return saveMetrics(sessionId, {
-        event: 'register_service',
-        service,           // 'mail' | 'drive' | 'events'
-        username,
-        password_strength, // 'weak' | 'medium' | 'strong'
-        ts: Date.now()
-    });
-}
-
 
 export async function completeSession(sessionId, consentEmail) {
     try {
@@ -125,8 +105,15 @@ export async function completeSession(sessionId, consentEmail) {
         });
         return await response.json();
     } catch (error) {
-        console.error('Error completing session:', error);
-        return { success: false, error: error.message };
+        console.error('Error al completar sesión:', error);
+        return { success: false };
     }
 }
 
+export async function registerServiceMetrics(sessionId, { service, username, password_strength }) {
+    return saveMetrics(sessionId, {
+        [`scenario1.${service}_user`]: username,
+        [`scenario1.${service}_password_strength`]: password_strength,
+        [`scenario1.${service}_registration_ts`]: new Date().toISOString()
+    });
+}

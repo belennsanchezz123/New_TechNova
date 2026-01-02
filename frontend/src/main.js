@@ -190,8 +190,36 @@ function showPolicyPopup() {
     document.getElementById('popup-policy-rules').classList.add('active');
 }
 
-function acceptPolicyAndStart() {
-    document.getElementById('popup-policy-rules').classList.remove('active');
+async function acceptPolicyAndStart() {
+    const pid = getParticipantId(); // Obtiene el P00x del localStorage
+    if (!pid) {
+        alert("Por favor, introduce tu ID de participante antes de empezar.");
+        return;
+    }
+
+    try {
+        // 1. Llamamos a la función de api.js para registrar el inicio en la DB
+        const data = await startSession(pid);
+
+        if (data.success && data.session) {
+            // 2. Guardamos el ID de sesión para que todas las métricas futuras se vinculen a él
+            const sid = data.session.id || data.session.sessionId;
+            setSessionId(sid);
+            
+            console.log("✅ Sesión vinculada al participante:", pid, "ID de Sesión:", sid);
+        } else {
+            console.warn("No se pudo obtener un ID de sesión del servidor, las métricas podrían fallar.");
+        }
+    } catch (error) {
+        console.error("Error al conectar con el servidor para iniciar sesión:", error);
+    }
+
+    // 3. Cerramos el popup y empezamos el Escenario 1
+    const policyPopup = document.getElementById('popup-policy-rules');
+    if (policyPopup) {
+        policyPopup.classList.remove('active');
+    }
+
     startScenario(1);
 }
 
