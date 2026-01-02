@@ -3,16 +3,14 @@ const API_URL = 'http://127.0.0.1:3000/api';
 import { getParticipantId } from '../utils/participant.js';
 
 /**
- * NUEVA: Inicia la sesión global al aceptar las políticas.
- * Envía el identificador (P00x) al backend.
+ * Inicia la sesión global al aceptar las políticas.
+ * Vincula el P00x al inicio del experimento.
  */
 export async function startSession(userIdentifier) {
     try {
         const response = await fetch(`${API_URL}/sessions/start`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userIdentifier })
         });
         return await response.json();
@@ -23,34 +21,37 @@ export async function startSession(userIdentifier) {
 }
 
 /**
- * MODIFICADA: Ahora usa la sesión que ya existe para actualizar los datos del servicio.
- * Si no hay sessionId previo, el backend lo gestionará con el participantId.
+ * Crea o actualiza un registro de servicio (mail, drive, events).
+ * Reutiliza la sesión activa del participante.
  */
 export async function createRegistration(username, serviceName, passwordStrength, passwordReuseCount) {
     const participantId = getParticipantId();
-    // Intentamos enviar tanto el nombre de usuario como el participantId 
-    // para que el backend sepa que es la misma persona.
-    const res = await fetch(`${API_URL}/sessions/start`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({
-            userIdentifier: username,
-            service: serviceName, 
-            participantId,
-            passwordStrength, 
-            passwordReuseCount
-        })
-    });
-    return res.json();
+    try {
+        const res = await fetch(`${API_URL}/sessions/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userIdentifier: username,
+                service: serviceName, 
+                participantId: participantId,
+                passwordStrength, 
+                passwordReuseCount
+            })
+        });
+        return await res.json();
+    } catch (error) {
+        console.error('Error in createRegistration:', error);
+        return { success: false };
+    }
 }
 
 /**
- * Guarda métricas vinculadas a un sessionId.
- * Se asegura de que los datos lleguen al Admin Dashboard.
+ * FUNCIÓN ÚNICA UNIVERSAL PARA MÉTRICAS
+ * Guarda cualquier objeto de métricas (Wi-Fi, Passwords, clics, etc.)
  */
-export async function saveMetrics(sessionId, metrics) {
+export async function saveMetrics(sessionId, metricsObject) {
     if (!sessionId) {
-        console.warn('saveMetrics: No sessionId provided, metrics will not be saved.');
+        console.error('saveMetrics: No hay sessionId activo.');
         return { success: false };
     }
 
@@ -58,30 +59,44 @@ export async function saveMetrics(sessionId, metrics) {
         const response = await fetch(`${API_URL}/sessions/metrics`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, metrics })
+            body: JSON.stringify({ 
+                sessionId: sessionId, 
+                metrics: metricsObject 
+            })
         });
-        
+
         const data = await response.json();
-        console.log('Métricas guardadas con éxito:', data);
+        if (data.success) {
+            console.log(`%c✅ Métricas guardadas [SID: ${sessionId}]`, "color: green; font-weight: bold;");
+            console.table(metricsObject); // Log visual para confirmar qué se envió
+        }
         return data;
     } catch (error) {
-        console.error('Error al guardar métricas:', error);
-        return { success: false, error: error.message };
+        console.error('Error en saveMetrics:', error);
+        return { success: false };
     }
 }
 
 /**
- * El resto de tus funciones se mantienen igual
+ * Actualiza estados de la sesión (MFA, completado, etc.)
  */
 export async function completeRegistration(sessionId, patch = {}) {
-    const res = await fetch(`${API_URL}/sessions/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ sessionId, ...patch })
-    });
-    return res.json();
+    try {
+        const res = await fetch(`${API_URL}/sessions/complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, ...patch })
+        });
+        return await res.json();
+    } catch (error) {
+        console.error('Error in completeRegistration:', error);
+        return { success: false };
+    }
 }
 
+/**
+ * Guarda los resultados del cuestionario final
+ */
 export async function saveQuestionnaire(questionnaireData) {
     try {
         const response = await fetch(`${API_URL}/questionnaire/save`, {
@@ -96,11 +111,14 @@ export async function saveQuestionnaire(questionnaireData) {
     }
 }
 
+/**
+ * Finaliza la sesión anotando el correo de consentimiento (si existe)
+ */
 export async function completeSession(sessionId, consentEmail) {
     try {
         const response = await fetch(`${API_URL}/sessions/complete`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, consentEmail })
         });
         return await response.json();
@@ -108,12 +126,4 @@ export async function completeSession(sessionId, consentEmail) {
         console.error('Error al completar sesión:', error);
         return { success: false };
     }
-}
-
-export async function registerServiceMetrics(sessionId, { service, username, password_strength }) {
-    return saveMetrics(sessionId, {
-        [`scenario1.${service}_user`]: username,
-        [`scenario1.${service}_password_strength`]: password_strength,
-        [`scenario1.${service}_registration_ts`]: new Date().toISOString()
-    });
 }
