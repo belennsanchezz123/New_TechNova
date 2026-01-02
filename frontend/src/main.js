@@ -60,8 +60,15 @@ const TOTAL_SCENARIOS = 9;
 // --- FUNCIONES GLOBALES ---
 
 function triggerTeamsIncident() {
-    const popup = document.getElementById('popup-teams-alert');
-    if (popup) popup.classList.add('active');
+    // Verificamos si el Escenario 1 se completó guardando una marca en localStorage
+    const sc1Completed = localStorage.getItem('sc1_completed') === 'true';
+
+    if (sc1Completed) {
+        const popup = document.getElementById('popup-teams-alert');
+        if (popup) popup.classList.add('active');
+    } else {
+        console.log("Simulación: Popup de Teams bloqueado porque el Escenario 1 no se completó.");
+    }
 }
 
 function startScenario(scenarioNumber) {
