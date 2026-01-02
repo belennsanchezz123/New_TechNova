@@ -4,7 +4,7 @@ import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
 import { getSessionId, setSessionId } from '../utils/session.js';
 
-let isEventsRegistrationComplete = false;
+export let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
 

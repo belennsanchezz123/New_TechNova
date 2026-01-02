@@ -270,12 +270,17 @@
 
         async function loadSessions() {
             try {
-                const response = await fetch(`${API_URL}/sessions/all`);
+                const response = await fetch(`${API_URL}/sessions/all?t=${Date.now()}`);
                 const data = await response.json();
 
                 if (data.success) {
-                    displaySessions(data.sessions);
-                    updateStats(data.sessions);
+                    const sortedSessions = data.sessions.sort((a, b) => {
+                // Usamos started_at o created_at según lo que devuelva tu backend
+                return new Date(b.started_at || b.created_at) - new Date(a.started_at || a.created_at);
+                });
+
+                    displaySessions(sortedSessions);
+                    updateStats(sortedSessions);
                 }
             } catch (error) {
                 console.error('Error loading sessions:', error);
@@ -295,45 +300,64 @@
             document.getElementById('active-sessions').textContent = active;
             document.getElementById('consent-count').textContent = consent;
         }
+function displaySessions(sessions) {
+    if (sessions.length === 0) {
+        document.getElementById('sessions-list').innerHTML =
+            '<div class="loading">No hay sesiones registradas</div>';
+        return;
+    }
 
-        function displaySessions(sessions) {
-            if (sessions.length === 0) {
-                document.getElementById('sessions-list').innerHTML =
-                    '<div class="loading">No hay sesiones registradas</div>';
-                return;
-            }
+    // Importante: Ordenamos por fecha (de más reciente a más antigua)
+    // Esto asegura que si P001 entró hoy, aparezca el primero
+    sessions.sort((a, b) => {
+        const dateA = new Date(a.created_at || a.started_at);
+        const dateB = new Date(b.created_at || b.started_at);
+        return dateB - dateA;
+    });
 
-            const table = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Participant ID</th>
-                            <th>Created At</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${sessions.map(session => `
-                            <tr>
-                                <td>${session.id || '-'}</td>
-                                <td>${session.participant_id || '-'}</td>
-                                <td>${(function(d){try{const t=new Date(d||session.created_at||session.started_at);return isNaN(t.getTime())? (d||session.created_at||session.started_at||'-') : t.toLocaleString()}catch(e){return d||session.created_at||session.started_at||'-'}})(session.created_at || session.started_at)}</td>
-                                <td>
-                                    <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">${session.completed_at ? 'Completada' : 'Activa'}</span>
-                                </td>
-                                <td>
-                                    <button class="view-btn" onclick="window.viewParticipantMetrics('${session.participant_id || session.id}')">Ver Métricas</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+    const table = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Sesión</th>
+                    <th>Participante</th>
+                    <th>Última Actividad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${sessions.map(session => {
+                    // Formateo de fecha simplificado
+                    const sessionDate = new Date(session.created_at || session.started_at);
+                    const dateStr = isNaN(sessionDate.getTime()) 
+                        ? (session.created_at || session.started_at || '-') 
+                        : sessionDate.toLocaleString();
 
-            document.getElementById('sessions-list').innerHTML = table;
-        }
+                    return `
+                    <tr>
+                        <td>${session.id || '-'}</td>
+                        <td style="font-weight: bold; color: #464775;">${session.participant_id || session.user_identifier || '-'}</td>
+                        <td>${dateStr}</td>
+                        <td>
+                            <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
+                                ${session.completed_at ? 'Finalizada' : 'En curso'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="view-btn" onclick="window.viewParticipantMetrics('${session.id}')">
+                                Ver Detalles
+                            </button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('sessions-list').innerHTML = table;
+}
 
         async function viewMetrics(sessionId) {
             try {

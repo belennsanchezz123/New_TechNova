@@ -3,7 +3,7 @@ import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
 import { metrics } from './utils/metrics.js'; 
-
+import { isEventsRegistrationComplete } from './handlers/scenario1.js';
 import { registerService, 
         handleMFA, 
         handlePasskey, 
@@ -223,14 +223,18 @@ async function acceptPolicyAndStart() {
     startScenario(1);
 }
 
-async function handleTeamsAlert() {
+window.handleTeamsAlert = async function() {
+    // 1. Obtener los elementos del DOM
     const passInput = document.getElementById('teams-new-pass');
-    const newPass = passInput.value;
+    const teamsPopup = document.getElementById('popup-teams-alert');
 
-    if (!newPass) {
+    // 2. Validar que se haya introducido una contraseña
+    if (!passInput || !passInput.value) {
         alert("Por favor, introduce una contraseña.");
         return;
     }
+
+    const newPass = passInput.value;
 
     // Solo procedemos si el usuario se ha logueado previamente en Events
     if (!isEventsRegistrationComplete) {
@@ -243,44 +247,41 @@ async function handleTeamsAlert() {
     const distance = getMinPasswordDistance(newPass);
     const sid = getSessionId();
     
-    if (metrics && metrics.scenario1) {
-        metrics.scenario1['scenario1.teams_password_distance'] = distance;
-    }
-
+    // 5. Guardar la métrica usando la función única saveMetrics
     try {
         if (sid) {
             await saveMetrics(sid, { 
                 'scenario1.teams_password_distance': distance 
             });
-            console.log(`Métrica enviada - Distancia: ${distance}`);
+            console.log(`✅ Métrica enviada - Distancia de Teams: ${distance}`);
+        } else {
+            console.warn("No se pudo enviar la métrica: sessionId no encontrado.");
         }
     } catch (err) {
         console.warn('Error al guardar métrica de Teams:', err);
     }
 
-    // Lógica de logs de seguridad
+    // 6. Logs de seguridad para depuración
     if (distance === 0) {
-        console.log("RIESGO CRÍTICO: Contraseña idéntica.");
+        console.log("%cRIESGO CRÍTICO: Contraseña idéntica.", "color: red; font-weight: bold;");
     } else if (distance <= 3) {
-        console.log("RIESGO ALTO: Contraseña muy similar.");
+        console.log("%cRIESGO ALTO: Contraseña muy similar.", "color: orange;");
     } else {
-        console.log("BUEN COMPORTAMIENTO: Contraseña diferente.");
+        console.log("%cBUEN COMPORTAMIENTO: Contraseña diferente.", "color: green;");
     }
 
+    // 7. Feedback al usuario y cierre de popup
     alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
-    // Cerrar el popup usando el ID definido en popups.js
-    // Cerrar el popup (ID proveniente de popups.js)
-
-    const teamsPopup = document.getElementById('popup-teams-alert');  
+    
     if (teamsPopup) {
         teamsPopup.classList.remove('active');
     }
-    // Reseteamos la variable para que no se vuelva a ejecutar accidentalmente
-    isEventsRegistrationComplete = false;
 
-    if (typeof teamsIncidentResolved !== 'undefined') {
-        teamsIncidentResolved = true;
+    // 8. IMPORTANTE: Resetear la variable de flujo si es necesario o marcar incidente como resuelto
+    if (typeof window.teamsIncidentResolved !== 'undefined') {
+        window.teamsIncidentResolved = true;
     }
+
 }
 
 // --- ASIGNACIONES A WINDOW ---

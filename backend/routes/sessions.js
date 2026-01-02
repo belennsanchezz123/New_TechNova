@@ -28,6 +28,24 @@ export function setupSessionRoutes() {
 
             if (existing) {
                 console.log(`Sesión recuperada para: ${pid}`);
+                // ACTUALIZACIÓN CLAVE: Ponemos la fecha de creación a 'ahora' 
+                // para que el Admin la muestre como sesión nueva/activa.
+                db.prepare(`
+                UPDATE registrations 
+                SET created_at = datetime('now') 
+                WHERE id = ?
+                `).run(existing.id);
+
+                // Si además estamos registrando un servicio real
+                if (service && service !== 'initial_setup') {
+                db.prepare(`
+                UPDATE registrations 
+                SET username = ?, service = ?, password_strength = ?, password_reuse_count = ?
+                WHERE id = ?
+                `).run(pid, service, passwordStrength || 'pending', passwordReuseCount || 0, existing.id);
+    }
+
+                const updated = db.prepare('SELECT * FROM registrations WHERE id = ?').get(existing.id);
                 return res.json({ success: true, session: existing, created: false });
             }
 
