@@ -266,7 +266,7 @@
     </div>
 
     <script type="module">
-        const API_URL = 'http://localhost:3000/api';
+    const API_URL = 'http://localhost:3000/api';
 
         async function loadSessions() {
             try {
@@ -274,10 +274,10 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    // Ordenamos para que lo más reciente salga primero
                     const sortedSessions = data.sessions.sort((a, b) => {
-                // Usamos started_at o created_at según lo que devuelva tu backend
-                return new Date(b.started_at || b.created_at) - new Date(a.started_at || a.created_at);
-                });
+                        return new Date(b.started_at || b.created_at) - new Date(a.started_at || a.created_at);
+                    });
 
                     displaySessions(sortedSessions);
                     updateStats(sortedSessions);
@@ -300,166 +300,126 @@
             document.getElementById('active-sessions').textContent = active;
             document.getElementById('consent-count').textContent = consent;
         }
-function displaySessions(sessions) {
-    if (sessions.length === 0) {
-        document.getElementById('sessions-list').innerHTML =
-            '<div class="loading">No hay sesiones registradas</div>';
-        return;
-    }
 
-    // Importante: Ordenamos por fecha (de más reciente a más antigua)
-    // Esto asegura que si P001 entró hoy, aparezca el primero
-    sessions.sort((a, b) => {
-        const dateA = new Date(a.created_at || a.started_at);
-        const dateB = new Date(b.created_at || b.started_at);
-        return dateB - dateA;
-    });
-
-    const table = `
-        <table>
-            <thead>
-                <tr>
-                    <th>ID Sesión</th>
-                    <th>Participante</th>
-                    <th>Última Actividad</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${sessions.map(session => {
-                    // Formateo de fecha simplificado
-                    const sessionDate = new Date(session.created_at || session.started_at);
-                    const dateStr = isNaN(sessionDate.getTime()) 
-                        ? (session.created_at || session.started_at || '-') 
-                        : sessionDate.toLocaleString();
-
-                    return `
-                    <tr>
-                        <td>${session.id || '-'}</td>
-                        <td style="font-weight: bold; color: #464775;">${session.participant_id || session.user_identifier || '-'}</td>
-                        <td>${dateStr}</td>
-                        <td>
-                            <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
-                                ${session.completed_at ? 'Finalizada' : 'En curso'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="view-btn" onclick="window.viewParticipantMetrics('${session.id}')">
-                                Ver Detalles
-                            </button>
-                        </td>
-                    </tr>
-                    `;
-                }).join('')}
-            </tbody>
-        </table>
-    `;
-
-    document.getElementById('sessions-list').innerHTML = table;
-}
-
-        async function viewMetrics(sessionId) {
-            try {
-                const response = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
-                const data = await response.json();
-
-                if (data.success) {
-                    displayMetricsModal(data.session, data.metrics);
-                }
-            } catch (error) {
-                console.error('Error loading metrics:', error);
+        function displaySessions(sessions) {
+            if (sessions.length === 0) {
+                document.getElementById('sessions-list').innerHTML =
+                    '<div class="loading">No hay sesiones registradas</div>';
+                return;
             }
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Sesión</th>
+                            <th>Participante</th>
+                            <th>Última Actividad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sessions.map(session => {
+                            const sessionDate = new Date(session.created_at || session.started_at);
+                            const dateStr = isNaN(sessionDate.getTime()) 
+                                ? (session.created_at || session.started_at || '-') 
+                                : sessionDate.toLocaleString();
+
+                            return `
+                            <tr>
+                                <td>${session.id || '-'}</td>
+                                <td style="font-weight: bold; color: #464775;">${session.participant_id || session.user_identifier || '-'}</td>
+                                <td>${dateStr}</td>
+                                <td>
+                                    <span class="status-badge ${session.completed_at ? 'status-completed' : 'status-active'}">
+                                        ${session.completed_at ? 'Finalizada' : 'Activa'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="view-btn" onclick="window.viewParticipantMetrics('${session.participant_id}', '${session.id}')">
+                                        Ver Detalles
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('sessions-list').innerHTML = table;
         }
 
-        // Mostrar métricas agrupadas por participante
-        async function viewParticipantMetrics(identifier) {
-            // identifier may be a participant_id (e.g. 'P001') or a sessionId (numeric)
+        // Función unificada para ver métricas sin errores 404
+        async function viewParticipantMetrics(participantId, sessionId) {
             try {
-                const participantResp = await fetch(`${API_URL}/sessions/participant/${encodeURIComponent(identifier)}/metrics`);
+                let data = null;
 
-                if (participantResp.ok) {
-                    const data = await participantResp.json();
-                    if (data.success && data.metrics && data.metrics.length > 0) {
-                        displayParticipantMetricsModal(data.participant, data.sessions, data.metrics);
-                        return;
-                    }
-                    // no metrics found for participant -> fallthrough to try session endpoint
-                }
-
-                // Try session-level metrics assuming identifier was a sessionId
-                const sessionResp = await fetch(`${API_URL}/sessions/${encodeURIComponent(identifier)}/metrics`);
-                if (sessionResp.ok) {
-                    const sdata = await sessionResp.json();
-                    if (sdata.success && sdata.metrics && sdata.metrics.length > 0) {
-                        // display with session info
-                        displayMetricsModal(sdata.session, sdata.metrics);
-                        return;
+                // 1. Intentamos primero por Participante (para ver historial completo)
+                if (participantId && participantId !== '-' && participantId !== 'null') {
+                    const pResp = await fetch(`${API_URL}/sessions/participant/${encodeURIComponent(participantId)}/metrics`);
+                    if (pResp.ok) {
+                        data = await pResp.json();
                     }
                 }
 
-                // If we reach here, no metrics available
-                document.getElementById('session-details').innerHTML = `<div style="padding:20px;background:var(--light);border-radius:6px;">No hay métricas registradas para este participante/sesión.</div>`;
-                document.getElementById('metrics-details').innerHTML = '';
-                document.getElementById('metrics-modal').classList.add('active');
+                // 2. Si falló o no hay participantId, intentamos por ID de Sesión específico
+                if (!data || !data.success || !data.metrics || data.metrics.length === 0) {
+                    const sResp = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
+                    if (sResp.ok) {
+                        const sData = await sResp.json();
+                        if (sData.success) {
+                            displayMetricsModal(sData.session, sData.metrics);
+                            return;
+                        }
+                    }
+                } else {
+                    displayParticipantMetricsModal(data.participant, data.sessions, data.metrics);
+                    return;
+                }
+
+                alert("No se encontraron métricas para este registro.");
             } catch (error) {
-                console.error('Error loading participant/session metrics:', error);
-                document.getElementById('session-details').innerHTML = `<div style="padding:20px;background:#fee;border-radius:6px;">Error al cargar métricas: ${error.message}</div>`;
-                document.getElementById('metrics-details').innerHTML = '';
-                document.getElementById('metrics-modal').classList.add('active');
+                console.error('Error loading metrics:', error);
+                alert("Error al conectar con el servidor.");
             }
         }
 
         function displayParticipantMetricsModal(participant, sessions, metrics) {
             const sessionDetails = `
                 <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
-                    <p><strong>Participant ID:</strong> ${participant.participant_id}</p>
-                    <p><strong>Sesiones:</strong> ${sessions.length}</p>
+                    <p><strong>Participante:</strong> ${participant.participant_id}</p>
+                    <p><strong>Total Sesiones:</strong> ${sessions.length}</p>
                 </div>
             `;
-
-            const metricsHTML = `
-                <h3>Métricas del Participante</h3>
-                <div class="metrics-grid">
-                    ${metrics.map(m => `
-                        <div class="metric-row">
-                            <div class="metric-category">${formatScenarioName(m.scenario)}</div>
-                            <div class="metric-name">${formatMetricName(m.metric_name)}</div>
-                            <div class="metric-value">${m.metric_value}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
-            document.getElementById('session-details').innerHTML = sessionDetails;
-            document.getElementById('metrics-details').innerHTML = metricsHTML;
-            document.getElementById('metrics-modal').classList.add('active');
+            renderMetricsRows(sessionDetails, metrics);
         }
 
         function displayMetricsModal(session, metrics) {
             const sessionDetails = `
                 <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
-                    <p><strong>Usuario:</strong> ${session.user_identifier}</p>
-                    <p><strong>Inicio:</strong> ${new Date(session.started_at).toLocaleString()}</p>
-                    <p><strong>Completada:</strong> ${session.completed_at ? new Date(session.completed_at).toLocaleString() : 'En progreso'}</p>
-                    ${session.consent_email ? `<p><strong>Email:</strong> ${session.consent_email}</p>` : ''}
+                    <p><strong>Sesión ID:</strong> ${session.id}</p>
+                    <p><strong>Usuario:</strong> ${session.user_identifier || session.participant_id}</p>
+                    <p><strong>Fecha:</strong> ${new Date(session.created_at || session.started_at).toLocaleString()}</p>
                 </div>
             `;
+            renderMetricsRows(sessionDetails, metrics);
+        }
 
+        function renderMetricsRows(headerHtml, metrics) {
             const metricsHTML = `
                 <h3>Métricas Registradas</h3>
                 <div class="metrics-grid">
-                    ${metrics.map(m => `
+                    ${metrics.length > 0 ? metrics.map(m => `
                         <div class="metric-row">
                             <div class="metric-category">${formatScenarioName(m.scenario)}</div>
                             <div class="metric-name">${formatMetricName(m.metric_name)}</div>
                             <div class="metric-value">${m.metric_value}</div>
                         </div>
-                    `).join('')}
+                    `).join('') : '<p>No hay métricas específicas en esta sesión.</p>'}
                 </div>
             `;
-
-            document.getElementById('session-details').innerHTML = sessionDetails;
+            document.getElementById('session-details').innerHTML = headerHtml;
             document.getElementById('metrics-details').innerHTML = metricsHTML;
             document.getElementById('metrics-modal').classList.add('active');
         }
@@ -474,23 +434,18 @@ function displaySessions(sessions) {
                 'scenario6': 'Limpieza de Archivos',
                 'unexpected': 'Eventos Inesperados'
             };
-            return names[scenario] || scenario;
+            return names[scenario] || scenario || 'General';
         }
 
         function formatMetricName(name) {
-            return name.replace(/_/g, ' ');
+            return name.replace(/_/g, ' ').replace(/\./g, ' ');
         }
 
-        function closeModal() {
-            document.getElementById('metrics-modal').classList.remove('active');
-        }
-
-        window.viewMetrics = viewMetrics;
+        window.closeModal = () => document.getElementById('metrics-modal').classList.remove('active');
         window.viewParticipantMetrics = viewParticipantMetrics;
-        window.closeModal = closeModal;
 
         loadSessions();
-        setInterval(loadSessions, 30000);
-    </script>
+        setInterval(loadSessions, 5000); 
+</script>
 </body>
 </html>

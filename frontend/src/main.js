@@ -2,8 +2,7 @@ import './styles/main.css';
 import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
-import { metrics } from './utils/metrics.js'; 
-import { isEventsRegistrationComplete } from './handlers/scenario1.js';
+import {saveMetrics } from './services/api.js';
 import { registerService, 
         handleMFA, 
         handlePasskey, 
@@ -11,7 +10,8 @@ import { registerService,
         closeRegistrationComplete,
         toggleWifiMenu,
         connectWifi, 
-        getMinPasswordDistance } from './handlers/scenario1.js';
+        getMinPasswordDistance,
+        isEventsRegistrationComplete } from './handlers/scenario1.js';
 
 import { handleInterruption } from './handlers/scenario2.js';
 
@@ -226,6 +226,7 @@ async function acceptPolicyAndStart() {
 window.handleTeamsAlert = async function() {
     // 1. Obtener los elementos del DOM
     const passInput = document.getElementById('teams-new-pass');
+    
     const teamsPopup = document.getElementById('popup-teams-alert');
 
     // 2. Validar que se haya introducido una contraseña
