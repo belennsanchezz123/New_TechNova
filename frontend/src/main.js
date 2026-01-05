@@ -60,14 +60,19 @@ const TOTAL_SCENARIOS = 9;
 // --- FUNCIONES GLOBALES ---
 
 function triggerTeamsIncident() {
-    // Verificamos si el Escenario 1 se completó guardando una marca en localStorage
-    const completed = localStorage.getItem('sc1_completed') === 'true' || isEventsRegistrationComplete;
+    // Verificación ultra-segura: Memoria OR LocalStorage
+    const sc1Completed = (typeof isEventsRegistrationComplete !== 'undefined' && isEventsRegistrationComplete === true) || 
+                         localStorage.getItem('sc1_completed') === 'true';
 
-    if (completed) {
+    if (sc1Completed) {
         const popup = document.getElementById('popup-teams-alert');
-        if (popup) popup.classList.add('active');
+        if (popup) {
+            popup.classList.add('active');
+            console.log("✅ Escenario 1 detectado como completo. Mostrando alerta de Teams.");
+        }
     } else {
-        console.log("Simulación: Popup bloqueado. Escenario 1 aún no finalizado.");
+        // Si no está completo, NO hacemos el classList.add
+        console.log("🚫 Bloqueo preventivo: El popup de Teams no se mostrará porque el Escenario 1 no ha terminado.");
     }
 }
 
@@ -83,21 +88,19 @@ function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
 
-    if (scenarioNumber === 3) {
+ if (scenarioNumber === 3) {
         renderEmails();
         
-        // --- LÓGICA FILTRADA ---
-        // Verificamos si el Escenario 1 está terminado (por variable o por almacenamiento)
+        // Comprobamos si el escenario 1 está realmente terminado
         const sc1Completed = isEventsRegistrationComplete || localStorage.getItem('sc1_completed') === 'true';
 
-        // Solo lanzamos la interrupción si el usuario terminó el E1 Y si no se ha resuelto antes
         if (sc1Completed && !teamsIncidentResolved) {
-            console.log('⚡ Escenario 1 completado. Programando interrupción de Teams...');
+            console.log('⚡ Iniciando interrupción de Teams...');
             setTimeout(() => {
                 triggerTeamsIncident();
             }, 1000);
         } else {
-            console.log('ℹ️ Escenario 3 cargado. Alerta de Teams omitida (E1 incompleto o incidente ya resuelto).');
+            console.log('ℹ️ Omitiendo interrupción de Teams: Escenario 1 incompleto o ya resuelto.');
         }
     }
 
@@ -343,5 +346,5 @@ window.drag = drag;
 window.drop = drop;
 window.allowDrop = allowDrop;
 window.handleTeamsAlert = handleTeamsAlert;
-
+window.valorTeams = () => isEventsRegistrationComplete;
 initApp();
