@@ -123,6 +123,7 @@ export async function handleMFA(activated) {
 
 export function handlePasskey(activated) {
     metrics.scenario1['scenario1.passkey_adoption_rate'] = activated ? 'Accepted' : 'Rejected';
+    isEventsRegistrationComplete = true;
     document.getElementById('popup-passkey').classList.remove('active');
     showRegistrationComplete();
 }

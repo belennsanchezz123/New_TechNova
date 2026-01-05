@@ -350,40 +350,23 @@
             document.getElementById('sessions-list').innerHTML = table;
         }
 
-        // Función unificada para ver métricas sin errores 404
         async function viewParticipantMetrics(participantId, sessionId) {
-            try {
-                let data = null;
+    try {
+        const response = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
+        const data = await response.json();
 
-                // 1. Intentamos primero por Participante (para ver historial completo)
-                if (participantId && participantId !== '-' && participantId !== 'null') {
-                    const pResp = await fetch(`${API_URL}/sessions/participant/${encodeURIComponent(participantId)}/metrics`);
-                    if (pResp.ok) {
-                        data = await pResp.json();
-                    }
-                }
+        if (data.success) {
 
-                // 2. Si falló o no hay participantId, intentamos por ID de Sesión específico
-                if (!data || !data.success || !data.metrics || data.metrics.length === 0) {
-                    const sResp = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
-                    if (sResp.ok) {
-                        const sData = await sResp.json();
-                        if (sData.success) {
-                            displayMetricsModal(sData.session, sData.metrics);
-                            return;
-                        }
-                    }
-                } else {
-                    displayParticipantMetricsModal(data.participant, data.sessions, data.metrics);
-                    return;
-                }
-
-                alert("No se encontraron métricas para este registro.");
-            } catch (error) {
-                console.error('Error loading metrics:', error);
-                alert("Error al conectar con el servidor.");
-            }
+            const sessionInfo = data.session || { id: sessionId, participant_id: participantId };
+            displayMetricsModal(sessionInfo, data.metrics);
+        } else {
+            alert("No se encontraron métricas para esta sesión.");
         }
+    } catch (error) {
+        console.error('Error loading metrics:', error);
+        alert("Error al cargar las métricas. Revisa la consola.");
+    }
+}
 
         function displayParticipantMetricsModal(participant, sessions, metrics) {
             const sessionDetails = `
@@ -396,33 +379,35 @@
         }
 
         function displayMetricsModal(session, metrics) {
-            const sessionDetails = `
-                <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
-                    <p><strong>Sesión ID:</strong> ${session.id}</p>
-                    <p><strong>Usuario:</strong> ${session.user_identifier || session.participant_id}</p>
-                    <p><strong>Fecha:</strong> ${new Date(session.created_at || session.started_at).toLocaleString()}</p>
-                </div>
-            `;
-            renderMetricsRows(sessionDetails, metrics);
-        }
+    if (!session) {
+        session = { id: '?', participant_id: 'Desconocido' };
+    }
 
-        function renderMetricsRows(headerHtml, metrics) {
-            const metricsHTML = `
-                <h3>Métricas Registradas</h3>
-                <div class="metrics-grid">
-                    ${metrics.length > 0 ? metrics.map(m => `
-                        <div class="metric-row">
-                            <div class="metric-category">${formatScenarioName(m.scenario)}</div>
-                            <div class="metric-name">${formatMetricName(m.metric_name)}</div>
-                            <div class="metric-value">${m.metric_value}</div>
-                        </div>
-                    `).join('') : '<p>No hay métricas específicas en esta sesión.</p>'}
+    const sessionDetails = `
+        <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
+            <p><strong>Participante:</strong> ${session.participant_id || session.user_identifier || 'P00x'}</p>
+            <p><strong>ID Sesión:</strong> ${session.id}</p>
+            <p><strong>Fecha:</strong> ${session.created_at ? new Date(session.created_at).toLocaleString() : 'Reciente'}</p>
+        </div>
+    `;
+
+    const metricsHTML = `
+        <h3>Métricas Registradas</h3>
+        <div class="metrics-grid">
+            ${metrics && metrics.length > 0 ? metrics.map(m => `
+                <div class="metric-row">
+                    <div class="metric-category">${formatScenarioName(m.scenario)}</div>
+                    <div class="metric-name">${formatMetricName(m.metric_name)}</div>
+                    <div class="metric-value">${m.metric_value}</div>
                 </div>
-            `;
-            document.getElementById('session-details').innerHTML = headerHtml;
-            document.getElementById('metrics-details').innerHTML = metricsHTML;
-            document.getElementById('metrics-modal').classList.add('active');
-        }
+            `).join('') : '<p style="padding:10px;">No hay métricas detalladas para mostrar.</p>'}
+        </div>
+    `;
+
+    document.getElementById('session-details').innerHTML = sessionDetails;
+    document.getElementById('metrics-details').innerHTML = metricsHTML;
+    document.getElementById('metrics-modal').classList.add('active');
+}
 
         function formatScenarioName(scenario) {
             const names = {
