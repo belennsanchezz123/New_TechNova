@@ -366,25 +366,22 @@ export function getScenarioHTML(scenarioNumber) {
         </div>
         `,
     3: `
-            <h2>
+           <h2>
                 Escenario 3: Gestión de Comunicaciones
                 <span class="translation">Scenario 3: Communications Management</span>
             </h2>
-
             <p>
             <strong>Instrucción:</strong> Es hora de revisar tu bandeja de entrada de <strong>TechNova Mail</strong>.
             <span class="translation">
             <strong>Instruction:</strong> It’s time to check your <strong>TechNova Mail</strong> inbox.
             </span>
             </p>
-
             <p>
             Tu gerente te ha enviado mensajes importantes sobre tu incorporación.
             <span class="translation">
             Your manager has sent you important messages regarding your onboarding.
             </span>
             </p>
-
             <p>
             Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. 
             <strong>Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong>
@@ -393,7 +390,6 @@ export function getScenarioHTML(scenarioNumber) {
             <strong>To interact with an email (reply, report, etc.), right-click on it in the inbox.</strong>
             </span>
             </p>
-
             <div style="margin-bottom: 10px;">
                 <button onclick="window.openComposeEmail()">Nuevo Correo</button>
             </div>
@@ -420,7 +416,6 @@ export function getScenarioHTML(scenarioNumber) {
                 Tarea: Mandar documento sensible
                 <span class="translation">Task: Send Sensitive Document</span>
             </h3>
-
             <p>
                 <strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe vía email a 
                 <strong>'elena_sanchezr@technova.com'</strong>.
@@ -429,7 +424,6 @@ export function getScenarioHTML(scenarioNumber) {
                 <strong>'elena_sanchezr@technova.com'</strong>.
                 </span>
             </p>
-
             <p>
                 Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.
                 <span class="translation">
@@ -437,7 +431,6 @@ export function getScenarioHTML(scenarioNumber) {
                 </span>
             </p>
             </div>
-
         `,
     4: `
 <h2>
@@ -850,7 +843,31 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </form>
             `,
-    9: `
+       9: 
+       `
+        <div class="ai-lab-container">
+            <h2>Escenario 3: Asistente de Inteligencia Artificial Corporativo</h2>
+            <div class="task-instruction" style="background: #eef2f5; padding: 15px; border-left: 5px solid #6264a7; margin-bottom: 20px;">
+                <p><strong>Tarea Actual:</strong> Se requiere la validación urgente del documento <b>"Revisión de Plantilla Q4"</b>.</p>
+            </div>
+            
+            <div class="ai-interface">
+                <textarea id="compose-body" oninput="window.handleAIInput()" 
+                    placeholder="Redacta manualmente o usa el asistente de IA..."
+                    style="width: 100%; height: 200px; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+                
+                <div class="ai-actions" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="window.useAI()" class="btn-ai" style="background: #6264a7; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                        🤖 Redactar con IA (Copilot TechNova)
+                    </button>
+                    <button onclick="window.sendComposedEmail()" class="btn-send" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                        Enviar Informe a RRHH
+                    </button>
+                </div>
+            </div>
+        </div>
+    `,
+    10: `
     <div class="simulation-end-container">
     <h2>¡Simulación Completada!</h2>
     <p>Gracias por tu participación. Tus respuestas y acciones han sido registradas correctamente para nuestro estudio sobre ciberseguridad.</p>

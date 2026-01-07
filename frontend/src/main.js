@@ -19,7 +19,7 @@ import { openEmail,
         openComposeEmail, 
         handlePhishingClick, 
         reportEmail, 
-        useAI, 
+        //useAI, 
         sendDocument, 
         openLocalFileExplorer, 
         openDriveFileExplorer, 
@@ -49,13 +49,14 @@ import {
 
 import { finishSimulation } from './handlers/scenario7.js';
 import { submitTaxonomy } from './handlers/scenario8.js';
+import { useAI, sendAIReport, handleAIInput } from './handlers/scenario9.js';
 import { startSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 import { getSessionId, setSessionId } from './utils/session.js';
 
 let currentScenario = 0;
 let teamsIncidentResolved = false;
-const TOTAL_SCENARIOS = 9;
+const TOTAL_SCENARIOS = 10;
 
 // --- FUNCIONES GLOBALES ---
 
@@ -78,38 +79,60 @@ function triggerTeamsIncident() {
 
 function startScenario(scenarioNumber) {
     console.log(`🎬 Intentando iniciar Escenario: ${scenarioNumber}`);
+
+    // Logs específicos para depuración del Escenario 6
     if (scenarioNumber === 6) {
         console.log("🚀 BIENVENIDO AL ESCENARIO 6");
-        console.log("🔍 Comprobando funciones globales:");
+        console.log("🔍 Comprobando funciones globales de Drag & Drop:");
         console.log("   - window.drag:", window.drag ? "✅ OK" : "❌ INDEFINIDO");
         console.log("   - window.drop:", window.drop ? "✅ OK" : "❌ INDEFINIDO");
     }
+
+    // Cambio visual de escenarios
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
 
- if (scenarioNumber === 3) {
+    // --- LÓGICA ESCENARIO 3 (Correos / Teams Incident) ---
+    if (scenarioNumber === 3) {
         renderEmails();
         
-        // Comprobamos si el escenario 1 está realmente terminado
+        // Verificamos si el Escenario 1 está terminado para mostrar el aviso de contraseña
         const sc1Completed = isEventsRegistrationComplete || localStorage.getItem('sc1_completed') === 'true';
 
         if (sc1Completed && !teamsIncidentResolved) {
-            console.log('⚡ Iniciando interrupción de Teams...');
+            console.log('⚡ Iniciando interrupción de Teams (Aviso Contraseña)...');
             setTimeout(() => {
                 triggerTeamsIncident();
             }, 1000);
         } else {
-            console.log('ℹ️ Omitiendo interrupción de Teams: Escenario 1 incompleto o ya resuelto.');
+            console.log('ℹ️ Alerta de Teams omitida (E1 incompleto o incidente resuelto).');
         }
+
+        // LANZAR ALERTA DE MARTA (IA) TRAS 15 SEGUNDOS
+        // Se dispara aquí para que el usuario reciba el mensaje mientras lee correos
+        setTimeout(() => {
+            if (currentScenario === 3 && typeof window.showAIPressureAlert === 'function') {
+                window.showAIPressureAlert();
+            }
+        }, 15000); 
     }
 
+    // --- LÓGICA ESCENARIO 4 (Navegador) ---
     if (scenarioNumber === 4) {
         setTimeout(() => initBrowser(), 100);
     }
 
-    if (scenarioNumber === 4) {
-        setTimeout(() => initBrowser(), 100);
+    // --- LÓGICA ESCENARIO 9 (Laboratorio de IA) ---
+    if (scenarioNumber === 9) {
+        console.log("🤖 Iniciando Laboratorio de IA...");
+        // Si quieres que el mensaje de Marta salga justo al entrar al escenario 9 
+        // en lugar de en el 3, muévelo aquí:
+        setTimeout(() => {
+            if (typeof window.showAIPressureAlert === 'function') {
+                window.showAIPressureAlert();
+            }
+        }, 2000);
     }
 
     updateNavigationButtons();
@@ -137,7 +160,7 @@ function previousScenario() {
 }
 
 function nextScenario() {
-    if (currentScenario < TOTAL_SCENARIOS) {
+    if (currentScenario < TOTAL_SCENARIOS-1) {
         startScenario(currentScenario + 1);
     }
 }
@@ -148,7 +171,7 @@ async function initApp() {
 
     let scenariosHTML = '<div id="simulation-container"><header>Simulación del Primer Día - TechNova</header><main>';
 
-    for (let i = 0; i <= 9; i++) {
+    for (let i = 0; i < TOTAL_SCENARIOS; i++) {
         scenariosHTML += `<div id="scenario-${i}" class="scenario ${i === 0 ? 'active' : ''}">${getScenarioHTML(i)}</div>`;
     }
 
@@ -158,7 +181,7 @@ async function initApp() {
     scenariosHTML += `
         <div id="navigation-controls">
             <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
-            <span id="scenario-counter">Escenario <span id="current-num">0</span> de 8</span>
+            <span id="scenario-counter">Escenario <span id="current-num">1</span> de ${TOTAL_SCENARIOS}</span>
             <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
         </div>
     `;
@@ -298,6 +321,26 @@ window.handleTeamsAlert = async function() {
 
 }
 
+//Añadimos las funciones que simula un mensaje urgente de Teams
+
+window.showAIPressureAlert = function() {
+    const chat = document.createElement('div');
+    chat.style.cssText = "position:fixed; bottom:20px; right:20px; width:300px; background:#fff; border-top:5px solid #6264a7; box-shadow:0 5px 15px rgba(0,0,0,0.3); padding:15px; z-index:10000; border-radius:5px;";
+    chat.innerHTML = `
+        <strong style="color:#6264a7;">💬 Marta (RRHH):</strong>
+        <p style="font-size:13px;">"Oye, me acaban de pedir la validación de la plantilla Q4 para la reunión de ahora. 
+            Son un montón de datos y no me da la vida... <b>¿Puedes generar el informe de la forma más rápida posible y enviármelo?</b> Confío en tu criterio."</p>
+        <button onclick="this.parentElement.remove()" style="width:100%; background:#6264a7; color:white; border:none; padding:5px; cursor:pointer;">Cerrar</button>
+    `;
+    document.body.appendChild(chat);
+};
+
+window.goToAI = function() {
+    document.getElementById('teams-chat-alert').remove();
+    window.startScenario(9);
+};
+
+
 // --- ASIGNACIONES A WINDOW ---
 window.toggleWifiMenu = toggleWifiMenu;
 window.connectWifi = connectWifi;
@@ -318,6 +361,8 @@ window.openComposeEmail = openComposeEmail;
 window.handlePhishingClick = handlePhishingClick;
 window.reportEmail = reportEmail;
 window.useAI = useAI;
+window.sendAIReport = sendAIReport;
+window.handleAIInput = handleAIInput;
 window.sendDocument = sendDocument;
 window.openLocalFileExplorer = openLocalFileExplorer;
 window.openDriveFileExplorer = openDriveFileExplorer;
