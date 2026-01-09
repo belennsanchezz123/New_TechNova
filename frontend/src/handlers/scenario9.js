@@ -4,49 +4,61 @@ import { getSessionId } from '../utils/session.js';
 let aiGeneratedText = "";
 let startTime = 0;
 let userEdited = false;
-
-
-export function useAI() {
-    const bodyField = document.getElementById('ai-editor-body');
-    
-    // DISEÑO DEL TRUCO (Métrica C): Generamos un dato falso (200.000€ en vez de 20.000€)
-    aiGeneratedText = `He revisado la plantilla Q4. Todo es correcto. Carlos Ruiz tiene un salario de 55.000€ y Lucía Márquez tiene un salario de 200.000€. Procede con el cierre.`;
-    
-    bodyField.value = aiGeneratedText;
-    startTime = Date.now();
-    userEdited = false;
-    console.log("🤖 IA: Generando respuesta con alucinación salarial...");
-}
+let aiWasUsed = false; // Variable para proactividad
 
 export function handleAIInput() {
     userEdited = true;
 }
 
+export function useAI() {
+    window.aiWasUsed = true;
+    const bodyField = document.getElementById('ai-editor-body');
+    
+    // El informe sale limpio, pero con la alucinación de Lucía Márquez (200.000€)
+    const summary = `RESUMEN DE VALIDACIÓN Q4 (TechNova):
+- Carlos Ruiz (TN-4482): 55.000€ + 12% bonus. Turno mañana (8-15) OK.
+- Lucía Márquez (TN-9921): Salario 200.000€. Solicitud de teletrabajo aceptada.
+- Javier Ochoa (TN-1102): Salario 32.000€. Petición de subida a 35.000€ bajo revisión.
+- Maria Garcia (TN-2231): Ajuste a 45.000€ (desde 42k).
+- Elena Gomez (TN-7712): Remoto 100% (Pendiente).
+- David Perez (TN-3341): Ascenso a 50.000€.
+--------------------------------------------------
+Datos consolidados a partir del historial de chat.`;
+    
+    bodyField.value = summary;
+    window.aiStartTime = Date.now();
+    window.userEdited = false;
+    document.getElementById('ai-status-msg').innerHTML = "<span style='color:blue'>🤖 IA: Información extraída y formateada.</span>";
+}
+
+
 export async function sendAIReport() {
     const sid = getSessionId();
     const currentBody = document.getElementById('ai-editor-body').value;
-    const endTime = Date.now();
-    const duration = (endTime - startTime) / 1000; // segundos
+    const duration = aiWasUsed ? (Date.now() - startTime) / 1000 : 0;
 
-    // Métrica A: Shadow AI (Detectamos si pegó palabras del PDF original: "Cirugía cardíaca", "Diabetes", "IBAN")
-    const sensitiveWords = ["cirugía", "cardíaca", "diabetes", "insulina", "baja prevista"];
-    const shadowAI = sensitiveWords.some(word => currentBody.toLowerCase().includes(word));
+    // Detección de Fuga de Datos (Shadow AI)
+    const sensitiveTerms = ["TN-4482", "TN-9921", "TN-1102", "32.000€"];
+    const shadowAI = sensitiveTerms.some(term => currentBody.includes(term));
 
-    // Métrica C: Verificación de Alucinación
-    // Si el texto sigue diciendo 200.000, es que no corrigió el error
+    // Detección de Alucinación (No corrigió los 200.000€)
     const hallucinationAccepted = currentBody.includes("200.000");
 
     const metricsIA = {
-        'scenario9.shadow_ai_leak': shadowAI ? 'Critical' : 'None',
-        'scenario9.blind_trust': (duration < 5 && !userEdited) ? 'Yes' : 'No',
+        'scenario9.proactive_ai_usage': aiWasUsed ? 'Yes' : 'No',
+        'scenario9.shadow_ai_leak': shadowAI ? 'High' : 'None',
+        'scenario9.blind_trust': (aiWasUsed && duration < 8 && !userEdited) ? 'Yes' : 'No',
         'scenario9.hallucination_detected': !hallucinationAccepted ? 'Yes' : 'No',
         'scenario9.reaction_time': duration.toFixed(2)
     };
 
     try {
-        await saveMetrics(sid, metricsIA);
+        if (sid) {
+            await saveMetrics(sid, metricsIA);
+            console.log("✅ Métricas IA enviadas:", metricsIA);
+        }
         alert("✅ Informe enviado a RRHH.");
-        // Aquí podrías llamar a window.nextScenario() si hubiera un 10
+        if (window.nextScenario) window.nextScenario();
     } catch (err) {
         console.error("Error al guardar métricas IA:", err);
     }

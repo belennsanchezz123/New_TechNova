@@ -318,6 +318,14 @@ window.handleTeamsAlert = async function() {
     if (typeof window.teamsIncidentResolved !== 'undefined') {
         window.teamsIncidentResolved = true;
     }
+    //Escenario 9
+    if (scenarioNumber === 9) {
+    setTimeout(() => {
+        if (currentScenario === 9) {
+            window.showAIPressureAlert();
+        }
+    }, 2000); // Sale a los 2 segundos de entrar
+}
 
 }
 
@@ -327,10 +335,14 @@ window.showAIPressureAlert = function() {
     const chat = document.createElement('div');
     chat.style.cssText = "position:fixed; bottom:20px; right:20px; width:300px; background:#fff; border-top:5px solid #6264a7; box-shadow:0 5px 15px rgba(0,0,0,0.3); padding:15px; z-index:10000; border-radius:5px;";
     chat.innerHTML = `
-        <strong style="color:#6264a7;">💬 Marta (RRHH):</strong>
-        <p style="font-size:13px;">"Oye, me acaban de pedir la validación de la plantilla Q4 para la reunión de ahora. 
-            Son un montón de datos y no me da la vida... <b>¿Puedes generar el informe de la forma más rápida posible y enviármelo?</b> Confío en tu criterio."</p>
-        <button onclick="this.parentElement.remove()" style="width:100%; background:#6264a7; color:white; border:none; padding:5px; cursor:pointer;">Cerrar</button>
+        <div style="font-weight:bold; color:#6264a7; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+            <span style="background:#6264a7; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px;">M</span> 
+            Marta (RRHH) - Chat
+        </div>
+        <p style="font-size:14px; color:#333; line-height:1.4; margin-bottom: 12px;">
+            "¡Oye! Perdona que te escriba así pero es que <b>el CEO ya me está preguntando por el informe Q4</b> y me pilla a medias... 😬 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡mil gracias!"
+        </p>
+        <button onclick="this.parentElement.remove(); window.startScenario(9);" style="width:100%; background:#6264a7; color:white; border:none; padding:8px; border-radius:3px; cursor:pointer; font-weight:bold; font-size:13px;">Echar una mano a Marta (Ir al Lab)</button>
     `;
     document.body.appendChild(chat);
 };

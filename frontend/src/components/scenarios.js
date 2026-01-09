@@ -843,26 +843,49 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </form>
             `,
-       9: 
-       `
-        <div class="ai-lab-container">
-            <h2>Escenario 3: Asistente de Inteligencia Artificial Corporativo</h2>
-            <div class="task-instruction" style="background: #eef2f5; padding: 15px; border-left: 5px solid #6264a7; margin-bottom: 20px;">
-                <p><strong>Tarea Actual:</strong> Se requiere la validación urgente del documento <b>"Revisión de Plantilla Q4"</b>.</p>
+       9: `
+        <div class="ai-lab-wrapper">
+            <h2 style="color: #6264a7;">Escenario 9: Incidencias Críticas de Nóminas (Chat de Grupo)</h2>
+            <div style="background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; margin-bottom: 15px; font-size: 0.85em;">
+                ⚠️ <strong>SISTEMA CAÍDO:</strong> La base de datos de salarios no funciona. Marta necesita el resumen para la reunión del CEO <strong>YA</strong>. Usa el historial de este chat.
             </div>
             
-            <div class="ai-interface">
-                <textarea id="compose-body" oninput="window.handleAIInput()" 
-                    placeholder="Redacta manualmente o usa el asistente de IA..."
-                    style="width: 100%; height: 200px; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
-                
-                <div class="ai-actions" style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button onclick="window.useAI()" class="btn-ai" style="background: #6264a7; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                        🤖 Redactar con IA (Copilot TechNova)
-                    </button>
-                    <button onclick="window.sendComposedEmail()" class="btn-send" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                        Enviar Informe a RRHH
-                    </button>
+            <div class="ai-task-container" style="display: flex; gap: 20px; align-items: stretch;">
+                <div style="flex: 1.2; background: #fff; padding: 15px; border: 1px solid #ddd; border-top: 5px solid #6264a7; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1em; color: #6264a7; margin-top:0;">💬 Chat: Operaciones RRHH</h3>
+                    <div id="raw-chat-data" style="height: 380px; overflow-y: auto; font-size: 0.82em; background: #fdfdfd; padding: 10px; border: 1px solid #eee; line-height: 1.4; color: #333;">
+                        <p><strong>Marta (10:15):</strong> Chicos, ¿tenemos lo de TechNova? ¡El jefe me pide los cambios del Q4 en 5 minutos!</p>
+                        <p><strong>Juan (10:16):</strong> Voy... Carlos Ruiz (TN-4482) dice que ok a los 55.000€ pero que solo si le damos turno de mañana (8 a 15). Ah, y el bonus del 10% no se toca.</p>
+                        <p><strong>Elena (10:17):</strong> ¡Oye! Maria Garcia (TN-2231) me acaba de llamar gritando. Dice que quiere 45.000€, que ahora cobra 42k y no le llega.</p>
+                        <p><strong>Juan (10:18):</strong> Esperad, Lucía Márquez (TN-9921) cobra 48.000€. Me mandó un mail diciendo que o teletrabaja los viernes o acepta la oferta de la competencia.</p>
+                        <p><strong>Marta (10:19):</strong> Juan, ¿qué pasa con Javier Ochoa (TN-1102)?</p>
+                        <p><strong>Juan (10:20):</strong> Javier está insoportable. Cobra 32.000€ y exige subir a 35k hoy mismo o se va. Sinceramente, me tiene harto con sus amenazas.</p>
+                        <p><strong>Elena (10:21):</strong> Marta, apunta también: Sergio Lopez (TN-5542) sigue con 60k + 5% bonus, sin cambios. Y Elena Gomez (TN-7712) 38k, pero pide remoto 100%.</p>
+                        <p><strong>Juan (10:22):</strong> Ah, se me olvidaba Carlos Ruiz... corregid lo de antes, el bonus no es el 10%, es el 12% que me lo acaba de confirmar por WhatsApp.</p>
+                        <p><strong>Marta (10:23):</strong> ¡Uf, qué lío! David Perez (TN-3341) sube a 50k (estaba en 45k) por el ascenso. Ana Belen (TN-8823) 52k sin cambios.</p>
+                        <p><strong>Elena (10:24):</strong> Pedro Juan (TN-1234) cobra 30k. Laura Martinez (TN-5678) 40k. No tienen cambios estos dos.</p>
+                        <p><strong>Juan (10:25):</strong> Marta, ¿le has dicho lo de Javier Ochoa? Si no le subimos los 3k se pira.</p>
+                        <p><strong>Marta (10:26):</strong> ¡No tengo tiempo! Pásalo todo al informe y lo que salga, que entro en la reunión!</p>
+                    </div>
+                </div>
+
+                <div style="flex: 1; display: flex; flex-direction: column; background: #f4f6f9; padding: 15px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
+                    <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
+                        placeholder="Pon orden en este lío y redacta el informe consolidado..."
+                        style="flex: 1; min-height: 250px; padding: 10px; font-size: 0.85em; border: 1px solid #bbb; border-radius: 4px;"></textarea>
+                    
+                    <div id="ai-status-msg" style="height: 20px; font-size: 0.75em; margin: 5px 0;"></div>
+                    
+                    <div style="margin: 5px 0 15px 0; font-size: 0.75em; color: #555;">
+                        <input type="checkbox" id="check-responsibility">
+                        <label for="check-responsibility">onfirmo que he filtrado el ruido y los datos son correctos según la política de TechNova.</label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.useAI()" style="background: #6264a7; color: white; flex: 1.2; font-weight: bold; padding: 10px;">🤖 Ordenar con IA</button>
+                        <button onclick="window.sendAIReport()" style="background: #2ea44f; color: white; flex: 0.8; font-weight: bold;">Enviar</button>
+                    </div>
                 </div>
             </div>
         </div>
