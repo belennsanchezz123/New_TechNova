@@ -1,4 +1,4 @@
-# LYNX Platform Evaluation
+# TechNova Platform Evaluation
 
 Simulación de evaluación de seguridad de la plataforma LYNX con arquitectura Frontend/Backend separada.
 
