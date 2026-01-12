@@ -99,18 +99,23 @@ export async function completeRegistration(sessionId, patch = {}) {
  */
 export async function saveQuestionnaire(questionnaireData) {
     try {
-        const response = await fetch(`${API_URL}/questionnaire/save`, {
+        // Cambiamos /save por /submit para coincidir con el backend
+        const response = await fetch(`${API_URL}/questionnaire/submit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(questionnaireData),
         });
+
+        if (!response.ok) {
+            throw new Error(`Error en el servidor: ${response.status}`);
+        }
+
         return await response.json();
     } catch (error) {
         console.error('Error al guardar el cuestionario:', error);
         throw error;
     }
 }
-
 /**
  * Finaliza la sesión anotando el correo de consentimiento (si existe)
  */

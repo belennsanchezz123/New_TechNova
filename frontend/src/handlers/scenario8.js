@@ -76,9 +76,9 @@ export async function submitTaxonomy() {
         });
 
         await saveQuestionnaire({
-            participantId,
-            sessionId,
-            answers // Envía el nuevo objeto de respuestas
+        participantId: participantId,
+        sessionId: sessionId,
+        answers: answers // El objeto con q_0_0, q_0_1, etc.
         });
 
         alert('Cuestionario enviado. ¡Gracias por completar la simulación!');

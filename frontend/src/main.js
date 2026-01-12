@@ -56,7 +56,7 @@ import { getSessionId, setSessionId } from './utils/session.js';
 
 let currentScenario = 0;
 let teamsIncidentResolved = false;
-const TOTAL_SCENARIOS = 10;
+const TOTAL_SCENARIOS = 11;
 
 // --- FUNCIONES GLOBALES ---
 
@@ -108,14 +108,6 @@ function startScenario(scenarioNumber) {
         } else {
             console.log('ℹ️ Alerta de Teams omitida (E1 incompleto o incidente resuelto).');
         }
-
-        // LANZAR ALERTA DE MARTA (IA) TRAS 15 SEGUNDOS
-        // Se dispara aquí para que el usuario reciba el mensaje mientras lee correos
-        setTimeout(() => {
-            if (currentScenario === 3 && typeof window.showAIPressureAlert === 'function') {
-                window.showAIPressureAlert();
-            }
-        }, 15000); 
     }
 
     // --- LÓGICA ESCENARIO 4 (Navegador) ---
@@ -126,8 +118,6 @@ function startScenario(scenarioNumber) {
     // --- LÓGICA ESCENARIO 9 (Laboratorio de IA) ---
     if (scenarioNumber === 9) {
         console.log("🤖 Iniciando Laboratorio de IA...");
-        // Si quieres que el mensaje de Marta salga justo al entrar al escenario 9 
-        // en lugar de en el 3, muévelo aquí:
         setTimeout(() => {
             if (typeof window.showAIPressureAlert === 'function') {
                 window.showAIPressureAlert();
@@ -162,8 +152,8 @@ function previousScenario() {
 function nextScenario() {
     if (currentScenario < TOTAL_SCENARIOS-1) {
         startScenario(currentScenario + 1);
+        }
     }
-}
 
 async function initApp() {
     console.log('🟢 INICIANDO APP');
@@ -181,7 +171,7 @@ async function initApp() {
     scenariosHTML += `
         <div id="navigation-controls">
             <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
-            <span id="scenario-counter">Escenario <span id="current-num">1</span> de ${TOTAL_SCENARIOS}</span>
+            <span id="scenario-counter">Escenario <span id="current-num">1</span> de ${TOTAL_SCENARIOS-1}</span>
             <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
         </div>
     `;
@@ -318,32 +308,49 @@ window.handleTeamsAlert = async function() {
     if (typeof window.teamsIncidentResolved !== 'undefined') {
         window.teamsIncidentResolved = true;
     }
-    //Escenario 9
-    if (scenarioNumber === 9) {
-    setTimeout(() => {
-        if (currentScenario === 9) {
-            window.showAIPressureAlert();
-        }
-    }, 2000); // Sale a los 2 segundos de entrar
-}
-
 }
 
 //Añadimos las funciones que simula un mensaje urgente de Teams
 
 window.showAIPressureAlert = function() {
+    // Evitar duplicados si el mensaje ya está en pantalla
+    if (document.getElementById('teams-pressure-msg')) return;
+
     const chat = document.createElement('div');
-    chat.style.cssText = "position:fixed; bottom:20px; right:20px; width:300px; background:#fff; border-top:5px solid #6264a7; box-shadow:0 5px 15px rgba(0,0,0,0.3); padding:15px; z-index:10000; border-radius:5px;";
-    chat.innerHTML = `
-        <div style="font-weight:bold; color:#6264a7; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-            <span style="background:#6264a7; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px;">M</span> 
-            Marta (RRHH) - Chat
-        </div>
-        <p style="font-size:14px; color:#333; line-height:1.4; margin-bottom: 12px;">
-            "¡Oye! Perdona que te escriba así pero es que <b>el CEO ya me está preguntando por el informe Q4</b> y me pilla a medias... 😬 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡mil gracias!"
-        </p>
-        <button onclick="this.parentElement.remove(); window.startScenario(9);" style="width:100%; background:#6264a7; color:white; border:none; padding:8px; border-radius:3px; cursor:pointer; font-weight:bold; font-size:13px;">Echar una mano a Marta (Ir al Lab)</button>
+    chat.id = 'teams-pressure-msg';
+    
+    // Estilos de notificación moderna
+    chat.style.cssText = `
+        position: fixed; 
+        bottom: 20px; 
+        right: 20px; 
+        width: 320px; 
+        background: #fff; 
+        border-top: 6px solid #6264a7; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+        z-index: 10000; 
+        border-radius: 5px; 
+        padding: 15px; 
+        font-family: 'Segoe UI', Tahoma, sans-serif;
     `;
+    
+    chat.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="font-weight:bold; color:#6264a7; display:flex; align-items:center; gap:8px;">
+                <span style="background:#6264a7; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px;">M</span> 
+                Marta (RRHH)
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                    style="background:none; border:none; color:#888; cursor:pointer; font-size:18px; line-height:1; padding:0 5px;"
+                    title="Cerrar mensaje">
+                &times;
+            </button>
+        </div>
+        <p style="font-size:13px; color:#333; line-height:1.4; margin: 0;">
+            "¡Oye! Perdona que te escriba así pero es que <b>el CEO ya me está preguntando por el informe Q4</b> y me pilla a medias... 😬 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡gracias!"
+        </p>
+    `;
+    
     document.body.appendChild(chat);
 };
 

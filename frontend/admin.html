@@ -265,6 +265,11 @@
         </div>
     </div>
 
+    <button class="view-btn" 
+    onclick="window.viewAllQuestionnaires()" style="background: var(--success); margin-bottom: 20px;">
+    📊 Ver Respuestas Taxonomía
+    </button>
+
     <script type="module">
     const API_URL = 'http://localhost:3000/api';
 
@@ -469,6 +474,51 @@
 
         loadSessions();
         setInterval(loadSessions, 5000); 
+    window.viewAllQuestionnaires = async function() {
+    try {
+        const response = await fetch(`${API_URL}/questionnaire/all`);
+        const data = await response.json();
+
+        if (data.success) {
+            let html = `
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; font-size: 0.8em;">
+                        <thead>
+                            <tr>
+                                <th>Participante</th>
+                                <th>Fecha</th>
+                                <th>Respuestas (JSON)</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            data.responses.forEach(r => {
+                // Intentamos parsear el JSON de respuestas para mostrarlo bonito
+                const answers = JSON.parse(r.answers_json || '{}');
+                const prettyAnswers = Object.entries(answers)
+                    .map(([q, v]) => `<b>${q}:</b> ${v}`)
+                    .join(' | ');
+
+                html += `
+                    <tr>
+                        <td>${r.participant_id}</td>
+                        <td>${new Date(r.submitted_at).toLocaleString()}</td>
+                        <td><small>${prettyAnswers}</small></td>
+                    </tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+            
+            // Reutilizamos el modal que ya tienes
+            document.getElementById('session-details').innerHTML = "<h2>Respuestas de Taxonomía</h2>";
+            document.getElementById('metrics-details').innerHTML = html;
+            document.getElementById('metrics-modal').classList.add('active');
+        }
+    } catch (error) {
+        alert("Error al cargar los cuestionarios");
+        console.error(error);
+    }
+}
 </script>
 </body>
 </html>
