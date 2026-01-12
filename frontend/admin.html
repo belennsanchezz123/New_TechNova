@@ -411,12 +411,12 @@
 
         function formatScenarioName(scenario) {
             const names = {
-                'scenario1': 'Creación de Cuenta',
-                'scenario2': 'Interrupciones & Periféricos',
+                'scenario1': 'Cuentas y Seguridad',
+                'scenario2': 'Interrupciones & Elementos externos',
                 'scenario3': 'Email & Comunicaciones',
                 'scenario4': 'Navegación Web',
-                'scenario5': 'Redes Sociales',
-                'scenario6': 'Limpieza de Archivos',
+                'scenario5': 'Privacidad en Redes Sociales',
+                'scenario6': 'Limpieza y Gestion de archivos',
                 'scenario9': 'Uso de IA',
                 'unexpected': 'Eventos Inesperados'
             };
@@ -426,6 +426,43 @@
         function formatMetricName(name) {
             return name.replace(/_/g, ' ').replace(/\./g, ' ');
         }
+        //Nueva funcion para traducir las metricas especificas 
+        /*
+        function formatMetricName(name) {
+        // Diccionario de traducción para métricas específicas
+        const translations = {
+        // Métricas de IA (Escenario 9)
+        'proactive ai usage': 'Uso Proactivo de IA',
+        'shadow ai leak': 'Fuga de Privacidad (Shadow IA)',
+        'blind trust': 'Confianza Ciega (Sin revisión)',
+        'hallucination detected': 'Error de Datos Detectado',
+        'reaction time': 'Tiempo de Respuesta (seg)',
+        'final content length': 'Longitud del Informe',
+        
+        // Métricas de Cuentas (Escenario 1)
+        'password strength': 'Fortaleza de Contraseña',
+        'password reuse count': 'Reutilización de Contraseña',
+        'mfa enabled': 'Doble Factor (MFA)',
+        'teams password distance': 'Diferencia Pass Teams',
+        
+        // Métricas de Email (Escenario 3)
+        'phishing click': 'Click en Phishing',
+        'email reported': 'Correo Reportado',
+        'attachment removed': 'Adjunto Eliminado',
+        'sensitive data leak': 'Fuga de Datos Sensibles'
+    };
+
+    // 1. Limpiamos el nombre técnico (puntos y guiones)
+    let technicalName = name.replace(/_/g, ' ').replace(/\./g, ' ').toLowerCase().trim();
+    
+    // 2. Buscamos en el diccionario, si no existe, devolvemos el nombre limpio capitalizado
+    if (translations[technicalName]) {
+        return translations[technicalName];
+    }
+
+    return technicalName.charAt(0).toUpperCase() + technicalName.slice(1);
+}
+*/
 
         window.closeModal = () => document.getElementById('metrics-modal').classList.remove('active');
         window.viewParticipantMetrics = viewParticipantMetrics;
