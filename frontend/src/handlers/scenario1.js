@@ -26,7 +26,6 @@ function goNext(service) {
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
     } else if (service === 'events') {
         localStorage.setItem('sc1_completed', 'true');
-        document.getElementById('popup-passkey').classList.add('active');
     }
 }
 
@@ -121,12 +120,6 @@ export async function handleMFA(activated) {
     if (eventsForm) eventsForm.style.display = 'block';
 }
 
-export function handlePasskey(activated) {
-    metrics.scenario1['scenario1.passkey_adoption_rate'] = activated ? 'Accepted' : 'Rejected';
-    isEventsRegistrationComplete = true;
-    document.getElementById('popup-passkey').classList.remove('active');
-    showRegistrationComplete();
-}
 
 function showRegistrationComplete() {
     const mailUsername = registrations['mail']?.username || '-';

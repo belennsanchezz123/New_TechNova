@@ -5,12 +5,11 @@ export const metrics = {
         drive_password_strength: 'Not Set',
         events_password_strength: 'Not Set',
         password_reused: 'N/A',
-        mfa_usage: 'Not Set',
-        passkey_adoption_rate: 'Not Set'
+        mfa_usage: 'Not Set'
     },
     scenario2: {
-        manual_lock_screen: 'Not Set',
-        usb_antivirus_scan: 'Not Set'
+        manual_lock_screen: 'Not Set'
+        //usb_antivirus_scan: 'Not Set'
     },
     scenario3: {
         phishing_click_rate: 'Did not click',

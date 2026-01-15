@@ -2,7 +2,7 @@ import { metrics } from '../utils/metrics.js';
 import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
 
-let hasScannedDrive = false;
+//let hasScannedDrive = false;
 
 // --- INICIO DE LA NUEVA LÓGICA ---
 
@@ -25,52 +25,38 @@ function showUsbTask() {
     setupFileExplorer(); // Configura la lógica del explorador de archivos
 }
 
-// Función 'onclick' para los botones de interrupción
-// La exportamos a 'window' para que el 'onclick' del HTML la encuentre
+
 export async function handleInterruption(didLock) {
     const sid = getSessionId(); 
+    const valorMétrica = didLock ? 'Yes, locked screen' : 'No, left screen unlocked';
+    metrics.scenario2.manual_lock_screen = valorMétrica;
+
+    try {
+        await saveMetrics(sid, { 'scenario2.manual_lock_screen': valorMétrica });
+    } catch (err) {
+        console.warn('Error al guardar métrica:', err);
+    }
+
     if (didLock) {
-        // Opción Correcta: El usuario suspende la sesión
-        const valorMétrica = 'Yes, locked screen';
-        metrics.scenario2.manual_lock_screen = valorMétrica;
-        
-        // CAMBIO AQUÍ: Usamos saveMetrics con el prefijo 'scenario2.'
-        // Esto hace que el Admin lo lea bien y NO guarda 'event' ni 'username'
-        try {
-            await saveMetrics(sid, { 
-                'scenario2.manual_lock_screen': valorMétrica 
-            });
-        } catch (err) {
-            console.warn('Error al guardar métrica:', err);
-        }
-
-        // Muestra la pantalla de bloqueo
         const lockScreen = document.getElementById('simulated-lock-screen');
-        if (lockScreen) {
-            lockScreen.style.display = 'flex';
-        }
-
-        document.addEventListener('keydown', handleKeyUnlock);
+        if (lockScreen) lockScreen.style.display = 'flex';
         
+        // Modificamos el desbloqueo para que salte al Escenario 3
+        const unlockAndGo = (event) => {
+            if (event.key === 'v') {
+                if (lockScreen) lockScreen.style.display = 'none';
+                document.removeEventListener('keydown', unlockAndGo);
+                window.startScenario(3); // <--- SALTO DIRECTO AL ESCENARIO 3
+            }
+        };
+        document.addEventListener('keydown', unlockAndGo);
     } else {
-        // Opción Incorrecta: El usuario continúa
-        const valorMétrica = 'No, left screen unlocked';
-        metrics.scenario2.manual_lock_screen = valorMétrica;
-
-        // CAMBIO AQUÍ: Lo mismo, prefijo 'scenario2.'
-        try {
-            await saveMetrics(sid, { 
-                'scenario2.manual_lock_screen': valorMétrica 
-            });
-        } catch (err) {
-            console.warn('Error al guardar métrica:', err);
-        }
-        
-        showUsbTask();
+        window.startScenario(3); // <--- SALTO DIRECTO AL ESCENARIO 3
     }
 }
 
 // Función para cambiar entre vistas del explorador
+/*
 function navigateToView(viewId, pathText, sidebarActiveId) {
     // Ocultar todas las vistas
     const views = ['this-pc-view', 'drive-c-view', 'network-view', 'documents-view', 'images-view', 'usb-content-view'];
@@ -225,3 +211,4 @@ function setupFileExplorer() {
         });
     });
 }
+    */

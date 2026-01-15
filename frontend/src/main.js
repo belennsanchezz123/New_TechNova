@@ -5,7 +5,6 @@ import { renderEmails } from './utils/emails.js';
 import {saveMetrics } from './services/api.js';
 import { registerService, 
         handleMFA, 
-        handlePasskey, 
         toggleProfileDropdown, 
         closeRegistrationComplete,
         toggleWifiMenu,
@@ -370,7 +369,6 @@ window.nextScenario = nextScenario;
 window.acceptPolicyAndStart = acceptPolicyAndStart;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
-window.handlePasskey = handlePasskey;
 window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
