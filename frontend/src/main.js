@@ -2,44 +2,47 @@ import './styles/main.css';
 import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
-import {saveMetrics } from './services/api.js';
-import { registerService, 
-        handleMFA, 
-        toggleProfileDropdown, 
-        closeRegistrationComplete,
-        toggleWifiMenu,
-        connectWifi, 
-        getMinPasswordDistance,
-        isEventsRegistrationComplete } from './handlers/scenario1.js';
+import { saveMetrics } from './services/api.js';
+import {
+    registerService,
+    handleMFA,
+    toggleProfileDropdown,
+    closeRegistrationComplete,
+    toggleWifiMenu,
+    connectWifi,
+    getMinPasswordDistance,
+    isEventsRegistrationComplete
+} from './handlers/scenario1.js';
 
 import { handleInterruption } from './handlers/scenario2.js';
 
-import { openEmail, 
-        openComposeEmail, 
-        handlePhishingClick, 
-        reportEmail, 
-        //useAI, 
-        sendDocument, 
-        openLocalFileExplorer, 
-        openDriveFileExplorer, 
-        selectAttachment, 
-        removeAttachment, 
-        closeFileExplorer, 
-        sendComposedEmail, 
-        cancelCompose,
-        // openConfidentialDoc // <--- COMENTADO (No se usa todavía)
-        } from './handlers/scenario3.js';
+import {
+    openEmail,
+    openComposeEmail,
+    handlePhishingClick,
+    reportEmail,
+    //useAI, 
+    sendDocument,
+    openLocalFileExplorer,
+    openDriveFileExplorer,
+    selectAttachment,
+    removeAttachment,
+    closeFileExplorer,
+    sendComposedEmail,
+    cancelCompose,
+    // openConfidentialDoc // <--- COMENTADO (No se usa todavía)
+} from './handlers/scenario3.js';
 
 import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
 
-import { 
-    openWordDocs, 
-    openSaveDialog, 
-    finalizeSave, 
-    openTempFolder, 
-    showContextMenu, 
-    performDelete, 
+import {
+    openWordDocs,
+    openSaveDialog,
+    finalizeSave,
+    openTempFolder,
+    showContextMenu,
+    performDelete,
     openMyPC,
     drag,
     drop,
@@ -61,8 +64,7 @@ const TOTAL_SCENARIOS = 11;
 
 function triggerTeamsIncident() {
     // Verificación ultra-segura: Memoria OR LocalStorage
-    const sc1Completed = (typeof isEventsRegistrationComplete !== 'undefined' && isEventsRegistrationComplete === true) || 
-                         localStorage.getItem('sc1_completed') === 'true';
+    const sc1Completed = (typeof isEventsRegistrationComplete !== 'undefined' && isEventsRegistrationComplete === true);
 
     if (sc1Completed) {
         const popup = document.getElementById('popup-teams-alert');
@@ -95,9 +97,9 @@ function startScenario(scenarioNumber) {
     // --- LÓGICA ESCENARIO 3 (Correos / Teams Incident) ---
     if (scenarioNumber === 3) {
         renderEmails();
-        
+
         // Verificamos si el Escenario 1 está terminado para mostrar el aviso de contraseña
-        const sc1Completed = isEventsRegistrationComplete || localStorage.getItem('sc1_completed') === 'true';
+        const sc1Completed = isEventsRegistrationComplete;
 
         if (sc1Completed && !teamsIncidentResolved) {
             console.log('⚡ Iniciando interrupción de Teams (Aviso Contraseña)...');
@@ -149,10 +151,10 @@ function previousScenario() {
 }
 
 function nextScenario() {
-    if (currentScenario < TOTAL_SCENARIOS-1) {
+    if (currentScenario < TOTAL_SCENARIOS - 1) {
         startScenario(currentScenario + 1);
-        }
     }
+}
 
 async function initApp() {
     console.log('🟢 INICIANDO APP');
@@ -170,7 +172,7 @@ async function initApp() {
     scenariosHTML += `
         <div id="navigation-controls">
             <button id="prev-scenario-btn" onclick="window.previousScenario()" disabled>← Anterior</button>
-            <span id="scenario-counter">Escenario <span id="current-num">1</span> de ${TOTAL_SCENARIOS-1}</span>
+            <span id="scenario-counter">Escenario <span id="current-num">1</span> de ${TOTAL_SCENARIOS - 1}</span>
             <button id="next-scenario-btn" onclick="window.nextScenario()">Siguiente →</button>
         </div>
     `;
@@ -200,9 +202,9 @@ function validateAndStart() {
         setParticipantId(participantId);
         error.style.display = 'none';
         input.style.borderColor = '';
-        showPolicyPopup(); 
-    } 
-    
+        showPolicyPopup();
+    }
+
     catch (err) {
         error.textContent = err.message;
         error.style.display = 'block';
@@ -230,7 +232,7 @@ async function acceptPolicyAndStart() {
             // 2. Guardamos el ID de sesión para que todas las métricas futuras se vinculen a él
             const sid = data.session.id || data.session.sessionId;
             setSessionId(sid);
-            
+
             console.log("✅ Sesión vinculada al participante:", pid, "ID de Sesión:", sid);
         } else {
             console.warn("No se pudo obtener un ID de sesión del servidor, las métricas podrían fallar.");
@@ -248,10 +250,10 @@ async function acceptPolicyAndStart() {
     startScenario(1);
 }
 
-window.handleTeamsAlert = async function() {
+window.handleTeamsAlert = async function () {
     // 1. Obtener los elementos del DOM
     const passInput = document.getElementById('teams-new-pass');
-    
+
     const teamsPopup = document.getElementById('popup-teams-alert');
 
     // 2. Validar que se haya introducido una contraseña
@@ -272,12 +274,12 @@ window.handleTeamsAlert = async function() {
 
     const distance = getMinPasswordDistance(newPass);
     const sid = getSessionId();
-    
+
     // 5. Guardar la métrica usando la función única saveMetrics
     try {
         if (sid) {
-            await saveMetrics(sid, { 
-                'scenario1.teams_password_distance': distance 
+            await saveMetrics(sid, {
+                'scenario1.teams_password_distance': distance
             });
             console.log(`✅ Métrica enviada - Distancia de Teams: ${distance}`);
         } else {
@@ -298,7 +300,7 @@ window.handleTeamsAlert = async function() {
 
     // 7. Feedback al usuario y cierre de popup
     alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
-    
+
     if (teamsPopup) {
         teamsPopup.classList.remove('active');
     }
@@ -311,13 +313,13 @@ window.handleTeamsAlert = async function() {
 
 //Añadimos las funciones que simula un mensaje urgente de Teams
 
-window.showAIPressureAlert = function() {
+window.showAIPressureAlert = function () {
     // Evitar duplicados si el mensaje ya está en pantalla
     if (document.getElementById('teams-pressure-msg')) return;
 
     const chat = document.createElement('div');
     chat.id = 'teams-pressure-msg';
-    
+
     // Estilos de notificación moderna
     chat.style.cssText = `
         position: fixed; 
@@ -332,7 +334,7 @@ window.showAIPressureAlert = function() {
         padding: 15px; 
         font-family: 'Segoe UI', Tahoma, sans-serif;
     `;
-    
+
     chat.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <div style="font-weight:bold; color:#6264a7; display:flex; align-items:center; gap:8px;">
@@ -349,11 +351,11 @@ window.showAIPressureAlert = function() {
             "¡Oye! Perdona que te escriba así pero es que <b>el CEO ya me está preguntando por el informe Q4</b> y me pilla a medias... 😬 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡gracias!"
         </p>
     `;
-    
+
     document.body.appendChild(chat);
 };
 
-window.goToAI = function() {
+window.goToAI = function () {
     document.getElementById('teams-chat-alert').remove();
     window.startScenario(9);
 };

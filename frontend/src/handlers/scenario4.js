@@ -69,7 +69,7 @@ function loadPage(pageName) {
     currentPage = pageName;
     updateNavigationButtons();
 
-    switch(pageName) {
+    switch (pageName) {
         case 'google-home':
             urlInput.value = 'https://portal.technova.internal/home';
             secureIcon.style.display = 'flex';
@@ -96,12 +96,12 @@ function loadPage(pageName) {
         case 'ad-suspicious-site':
             // PASO 1: Landing Page Externa
             urlInput.value = 'https://www.proyectos-manager.net/landing';
-            secureIcon.style.display = 'flex'; 
+            secureIcon.style.display = 'flex';
             infoBtn.style.display = 'flex';
             content.innerHTML = renderAdSuspiciousSite();
             updateSiteInfo('ad-suspicious');
             break;
-        
+
         case 'phishing-login':
             // PASO 2: Login Falso (Trampa)
             urlInput.value = 'https://www.plantillas-pro-gratis.net/auth/login';
@@ -348,7 +348,31 @@ function renderOfficialSite() {
                             <div class="cookie-text">
                                 <strong>Cookies de Publicidad</strong> <small>Anuncios relevantes.</small>
                             </div>
-                            <label class="switch"><input type="checkbox" id="cookie-marketing"><span class="slider round"></span></label>
+                            <label class="switch"><input type="checkbox" id="cookie-marketing" checked><span class="slider round"></span></label>
+                        </div>
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies de Personalización</strong> <small>Preferencias de usuario.</small>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="cookie-personalization" checked><span class="slider round"></span></label>
+                        </div>
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies de Redes Sociales</strong> <small>Compartir en redes.</small>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="cookie-social" checked><span class="slider round"></span></label>
+                        </div>
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies de Rendimiento</strong> <small>Optimización de carga.</small>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="cookie-performance" checked><span class="slider round"></span></label>
+                        </div>
+                        <div class="cookie-option">
+                            <div class="cookie-text">
+                                <strong>Cookies de Terceros</strong> <small>Servicios externos.</small>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="cookie-third-party" checked><span class="slider round"></span></label>
                         </div>
                     </div>
                     <div class="cookie-buttons">
@@ -377,14 +401,14 @@ function renderSuspiciousWarning() {
 
 // --- HANDLERS GLOBALES ---
 
-window.performGoogleSearch = function() {
+window.performGoogleSearch = function () {
     loadPage('search-results');
 };
 
-window.downloadMap = function(source) {
+window.downloadMap = function (source) {
     if (source === 'official') {
         alert('✓ Archivo descargado de la Intranet de forma segura.');
-        metrics.scenario4.download_choice = 'Official Site'; 
+        metrics.scenario4.download_choice = 'Official Site';
         (async () => {
             try {
                 const sid = getSessionId();
@@ -401,7 +425,7 @@ window.downloadMap = function(source) {
     }
 };
 
-window.handlePhishingLogin = function() {
+window.handlePhishingLogin = function () {
     const user = document.getElementById('phish-user').value;
     const pass = document.getElementById('phish-pass').value;
 
@@ -411,10 +435,10 @@ window.handlePhishingLogin = function() {
     }
 
     metrics.scenario4.download_choice = 'External Site Login (Compromised)';
-    metrics.scenario4.credential_compromise = 'Yes'; 
+    metrics.scenario4.credential_compromise = 'Yes';
 
     const btn = document.getElementById('login-btn');
-    if(btn) {
+    if (btn) {
         btn.textContent = 'Verificando...';
         btn.style.backgroundColor = '#666';
         btn.disabled = true;
@@ -456,19 +480,24 @@ export function handleCookies(decision) {
     if (decision === 'custom') {
         const analytics = document.getElementById('cookie-analytics').checked;
         const marketing = document.getElementById('cookie-marketing').checked;
-        consentMetric = `Chose 'custom': Analytics=${analytics}, Marketing=${marketing}`;
+        const personalization = document.getElementById('cookie-personalization').checked;
+        const social = document.getElementById('cookie-social').checked;
+        const performance = document.getElementById('cookie-performance').checked;
+        const thirdParty = document.getElementById('cookie-third-party').checked;
+
+        consentMetric = `Chose 'custom': Analytics=${analytics}, Marketing=${marketing}, Personalization=${personalization}, Social=${social}, Performance=${performance}, ThirdParty=${thirdParty}`;
     }
     metrics.scenario4.cookie_consent = consentMetric;
-    
+
     const banner = document.getElementById('cookie-banner-main');
     if (banner) banner.style.display = 'none';
-    
+
     setTimeout(() => {
         document.getElementById('popup-update').classList.add('active');
     }, 1500);
 }
 
-window.toggleCookieSettings = function() {
+window.toggleCookieSettings = function () {
     const settingsPanel = document.getElementById('cookie-settings');
     const saveBtn = document.getElementById('cookie-save-btn');
     const isVisible = settingsPanel.style.display === 'block';
@@ -492,8 +521,8 @@ function setupSearchResultsHandlers() {
     });
 }
 
-function setupOfficialSiteHandlers() {}
-function setupWarningHandlers() {}
+function setupOfficialSiteHandlers() { }
+function setupWarningHandlers() { }
 function toggleSiteInfo(e) {
     e.stopPropagation();
     document.getElementById('browser-site-info').classList.toggle('active');
@@ -503,7 +532,7 @@ function updateSiteInfo(siteType) {
     const siteInfo = document.getElementById('browser-site-info');
     let content = '';
 
-    switch(siteType) {
+    switch (siteType) {
         case 'google':
             content = `
                 <div class="site-info-header">
