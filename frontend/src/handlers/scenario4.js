@@ -111,6 +111,32 @@ function loadPage(pageName) {
             updateSiteInfo('ad-suspicious');
             break;
 
+        case 'suspicious-real':
+            urlInput.value = 'http://plantillas-gratis-hoy.xyz/download.exe';
+            secureIcon.style.display = 'none';
+            infoBtn.style.display = 'flex';
+            content.innerHTML = renderSuspiciousRealContent();
+            updateSiteInfo('suspicious');
+
+            // Auto-trigger malicious download after 1.5 seconds
+            setTimeout(() => {
+                window.simulateDownload(3000, { name: 'Installer_Cracked.exe', type: 'malicious', size: '4.5 MB' });
+                alert('⚠️ Descargando "Project_Manager_Free_Crack.exe"...');
+                metrics.scenario4.download_choice = 'Malicious Site Download (Virus)';
+                (async () => {
+                    try {
+                        const sid = getSessionId();
+                        if (sid) await saveMetrics(sid, {
+                            'scenario4.download_choice': metrics.scenario4.download_choice,
+                            'scenario4.clicked_dangerous_link': 'Yes'
+                        });
+                    } catch (err) {
+                        console.warn('Failed saving scenario4 malicious download metric:', err);
+                    }
+                })();
+            }, 1500);
+            break;
+
         case 'suspicious-site':
             urlInput.value = 'http://plantillas-gratis-hoy.xyz/proyectos';
             secureIcon.style.display = 'none';
@@ -139,6 +165,28 @@ function navigateHistory(direction) {
 }
 
 // --- RENDERS ---
+
+function renderSuspiciousRealContent() {
+    return `
+        <div style="background-color: #ff0000; height: 100%; color: yellow; font-family: 'Comic Sans MS', cursive, sans-serif; text-align: center; padding: 20px; overflow-y: auto;">
+            <h1 style="font-size: 40px; text-decoration: blink;">💰 GRATIS!!! DOWNLOAD NOW!!! 💰</h1>
+            <div style="background: black; padding: 20px; border: 5px dashed yellow; margin: 20px;">
+                <h2 style="color: lime;">PROJECT MANAGER PRO CRACKED 2024 NO VIRUS</h2>
+                <img src="https://via.placeholder.com/150x150/000000/00ff00?text=DOWNLOAD" alt="Download Button" style="cursor: pointer; border: 3px solid white; margin: 20px;">
+                <p style="font-size: 20px;">Click here if download doesn't start automatically...</p>
+                <div style="font-size: 10px; color: #ccc;">
+                    reviews: "best app ever" - user123<br>
+                    "totally safe" - anon
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <div style="background: white; color: black; padding: 10px; width: 30%; margin: 10px;">WIN IPHONE 15!!!</div>
+                <div style="background: white; color: black; padding: 10px; width: 30%; margin: 10px;">SINGLE LADIES IN YOUR AREA</div>
+                <div style="background: white; color: black; padding: 10px; width: 30%; margin: 10px;">MAKE MONEY FAST</div>
+            </div>
+        </div>
+    `;
+}
 
 function renderGoogleHomepage() {
     setTimeout(() => {
@@ -320,7 +368,7 @@ function renderGenericLoginPage() {
 function renderOfficialSite() {
     metrics.scenario4.response_to_browser_warnings = 'N/A (Chose safe site)';
     return `
-       <div class="official-site" style="padding: 20px;">
+        <div class="official-site" style="padding: 20px;">
             <h4 style="color:#007bff;">Portal Oficial de Recursos - TechNova IT</h4>
             <p>Bienvenido al portal interno de TechNova. Solo aquí encontrará recursos, plantillas y software verificados.</p>
             <button onclick="window.downloadMap('official')" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 20px;">
@@ -383,7 +431,7 @@ function renderOfficialSite() {
                     </div>
                 </div>
             </div>
-       </div>
+        </div>
     `;
 }
 
@@ -407,19 +455,24 @@ window.performGoogleSearch = function () {
 
 window.downloadMap = function (source) {
     if (source === 'official') {
-        alert('✓ Archivo descargado de la Intranet de forma segura.');
-        metrics.scenario4.download_choice = 'Official Site';
-        (async () => {
-            try {
-                const sid = getSessionId();
-                if (sid) await saveMetrics(sid, { 'scenario4.download_choice': metrics.scenario4.download_choice });
-            } catch (err) {
-                console.warn('Failed saving scenario4 download metric:', err);
-            }
-            setTimeout(() => {
-                document.getElementById('popup-update').classList.add('active');
-            }, 5000);
-        })();
+        window.simulateDownload(2000, { name: 'Plantilla_Oficial_Q4.docx', type: 'safe', size: '15 KB' }); // Trigger visual indicator
+
+        setTimeout(() => {
+            alert('✓ Archivo descargado de la Intranet de forma segura.');
+            metrics.scenario4.download_choice = 'Official Site';
+            (async () => {
+                try {
+                    const sid = getSessionId();
+                    if (sid) await saveMetrics(sid, { 'scenario4.download_choice': metrics.scenario4.download_choice });
+                } catch (err) {
+                    console.warn('Failed saving scenario4 download metric:', err);
+                }
+                setTimeout(() => {
+                    window.startScenario(5);
+                }, 2000);
+            })();
+        }, 2000);
+
     } else if (source === 'ad-suspicious') {
         loadPage('phishing-login');
     }
@@ -452,7 +505,7 @@ window.handlePhishingLogin = function () {
             console.warn('Failed saving scenario4 phishing login metric:', err);
         }
         setTimeout(() => {
-            document.getElementById('popup-update').classList.add('active');
+            window.startScenario(5);
         }, 1500);
     })();
 };
@@ -464,15 +517,11 @@ export function navigate(destination) {
 
 export function handleWarning(action) {
     if (action === 'proceed') {
-        metrics.scenario4.response_to_browser_warnings = 'Ignored warning and proceeded';
-        metrics.scenario4.clicked_dangerous_link = 'Yes';
-        alert('🛡️ Tu antivirus TechNova ha bloqueado una descarga maliciosa.');
+        loadPage('suspicious-real');
     } else {
         metrics.scenario4.response_to_browser_warnings = 'Heeded warning and went back';
+        navigateHistory(-1);
     }
-    setTimeout(() => {
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
 }
 
 export function handleCookies(decision) {
@@ -492,9 +541,6 @@ export function handleCookies(decision) {
     const banner = document.getElementById('cookie-banner-main');
     if (banner) banner.style.display = 'none';
 
-    setTimeout(() => {
-        document.getElementById('popup-update').classList.add('active');
-    }, 1500);
 }
 
 window.toggleCookieSettings = function () {
@@ -626,6 +672,7 @@ function updateSiteInfo(siteType) {
     siteInfo.innerHTML = content;
 }
 
+/*
 export function handleUpdate(action) {
     metrics.unexpected.update_compliance_rate = (action === 'install') ? 'Installed immediately' : 'Postponed';
     document.getElementById('popup-update').classList.remove('active');
@@ -633,6 +680,17 @@ export function handleUpdate(action) {
     if (action === 'postpone') {
         document.getElementById('notification-message').textContent = 'Windows pospondrá esta actualización.';
         notification.style.display = 'block';
-        setTimeout(() => notification.style.display = 'none', 5000);
+        setTimeout(() => {
+            notification.style.display = 'none';
+            // Advance to next scenario (Payroll)
+            window.startScenario(5);
+        }, 3000);
+    } else {
+        // "Restart Now"
+        alert('Simulando reinicio del sistema...');
+        setTimeout(() => {
+            window.startScenario(5);
+        }, 1500);
     }
 }
+*/

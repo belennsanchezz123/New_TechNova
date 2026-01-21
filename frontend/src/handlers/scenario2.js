@@ -7,8 +7,28 @@ import { getSessionId } from '../utils/session.js';
 // --- INICIO DE LA NUEVA LÓGICA ---
 
 // Esta función maneja el desbloqueo al pulsar la tecla 'v'
+// Función de inicialización exportada
+export function initScenario2() {
+    console.log("🔒 Inicializando Escenario 2: Decisión de Bloqueo");
+
+    // 1. Asegurar que la pantalla de bloqueo esté oculta al principio
+    const lockScreen = document.getElementById('simulated-lock-screen');
+    if (lockScreen) {
+        lockScreen.style.display = 'none';
+    }
+
+    // 2. Mostrar la pantalla de interrupción (la decisión)
+    const interruptionScreen = document.getElementById('task-interruption');
+    if (interruptionScreen) {
+        interruptionScreen.style.display = 'block';
+    }
+
+    // 3. (Opcional) Setup de listeners si fuera necesario, pero handleInterruption se llama onClick en el HTML
+}
+
+// Esta función maneja el desbloqueo al pulsar la tecla 'v'
 function handleKeyUnlock(event) {
-    if (event.key === 'v') {
+    if (event.key === 'v' || event.key === 'V') {
         const lockScreen = document.getElementById('simulated-lock-screen');
         if (lockScreen) {
             lockScreen.style.display = 'none';
@@ -19,17 +39,24 @@ function handleKeyUnlock(event) {
 }
 
 // Muestra la siguiente parte de la tarea (el USB)
+// Muestra la siguiente parte de la tarea (el USB)
+/*
 function showUsbTask() {
     document.getElementById('task-interruption').style.display = 'none';
     document.getElementById('task-usb').style.display = 'block';
     setupFileExplorer(); // Configura la lógica del explorador de archivos
 }
+*/
 
 
 export async function handleInterruption(didLock) {
-    const sid = getSessionId(); 
+    const sid = getSessionId();
     const valorMétrica = didLock ? 'Yes, locked screen' : 'No, left screen unlocked';
     metrics.scenario2.manual_lock_screen = valorMétrica;
+
+    // 1. Ocultar la pantalla de decisión
+    const interruptionScreen = document.getElementById('task-interruption');
+    if (interruptionScreen) interruptionScreen.style.display = 'none';
 
     try {
         await saveMetrics(sid, { 'scenario2.manual_lock_screen': valorMétrica });
@@ -38,20 +65,32 @@ export async function handleInterruption(didLock) {
     }
 
     if (didLock) {
+        // Opción A: Bloquear pantalla
         const lockScreen = document.getElementById('simulated-lock-screen');
-        if (lockScreen) lockScreen.style.display = 'flex';
-        
-        // Modificamos el desbloqueo para que salte al Escenario 3
+        if (lockScreen) {
+            lockScreen.style.display = 'flex';
+            lockScreen.focus();
+        }
+
+        // Listener para desbloquear con 'v'
         const unlockAndGo = (event) => {
-            if (event.key === 'v') {
+            if (event.key === 'v' || event.key === 'V') {
                 if (lockScreen) lockScreen.style.display = 'none';
                 document.removeEventListener('keydown', unlockAndGo);
-                window.startScenario(3); // <--- SALTO DIRECTO AL ESCENARIO 3
+
+                // Mostrar tarea USB (COMENTADO)
+                // showUsbTask();
+                // Ir directo al siguiente escenario
+                window.startScenario(3);
             }
         };
         document.addEventListener('keydown', unlockAndGo);
+
     } else {
-        window.startScenario(3); // <--- SALTO DIRECTO AL ESCENARIO 3
+        // Opción B: Continuar sin bloquear -> Ir directo a tarea USB (COMENTADO)
+        // showUsbTask();
+        // Ir directo al siguiente escenario
+        window.startScenario(3);
     }
 }
 

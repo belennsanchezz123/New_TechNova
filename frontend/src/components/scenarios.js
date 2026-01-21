@@ -1,8 +1,8 @@
 function generateQuestionGroup(title, questions, groupIndex) {
-  // Genera el HTML para una sola pregunta (fila)
-  const generateQuestionHTML = (question, qIndex) => {
-    const questionName = `q_${groupIndex}_${qIndex}`;
-    return `
+    // Genera el HTML para una sola pregunta (fila)
+    const generateQuestionHTML = (question, qIndex) => {
+        const questionName = `q_${groupIndex}_${qIndex}`;
+        return `
             <div class="question-row">
                 <div class="question-label">${question}</div>
                 <div class="radio-group-horizontal">
@@ -14,10 +14,10 @@ function generateQuestionGroup(title, questions, groupIndex) {
                 </div>
             </div>
         `;
-  };
+    };
 
-  // Crea el bloque completo del grupo
-  return `
+    // Crea el bloque completo del grupo
+    return `
         <div class="question-section-taxonomy">
             <h3>${title}</h3>
             ${questions.map((q, i) => generateQuestionHTML(q, i)).join("")}
@@ -25,8 +25,8 @@ function generateQuestionGroup(title, questions, groupIndex) {
     `;
 }
 export function getScenarioHTML(scenarioNumber) {
-  const scenarios = {
-    0: `
+    const scenarios = {
+        0: `
             <h2>
                 ¡Bienvenido a TechNova!
                 <span class="translation">Welcome to TechNova!</span>
@@ -58,7 +58,7 @@ export function getScenarioHTML(scenarioNumber) {
             </span>
             </button>
         `,
-    1: `
+        1: `
             <h2>
             Escenario 1: Conectividad y Configuración de Cuentas
             <span class="translation">Scenario 1: Connectivity and Account Setup</span>
@@ -79,39 +79,12 @@ export function getScenarioHTML(scenarioNumber) {
                 </span>
             </p>
 
-            <div style="height: 350px; background: linear-gradient(135deg, #0060a9 0%, #0078d7 100%); position: relative; border: 1px solid #333; margin-top: 20px; border-radius: 4px;">
-
-                    <div id="wifi-menu" class="wifi-menu">
-                        <div class="wifi-header">Redes disponibles</div>
-                        <div class="wifi-list">
-                            <div class="wifi-item" onclick="window.connectWifi('public')">
-                                <span class="wifi-signal">📶</span>
-                                <div class="wifi-details">
-                                    <div class="wifi-name">Free_Coffee_Guest</div>
-                                    <div class="wifi-status">Abierta</div>
-                                </div>
-                            </div>
-                            <div class="wifi-item" onclick="window.connectWifi('secure')">
-                                <span class="wifi-signal">🔒</span>
-                                <div class="wifi-details">
-                                    <div class="wifi-name">TechNova_Corp_Secure</div>
-                                    <div class="wifi-status">Segura (WPA2-Ent)</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="taskbar">
-                        <span style="margin-right: auto; color: white; padding-left: 10px; font-size: 12px;">9:00 AM</span>
-                        <div class="taskbar-icon" onclick="window.toggleWifiMenu()">
-                            <span id="wifi-icon-status">🌐</span>
-                        </div>
-                        <div class="taskbar-icon">🔋</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="registration-content" style="display: none;">
+            <p style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin: 20px 0;">
+                👉 <strong>Consejo:</strong> Busca el icono de red (📡) en la barra de tareas de la parte inferior para conectarte.
+            </p>
+            </div> <!-- END wifi-task-container -->
+            
+            <div id="registration-content" style="display:none;">
                 <p style="background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
                     ✅ <strong>Conexión Establecida.</strong> Ahora tienes acceso a la intranet para crear tus cuentas.
                 </p>
@@ -168,7 +141,7 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </div>
         `,
-    2: `
+        2: `
             <h2>
     Escenario 2: Dispositivos Externos
     <span class="translation">Scenario 2: External Devices</span>
@@ -221,10 +194,54 @@ export function getScenarioHTML(scenarioNumber) {
 </div>
 
 
+<!--
             <div id="task-usb" style="display:none;">
                 <h3>Manejo de Dispositivos Externos
                 <span class="translation">Handling External Devices</span>
                 </h3>
+                
+                <p>
+                    <strong>Instrucción:</strong> Has encontrado un pendrive USB en tu escritorio con la etiqueta "Plantillas". 
+                    Conéctalo virtualmente (haz doble clic en el icono USB) y busca el archivo.
+                    <span class="translation">
+                        <strong>Instruction:</strong> You found a USB drive on your desk labeled "Templates". 
+                        Virtually connect it (double-click the USB icon) and find the file.
+                    </span>
+                </p>
+
+                <div class="virtual-desktop" id="virtual-desktop-container">
+                    <div class="desktop-icons">
+                        <div class="d-icon" id="drive-c">
+                            <span>💽</span>
+                            <label>Disco Local (C:)</label>
+                        </div>
+                        <div class="d-icon" id="usb-drive">
+                            <span>💾</span>
+                            <label>USB Drive (E:)</label>
+                        </div>
+                        <div class="d-icon">
+                            <span>🗑️</span>
+                            <label>Papelera</label>
+                        </div>
+                    </div>
+
+                    
+                    <div id="usb-context-menu" class="context-menu-windows" style="display: none;">
+                        <div class="context-menu-item" id="usb-context-scan">🛡️ Escanear con TechNova Antivirus</div>
+                        <div class="context-menu-item">📂 Abrir</div>
+                        <div class="context-menu-item">⏏️ Expulsar</div>
+                        <div class="context-menu-item">🔧 Propiedades</div>
+                    </div>
+
+                    
+                   
+                    <div id="file-explorer-window" class="window-frame" style="display: none;">
+                       ... (File explorer content omitted for brevity in comment) ...
+                    </div> 
+                </div> 
+            </div>
+-->
+<!--
                 <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Bienvenida_Equipo_TechNova.docx'</strong>.
                 <span class="translation">
                 <strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file 
@@ -242,130 +259,18 @@ export function getScenarioHTML(scenarioNumber) {
                             <ul>
                                 <li id="sidebar-documents">▷ Documentos</li>
                                 <li id="sidebar-images">▷ Imágenes</li>
-                                <li id="sidebar-this-pc" class="active">▶ Este equipo</li>
-                                <li id="sidebar-drive-c" style="padding-left: 20px;">▷ Disco local (C:)</li>
-                                <li id="sidebar-network">▷ Red</li>
+                                <li id="sidebar-this-pc" class="active">▼ Este equipo</li>
                             </ul>
                         </div>
-                        <div class="fe-main">
-                            <div id="this-pc-view">
-                                <p class="fe-group-title">Dispositivos y unidades (2)</p>
-                                <div class="fe-item" id="drive-c">
-                                    <div class="fe-icon">💻</div>
-                                    <div class="fe-item-details">
-                                        <span>Disco local (C:)</span>
-                                        <div class="progress-bar"><div style="width: 55%;"></div></div>
-                                </div>
-                            </div>
-                            <div class="fe-item-usb-drive" id="usb-drive">
-                                <div class="usb-icon-container">
-                                    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect x="8" y="4" width="16" height="24" rx="2" fill="#4A4A4A"/>
-                                        <rect x="10" y="6" width="12" height="18" fill="#5A5A5A"/>
-                                        <rect x="14" y="25" width="4" height="3" fill="#3A3A3A"/>
-                                        <rect x="12" y="8" width="8" height="2" fill="#7A7A7A"/>
-                                    </svg>
-                                </div>
-                                <span class="usb-label">USB Drive (F:)</span>
-                            </div>
-                        </div>
-
-                        <div id="drive-c-view" style="display:none;">
-                            <div class="fe-item">
-                                <div class="fe-icon">📁</div>
-                                <div class="fe-item-details"><span>Archivos de programa</span></div>
-                            </div>
-                            <div class="fe-item">
-                                <div class="fe-icon">📁</div>
-                                <div class="fe-item-details"><span>Windows</span></div>
-                            </div>
-                            <div class="fe-item">
-                                <div class="fe-icon">📁</div>
-                                <div class="fe-item-details"><span>Usuarios</span></div>
-                            </div>
-                        </div>
-
-                        <div id="network-view" style="display:none;">
-                            <div class="fe-item">
-                                <div class="fe-icon">🖥️</div>
-                                <div class="fe-item-details"><span>SERVIDOR-OFICINA</span></div>
-                            </div>
-                            <div class="fe-item">
-                                <div class="fe-icon">🖥️</div>
-                                <div class="fe-item-details"><span>PC-SALA-02</span></div>
-                            </div>
-                        </div>
-
-                        <div id="documents-view" style="display:none;">
-                            <div class="fe-item">
-                                <div class="fe-icon">📄</div>
-                                <div class="fe-item-details"><span>Informe_2024.docx</span></div>
-                            </div>
-                            <div class="fe-item">
-                                <div class="fe-icon">📄</div>
-                                <div class="fe-item-details"><span>Presupuesto.xlsx</span></div>
-                            </div>
-                        </div>
-
-                        <div id="images-view" style="display:none;">
-                            <div class="fe-item">
-                                <div class="fe-icon">🖼️</div>
-                                <div class="fe-item-details"><span>vacaciones_2024.jpg</span></div>
-                            </div>
-                            <div class="fe-item">
-                                <div class="fe-icon">🖼️</div>
-                                <div class="fe-item-details"><span>logo_empresa.png</span></div>
-                            </div>
-                        </div>
-
-                        <div id="usb-content-view" style="display:none;">
-                            <div class="fe-item" id="file-mapa">
-                                <div class="fe-icon">📄</div>
-                                <div class="fe-item-details"><span>Bienvenida_Equipo_TechNova.docx</span></div>
-                            </div>
-                        <div class="fe-item" id="file-fotos">
-                            <div class="fe-icon">📄</div>
-                            <div class="fe-item-details"><span>Bienvenida_Equipo_TechNova_BORRADOR.docx</span></div>
+                        <div class="fe-content">
+                             (Contenido del explorador)
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+-->
 
-        <div id="usb-context-menu" class="context-menu-windows">
-            <div class="context-menu-item">Expandir</div>
-            <div class="context-menu-item">Abrir Reproducción automática...</div>
-            <div class="context-menu-item context-menu-highlight" id="usb-context-scan">
-                <span class="context-menu-icon">🛡️</span>
-                Analizar con Antivirus...
-            </div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item">Incluir en biblioteca</div>
-            <div class="context-menu-item">Anclar al Acceso rápido</div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item">Formatear...</div>
-            <div class="context-menu-item">Expulsar</div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item">Cortar</div>
-            <div class="context-menu-item">Copiar</div>
-            <div class="context-menu-separator"></div>
-            <div class="context-menu-item">Cambiar nombre</div>
-            <div class="context-menu-item">Propiedades</div>
-        </div>
-
-        <div id="antivirus-scanning-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <h3> Antivirus</h3>
-                <p>Analizando EVENT_FILES (E:)...</p>
-                <div class="scanning-progress">
-                    <div class="scanning-bar"></div>
-                </div>
-                <p class="scanning-status">Escaneando archivos...</p>
-            </div>
-        </div>
-        </div>
         `,
-    3: `
+        3: `
            <h2>
                 Escenario 3: Gestión de Comunicaciones
                 <span class="translation">Scenario 3: Communications Management</span>
@@ -432,7 +337,7 @@ export function getScenarioHTML(scenarioNumber) {
             </p>
             </div>
         `,
-    4: `
+        4: `
 <h2>
     Escenario 4: Búsqueda y Descarga de Recursos
     <span class="translation">Scenario 4: Resource Search & Download</span>
@@ -486,7 +391,7 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </div>
         `,
-    5: `
+        5: `
             <h2>
     Escenario 5: Redes Sociales y Privacidad
     <span class="translation">Scenario 5: Social Media and Privacy</span>
@@ -542,46 +447,149 @@ export function getScenarioHTML(scenarioNumber) {
         <input type="text" id="prof-social" placeholder="@usuario">
     </div>
 
-    <div class="form-group">
-        <label for="prof-city">
-            Ciudad de Residencia (Opcional - Para carpooling)
-            <span class="translation">City of Residence (Optional – For carpooling)</span>
-        </label>
-        <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
-    </div>
 
-    <button onclick="window.saveProfile()" style="color:white;">
-        Guardar Perfil Público
-        <span class="translation" style="color:white;">Save Public Profile</span>
-    </button>
-
-</div>
-
-<div id="app-task" style="display:none;">
-    <h3>
-        Conectar una Aplicación de Terceros
-        <span class="translation">Connect a Third-Party Application</span>
-    </h3>
-
-    <p>
-        <strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación 
-        <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.
-        <span class="translation">
-            <strong>Instruction:</strong> To improve team coordination, please integrate the 
-            <strong>'TechNova Calendar Sync'</strong> application into your TechNova Events profile.
-        </span>
-    </p>
-
-    <button onclick="window.connectApp()" style="color:white;">
-        Conectar 'TechNova Calendar Sync' App
-        <span class="translation" style="color:white;">Connect 'TechNova Calendar Sync' App</span>
-    </button>
-</div>
         `,
-    6: `
+        5: `
+        <div class="ai-lab-wrapper">
+            <h2 style="color: #6264a7;">Escenario 5: Incidencias Críticas de Nóminas (Chat de Grupo)</h2>
+            <div style="background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; margin-bottom: 15px; font-size: 0.85em;">
+                ⚠️ <strong>SISTEMA CAÍDO:</strong> La base de datos de salarios no funciona. Marta necesita el resumen para la reunión del CEO <strong>YA</strong>. Usa el historial de este chat.
+            </div>
+            
+            <div class="ai-task-container" style="display: flex; gap: 20px; align-items: stretch;">
+                <div style="flex: 1.2; background: #fff; padding: 15px; border: 1px solid #ddd; border-top: 5px solid #6264a7; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1em; color: #6264a7; margin-top:0;">💬 Chat: Operaciones RRHH</h3>
+                    <div id="raw-chat-data" style="height: 380px; overflow-y: auto; font-size: 0.82em; background: #fdfdfd; padding: 10px; border: 1px solid #eee; line-height: 1.4; color: #333;">
+                        <p><strong>Marta (10:15):</strong> Chicos, ¿tenemos lo de TechNova? ¡El jefe me pide los cambios del Q4 en 5 minutos!</p>
+                        <p><strong>Juan (10:16):</strong> Voy... Carlos Ruiz (TN-4482) dice que ok a los 55.000€ pero que solo si le damos turno de mañana (8 a 15). Ah, y el bonus del 10% no se toca.</p>
+                        <p><strong>Elena (10:17):</strong> ¡Oye! Maria Garcia (TN-2231) me acaba de llamar gritando. Dice que quiere 45.000€, que ahora cobra 42k y no le llega.</p>
+                        <p><strong>Juan (10:18):</strong> Esperad, Lucía Márquez (TN-9921) cobra 48.000€. Me mandó un mail diciendo que o teletrabaja los viernes o acepta la oferta de la competencia.</p>
+                        <p><strong>Marta (10:19):</strong> Juan, ¿qué pasa con Javier Ochoa (TN-1102)?</p>
+                        <p><strong>Juan (10:20):</strong> Javier está insoportable. Cobra 32.000€ y exige subir a 35k hoy mismo o se va. Sinceramente, me tiene harto con sus amenazas.</p>
+                        <p><strong>Elena (10:21):</strong> Marta, apunta también: Sergio Lopez (TN-5542) sigue con 60k + 5% bonus, sin cambios. Y Elena Gomez (TN-7712) 38k, pero pide remoto 100%.</p>
+                        <p><strong>Juan (10:22):</strong> Ah, se me olvidaba Carlos Ruiz... corregid lo de antes, el bonus no es el 10%, es el 12% que me lo acaba de confirmar por WhatsApp.</p>
+                        <p><strong>Marta (10:23):</strong> ¡Uf, qué lío! David Perez (TN-3341) sube a 50k (estaba en 45k) por el ascenso. Ana Belen (TN-8823) 52k sin cambios.</p>
+                        <p><strong>Elena (10:24):</strong> Pedro Juan (TN-1234) cobra 30k. Laura Martinez (TN-5678) 40k. No tienen cambios estos dos.</p>
+                        <p><strong>Juan (10:25):</strong> Marta, ¿le has dicho lo de Javier Ochoa? Si no le subimos los 3k se pira.</p>
+                        <p><strong>Marta (10:26):</strong> ¡No tengo tiempo! Pásalo todo al informe y lo que salga, que entro en la reunión!</p>
+                    </div>
+                </div>
+
+                <div style="flex: 1; display: flex; flex-direction: column; background: #f4f6f9; padding: 15px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
+                    <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
+                        placeholder="Pon orden en este lío y redacta el informe consolidado..."
+                        style="flex: 1; min-height: 250px; padding: 10px; font-size: 0.85em; border: 1px solid #bbb; border-radius: 4px;"></textarea>
+                    
+                    <div id="ai-status-msg" style="height: 20px; font-size: 0.75em; margin: 5px 0;"></div>
+                    
+                    <div style="margin: 5px 0 15px 0; font-size: 0.75em; color: #555;">
+                        <input type="checkbox" id="check-responsibility">
+                        <label for="check-responsibility">Confirm que he filtrado el ruido y los datos son correctos según la política de TechNova.</label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.useAI()" style="background: #6264a7; color: white; flex: 1.2; font-weight: bold; padding: 10px;">🤖 Ordenar con IA</button>
+                        <button onclick="window.sendAIReport()" style="background: #2ea44f; color: white; flex: 0.8; font-weight: bold;">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+        6: `
+        <div class="official-site" style="padding: 20px; max-width: 800px; margin: 0 auto;">
+            <h2>
+                Escenario 6: Configuración del Perfil Profesional
+                <span class="translation">Scenario 6: Professional Profile Setup</span>
+            </h2>
+            <p>
+                <strong>Instrucción:</strong> Para completar tu incorporación, RRHH te pide que configures tu <strong>Perfil Público</strong> 
+                en el directorio de la empresa. Ten cuidado con la información que compartes.
+                <span class="translation">
+                    <strong>Instruction:</strong> To complete user onboarding, HR asks you to set up your <strong>Public Profile</strong> 
+                    in the company directory. Be careful with the information you share.
+                </span>
+            </p>
+
+            <div id="profile-task">
+                <div class="form-group">
+                    <label>Nombre Completo (Obligatorio)</label>
+                    <input type="text" value="Usuario TechNova" disabled style="background: #eee;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Puesto (Obligatorio)</label>
+                    <input type="text" value="Project Manager" disabled style="background: #eee;">
+                </div>
+
+                <hr style="margin: 20px 0;">
+                <p><em>Los siguientes campos son opcionales pero ayudarán a tus compañeros a conocerte mejor.</em></p>
+
+                <div class="form-group">
+                    <label for="prof-dob">
+                        Fecha de Nacimiento (Opcional)
+                        <span class="translation">Date of Birth (Optional)</span>
+                    </label>
+                    <input type="date" id="prof-dob">
+                </div>
+
+                <div class="form-group">
+                    <label for="prof-phone">
+                        Teléfono Personal (Opcional - Para emergencias)
+                        <span class="translation">Personal Phone (Optional – For emergencies)</span>
+                    </label>
+                    <input type="tel" id="prof-phone" placeholder="+34 600 ...">
+                </div>
+
+                <div class="form-group">
+                    <label for="prof-social">
+                        Redes Sociales (LinkedIn/Twitter) (Opcional)
+                        <span class="translation">Social Media (LinkedIn/Twitter) (Optional)</span>
+                    </label>
+                    <input type="text" id="prof-social" placeholder="@usuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="prof-city">
+                        Ciudad de Residencia (Opcional - Para carpooling)
+                        <span class="translation">City of Residence (Optional – For carpooling)</span>
+                    </label>
+                    <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
+                </div>
+
+                <button onclick="window.saveProfile()" style="color:white;">
+                    Guardar Perfil Público
+                    <span class="translation" style="color:white;">Save Public Profile</span>
+                </button>
+
+            </div>
+
+            <div id="app-task" style="display:none;">
+                <h3>
+                    Conectar una Aplicación de Terceros
+                    <span class="translation">Connect a Third-Party Application</span>
+                </h3>
+
+                <p>
+                    <strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación 
+                    <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.
+                    <span class="translation">
+                        <strong>Instruction:</strong> To improve team coordination, please integrate the 
+                        <strong>'TechNova Calendar Sync'</strong> application into your TechNova Events profile.
+                    </span>
+                </p>
+
+                <button onclick="window.connectApp()" style="color:white;">
+                    Conectar 'TechNova Calendar Sync' App
+                    <span class="translation" style="color:white;">Connect 'TechNova Calendar Sync' App</span>
+                </button>
+            </div>
+        </div>
+        `,
+        7: `
 <h2>
-    Escenario 6: Cierre del Día - Política de Escritorio Limpio
-    <span class="translation">Scenario 6: End of Day – Clean Desk Policy</span>
+    Escenario 7: Cierre del Día - Política de Escritorio Limpio
+    <span class="translation">Scenario 7: End of Day – Clean Desk Policy</span>
 </h2>
 
 <p>
@@ -630,8 +638,8 @@ export function getScenarioHTML(scenarioNumber) {
 
             </div>
         `,
-    7: `
-            <h2>Fase final opcional: Verificación de filtración de datos</h2>
+        8: `
+            <h2>Escenario 8: Verificación de filtración de datos</h2>
             <p>Como parte de nuestra investigación, estamos estudiando cómo la exposición de datos públicos se relaciona con el comportamiento en ciberseguridad. Esta fase es <strong>100% voluntaria</strong>.</p>
             <p>Si das tu consentimiento, puedes proporcionar tu dirección de correo electrónico personal. Usaremos una herramienta automatizada para comprobar si ha aparecido en alguna filtración de datos pública conocida.Tu correo será anonimizado y almacenado de forma segura únicamente con fines de investigación.</p>
             <div class="form-group">
@@ -649,8 +657,8 @@ export function getScenarioHTML(scenarioNumber) {
             <button id="consent-submit-btn" onclick="window.finishSimulation(true)">I Consent and Submit</button>
             <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
-    8: `
-            <h2>Cuestionario de la Meta-Taxonomía de Comportamiento Humano en Ciberseguridad</h2>
+        9: `
+            <h2>Escenario 9: Cuestionario Final</h2>
             <p><strong>Instrucciones:</strong> Para cada afirmación, selecciona la opción que mejor describe tu comportamiento habitual.</p>
             
             <form class="questionnaire-form" id="taxonomy-questionnaire">
@@ -724,173 +732,126 @@ export function getScenarioHTML(scenarioNumber) {
                 <p style="margin-top: 30px; font-weight: bold; text-align: left;"><em>Escala para las siguientes preguntas: 1 (Nunca) - 5 (Siempre)</em></p>
 
                 ${generateQuestionGroup(
-                  "1. Password Management & Authentication",
-                  [
-                    "No cambio mis contraseñas, a menos que sea obligatorio.",
-                    "Utilizo contraseñas distintas para cada cuenta.",
-                    "Creo contraseñas que superan los requisitos mínimos.",
-                    "No incluyo caracteres especiales si no son obligatorios.",
-                    "Uso contraseñas simples como el nombre o fecha de nacimiento.",
-                    "Uso la misma contraseña para varias cuentas.",
-                    "Uso verificación en dos pasos (OTP, SMS, etc.).",
-                    "Guardo mis contraseñas en el navegador.",
-                    "¿Utilizas autenticación multifactor (MFA)?",
-                    "¿Compruebas si tus contraseñas han sido comprometidas?",
-                  ],
-                  1
-                )}
+            "1. Password Management & Authentication",
+            [
+                "No cambio mis contraseñas, a menos que sea obligatorio.",
+                "Utilizo contraseñas distintas para cada cuenta.",
+                "Creo contraseñas que superan los requisitos mínimos.",
+                "No incluyo caracteres especiales si no son obligatorios.",
+                "Uso contraseñas simples como el nombre o fecha de nacimiento.",
+                "Uso la misma contraseña para varias cuentas.",
+                "Uso verificación en dos pasos (OTP, SMS, etc.).",
+                "Guardo mis contraseñas en el navegador.",
+                "¿Utilizas autenticación multifactor (MFA)?",
+                "¿Compruebas si tus contraseñas han sido comprometidas?",
+            ],
+            1
+        )}
                 
                 ${generateQuestionGroup(
-                  "2. Device Securement & Physical Security",
-                  [
-                    "Bloqueo manually mi equipo al alejarme.",
-                    "Uso contraseña para desbloquear portátil/tablet.",
-                    "Uso Wi-Fi pública gratuita.",
-                    "Escaneo los dispositivos externos (USB, discos) antes de usarlos.",
-                  ],
-                  2
-                )}
+            "2. Device Securement & Physical Security",
+            [
+                "Bloqueo manually mi equipo al alejarme.",
+                "Uso contraseña para desbloquear portátil/tablet.",
+                "Uso Wi-Fi pública gratuita.",
+                "Escaneo los dispositivos externos (USB, discos) antes de usarlos.",
+            ],
+            2
+        )}
 
                 ${generateQuestionGroup(
-                  "3. Phishing Awareness & Safe Email Use",
-                  [
-                    "Abro enlaces sin verificar a dónde dirigen.",
-                    "Paso el ratón sobre enlaces antes de hacer clic.",
-                    "Reconozco sitios por su apariencia, no por la URL.",
-                    "Envío datos sin verificar que la conexión sea segura.",
-                    "¿Reportas mensajes sospechosos?",
-                  ],
-                  3
-                )}
+            "3. Phishing Awareness & Safe Email Use",
+            [
+                "Abro enlaces sin verificar a dónde dirigen.",
+                "Paso el ratón sobre enlaces antes de hacer clic.",
+                "Reconozco sitios por su apariencia, no por la URL.",
+                "Envío datos sin verificar que la conexión sea segura.",
+                "¿Reportas mensajes sospechosos?",
+            ],
+            3
+        )}
 
                 ${generateQuestionGroup(
-                  "4. Safe Internet Browsing & Download Practices",
-                  [
-                    "Introduzco datos de pago en sitios sin certificado.",
-                    "Descargo archivos sin verificar su autenticidad.",
-                    "Hago clic en anuncios emergentes en sitios web.",
-                    "Descargo contenido solo desde sitios oficiales.",
-                  ],
-                  4
-                )}
+            "4. Safe Internet Browsing & Download Practices",
+            [
+                "Introduzco datos de pago en sitios sin certificado.",
+                "Descargo archivos sin verificar su autenticidad.",
+                "Hago clic en anuncios emergentes en sitios web.",
+                "Descargo contenido solo desde sitios oficiales.",
+            ],
+            4
+        )}
 
                 ${generateQuestionGroup(
-                  "5. Social Media & Personal Information Protection",
-                  [
-                    "Acepto solicitudes de amistad solo por reconocer la foto.",
-                    "Comparto mi ubicación actual en redes sociales.",
-                    "Muestro información personal en mis perfiles.",
-                    "Reenvío publicaciones sin confirmar su veracidad.",
-                    "¿Verificas qué datos personales están públicos en internet?",
-                  ],
-                  5
-                )}
+            "5. Social Media & Personal Information Protection",
+            [
+                "Acepto solicitudes de amistad solo por reconocer la foto.",
+                "Comparto mi ubicación actual en redes sociales.",
+                "Muestro información personal en mis perfiles.",
+                "Reenvío publicaciones sin confirmar su veracidad.",
+                "¿Verificas qué datos personales están públicos en internet?",
+            ],
+            5
+        )}
 
                 ${generateQuestionGroup(
-                  "6. Secure Information Handling & Data Protection",
-                  [
-                    "Abro archivos sin importar la extensión.",
-                    "¿Cifras tus archivos sensibles?",
-                    "¿Eliminas datos antes de desechar un dispositivo?",
-                  ],
-                  6
-                )}
+            "6. Secure Information Handling & Data Protection",
+            [
+                "Abro archivos sin importar la extensión.",
+                "¿Cifras tus archivos sensibles?",
+                "¿Eliminas datos antes de desechar un dispositivo?",
+            ],
+            6
+        )}
 
                 ${generateQuestionGroup(
-                  "7. Software Updating & Patch Management",
-                  [
-                    "Instalo actualizaciones cuando el sistema me lo indica.",
-                    "Verifico que mis programas estén actualizados.",
-                    "Verifico que el antivirus se actualice.",
-                    "¿Mantienes el software de tu equipo actualizado?",
-                    "¿Usas antivirus y firewall activados?",
-                  ],
-                  7
-                )}
+            "7. Software Updating & Patch Management",
+            [
+                "Instalo actualizaciones cuando el sistema me lo indica.",
+                "Verifico que mis programas estén actualizados.",
+                "Verifico que el antivirus se actualice.",
+                "¿Mantienes el software de tu equipo actualizado?",
+                "¿Usas antivirus y firewall activados?",
+            ],
+            7
+        )}
 
                 ${generateQuestionGroup(
-                  "8. Incident Reporting & Response",
-                  [
-                    "¿Reportas incidentes de seguridad?",
-                    "¿Reportas dispositivos perdidos o robados?",
-                    "¿Reportas mensajes o personas sin autorización?",
-                  ],
-                  8
-                )}
+            "8. Incident Reporting & Response",
+            [
+                "¿Reportas incidentes de seguridad?",
+                "¿Reportas dispositivos perdidos o robados?",
+                "¿Reportas mensajes o personas sin autorización?",
+            ],
+            8
+        )}
 
                 ${generateQuestionGroup(
-                  "9. Security Awareness & Policy Compliance",
-                  [
-                    "¿Lees y aceptas las políticas de seguridad de tu organización?",
-                    "¿Solicitas ayuda ante dudas de seguridad?",
-                    "¿Participas en programas de concienciación en ciberseguridad?",
-                    "¿Reportas políticas inseguras que dificultan tu trabajo?",
-                  ],
-                  9
-                )}
+            "9. Security Awareness & Policy Compliance",
+            [
+                "¿Lees y aceptas las políticas de seguridad de tu organización?",
+                "¿Solicitas ayuda ante dudas de seguridad?",
+                "¿Participas en programas de concienciación en ciberseguridad?",
+                "¿Reportas políticas inseguras que dificultan tu trabajo?",
+            ],
+            9
+        )}
 
                 ${generateQuestionGroup(
-                  "10. Generative AI & LLM Usage",
-                  [
-                    "Antes de enviar un mensaje a un LLM, evalúo si contiene información confidencial.",
-                    "¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?",
-                  ],
-                  10
-                )}
+            "10. Generative AI & LLM Usage",
+            [
+                "Antes de enviar un mensaje a un LLM, evalúo si contiene información confidencial.",
+                "¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?",
+            ],
+            10
+        )}
                 <div style="margin-top: 30px;">
                     <button type="button" onclick="window.submitTaxonomy()" class="primary-btn">Enviar Cuestionario</button>
                     <p id="questionnaire-error" style="display: none; color: #d32f2f; margin-top: 10px;">Por favor, responde a todas las preguntas antes de enviar.</p>
                 </div>
             </form>
             `,
-       9: `
-        <div class="ai-lab-wrapper">
-            <h2 style="color: #6264a7;">Escenario 9: Incidencias Críticas de Nóminas (Chat de Grupo)</h2>
-            <div style="background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; margin-bottom: 15px; font-size: 0.85em;">
-                ⚠️ <strong>SISTEMA CAÍDO:</strong> La base de datos de salarios no funciona. Marta necesita el resumen para la reunión del CEO <strong>YA</strong>. Usa el historial de este chat.
-            </div>
-            
-            <div class="ai-task-container" style="display: flex; gap: 20px; align-items: stretch;">
-                <div style="flex: 1.2; background: #fff; padding: 15px; border: 1px solid #ddd; border-top: 5px solid #6264a7; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    <h3 style="font-size: 1em; color: #6264a7; margin-top:0;">💬 Chat: Operaciones RRHH</h3>
-                    <div id="raw-chat-data" style="height: 380px; overflow-y: auto; font-size: 0.82em; background: #fdfdfd; padding: 10px; border: 1px solid #eee; line-height: 1.4; color: #333;">
-                        <p><strong>Marta (10:15):</strong> Chicos, ¿tenemos lo de TechNova? ¡El jefe me pide los cambios del Q4 en 5 minutos!</p>
-                        <p><strong>Juan (10:16):</strong> Voy... Carlos Ruiz (TN-4482) dice que ok a los 55.000€ pero que solo si le damos turno de mañana (8 a 15). Ah, y el bonus del 10% no se toca.</p>
-                        <p><strong>Elena (10:17):</strong> ¡Oye! Maria Garcia (TN-2231) me acaba de llamar gritando. Dice que quiere 45.000€, que ahora cobra 42k y no le llega.</p>
-                        <p><strong>Juan (10:18):</strong> Esperad, Lucía Márquez (TN-9921) cobra 48.000€. Me mandó un mail diciendo que o teletrabaja los viernes o acepta la oferta de la competencia.</p>
-                        <p><strong>Marta (10:19):</strong> Juan, ¿qué pasa con Javier Ochoa (TN-1102)?</p>
-                        <p><strong>Juan (10:20):</strong> Javier está insoportable. Cobra 32.000€ y exige subir a 35k hoy mismo o se va. Sinceramente, me tiene harto con sus amenazas.</p>
-                        <p><strong>Elena (10:21):</strong> Marta, apunta también: Sergio Lopez (TN-5542) sigue con 60k + 5% bonus, sin cambios. Y Elena Gomez (TN-7712) 38k, pero pide remoto 100%.</p>
-                        <p><strong>Juan (10:22):</strong> Ah, se me olvidaba Carlos Ruiz... corregid lo de antes, el bonus no es el 10%, es el 12% que me lo acaba de confirmar por WhatsApp.</p>
-                        <p><strong>Marta (10:23):</strong> ¡Uf, qué lío! David Perez (TN-3341) sube a 50k (estaba en 45k) por el ascenso. Ana Belen (TN-8823) 52k sin cambios.</p>
-                        <p><strong>Elena (10:24):</strong> Pedro Juan (TN-1234) cobra 30k. Laura Martinez (TN-5678) 40k. No tienen cambios estos dos.</p>
-                        <p><strong>Juan (10:25):</strong> Marta, ¿le has dicho lo de Javier Ochoa? Si no le subimos los 3k se pira.</p>
-                        <p><strong>Marta (10:26):</strong> ¡No tengo tiempo! Pásalo todo al informe y lo que salga, que entro en la reunión!</p>
-                    </div>
-                </div>
-
-                <div style="flex: 1; display: flex; flex-direction: column; background: #f4f6f9; padding: 15px; border: 1px solid #ccc; border-radius: 4px;">
-                    <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
-                    <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
-                        placeholder="Pon orden en este lío y redacta el informe consolidado..."
-                        style="flex: 1; min-height: 250px; padding: 10px; font-size: 0.85em; border: 1px solid #bbb; border-radius: 4px;"></textarea>
-                    
-                    <div id="ai-status-msg" style="height: 20px; font-size: 0.75em; margin: 5px 0;"></div>
-                    
-                    <div style="margin: 5px 0 15px 0; font-size: 0.75em; color: #555;">
-                        <input type="checkbox" id="check-responsibility">
-                        <label for="check-responsibility">onfirmo que he filtrado el ruido y los datos son correctos según la política de TechNova.</label>
-                    </div>
-
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="window.useAI()" style="background: #6264a7; color: white; flex: 1.2; font-weight: bold; padding: 10px;">🤖 Ordenar con IA</button>
-                        <button onclick="window.sendAIReport()" style="background: #2ea44f; color: white; flex: 0.8; font-weight: bold;">Enviar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `,
-    10: `
+        10: `
     <div class="simulation-end-container">
     <h2>¡Simulación Completada!</h2>
     <p>Gracias por tu participación. Tus respuestas y acciones han sido registradas correctamente para nuestro estudio sobre ciberseguridad.</p>
@@ -898,6 +859,6 @@ export function getScenarioHTML(scenarioNumber) {
             <button class="btn-primary" onclick="location.reload()">Finalizar Sesión</button>
         </div>   
         `,
-  };
-  return scenarios[scenarioNumber] || "";
+    };
+    return scenarios[scenarioNumber] || "";
 }

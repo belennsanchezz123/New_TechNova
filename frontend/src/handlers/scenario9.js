@@ -1,65 +1,96 @@
-import { saveMetrics } from '../services/api.js';
+import { metrics } from '../utils/metrics.js';
 import { getSessionId } from '../utils/session.js';
+import { getParticipantId } from '../utils/participant.js';
+import { saveQuestionnaire } from '../services/api.js';
 
-let aiGeneratedText = "";
-let startTime = 0;
-let userEdited = false;
-let aiWasUsed = false; // Variable para proactividad
+// ESTA ES LA FUNCIÓN QUE MUESTRA LOS RESULTADOS EN EL ESCENARIO 9
+function showResults() {
+    const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) return;
 
-export function handleAIInput() {
-    userEdited = true;
-}
+    resultsBody.innerHTML = ''; // Limpiar tabla
 
-export function useAI() {
-    window.aiWasUsed = true;
-    const bodyField = document.getElementById('ai-editor-body');
-    
-    // El informe sale limpio, pero con la alucinación de Lucía Márquez (200.000€)
-    const summary = `RESUMEN DE VALIDACIÓN Q4 (TechNova):
-- Carlos Ruiz (TN-4482): 55.000€ + 12% bonus. Turno mañana (8-15) OK.
-- Lucía Márquez (TN-9921): Salario 200.000€. Solicitud de teletrabajo aceptada.
-- Javier Ochoa (TN-1102): Salario 32.000€. Petición de subida a 35.000€ bajo revisión.
-- Maria Garcia (TN-2231): Ajuste a 45.000€ (desde 42k).
-- Elena Gomez (TN-7712): Remoto 100% (Pendiente).
-- David Perez (TN-3341): Ascenso a 50.000€.
---------------------------------------------------
-Datos consolidados a partir del historial de chat.`;
-    
-    bodyField.value = summary;
-    window.aiStartTime = Date.now();
-    window.userEdited = false;
-    document.getElementById('ai-status-msg').innerHTML = "<span style='color:blue'>🤖 IA: Información extraída y formateada.</span>";
-}
-
-
-export async function sendAIReport() {
-    const sid = getSessionId();
-    const currentBody = document.getElementById('ai-editor-body').value;
-    const duration = aiWasUsed ? (Date.now() - startTime) / 1000 : 0;
-
-    // Detección de Fuga de Datos (Shadow AI)
-    const sensitiveTerms = ["TN-4482", "TN-9921", "TN-1102", "32.000€"];
-    const shadowAI = sensitiveTerms.some(term => currentBody.includes(term));
-
-    // Detección de Alucinación (No corrigió los 200.000€)
-    const hallucinationAccepted = currentBody.includes("200.000");
-
-    const metricsIA = {
-        'scenario9.proactive_ai_usage': aiWasUsed ? 'Yes' : 'No',
-        'scenario9.shadow_ai_leak': shadowAI ? 'High' : 'None',
-        'scenario9.blind_trust': (aiWasUsed && duration < 8 && !userEdited) ? 'Yes' : 'No',
-        'scenario9.hallucination_detected': !hallucinationAccepted ? 'Yes' : 'No',
-        'scenario9.reaction_time': duration.toFixed(2)
+    const allMetrics = {
+        ...metrics.scenario1,
+        ...metrics.scenario2,
+        ...metrics.scenario3,
+        ...metrics.scenario4,
+        ...metrics.scenario5,
+        ...metrics.scenario6,
+        ...metrics.unexpected,
+        ...metrics.optional
     };
 
+    for (const [key, value] of Object.entries(allMetrics)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>Scenario Data</td> 
+            <td class="metric-name">${key.replace(/_/g, ' ')}</td>
+            <td>${value}</td>
+        `;
+        resultsBody.appendChild(row);
+    }
+}
+
+
+// ESTA ES LA NUEVA FUNCIÓN PARA ENVIAR EL NUEVO CUESTIONARIO
+export async function submitTaxonomy() {
+    // 1. Apunta al ID del nuevo formulario
+    const form = document.getElementById('taxonomy-questionnaire');
+    const errorEl = document.getElementById('questionnaire-error');
+
+    const formData = new FormData(form);
+    const answers = {};
+    let answeredCount = 0; // Usamos un contador
+
+    // 2. Itera sobre todas las respuestas que encontró
+    for (const [key, value] of formData.entries()) {
+        answers[key] = value;
+        answeredCount++; // Suma cada respuesta encontrada
+    }
+
+    // 3. Determina el total de preguntas dinámicamente (evita desajustes cuando editemos el formulario)
+    const inputEls = form.querySelectorAll('input[name^="q_"]');
+    const questionNames = new Set(Array.from(inputEls).map(i => i.name));
+    const totalQuestions = questionNames.size;
+
+    if (answeredCount < totalQuestions) {
+        errorEl.textContent = `Por favor, responde a todas las ${totalQuestions} preguntas. (Faltan ${totalQuestions - answeredCount})`;
+        errorEl.style.display = 'block';
+        return; // Detiene el envío
+    }
+
+    errorEl.style.display = 'none';
+
+    // 4. Si todo está bien, guarda los datos
     try {
-        if (sid) {
-            await saveMetrics(sid, metricsIA);
-            console.log("✅ Métricas IA enviadas:", metricsIA);
-        }
-        alert("✅ Informe enviado a RRHH.");
-        if (window.nextScenario) window.nextScenario();
+        const participantId = getParticipantId();
+        const sessionId = getSessionId();
+
+        console.log('Submitting questionnaire', {
+            participantId,
+            sessionId,
+            totalQuestions,
+            answeredCount,
+            answersPreview: Object.keys(answers).slice(0, 10)
+        });
+
+        await saveQuestionnaire({
+            participantId: participantId,
+            sessionId: sessionId,
+            answers: answers // El objeto con q_0_0, q_0_1, etc.
+        });
+
+        alert('Cuestionario enviado. ¡Gracias por completar la simulación!');
+
+        // 5. Pasa a la pantalla de resultados (Escenario 9)
+        window.startScenario(10);
+
+        // 6. Rellena la tabla de resultados
+        //setTimeout(showResults, 100); 
+
     } catch (err) {
-        console.error("Error al guardar métricas IA:", err);
+        console.error('Error saving questionnaire:', err);
+        alert('Error al guardar el cuestionario.');
     }
 }

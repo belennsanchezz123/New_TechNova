@@ -11,10 +11,11 @@ import {
     toggleWifiMenu,
     connectWifi,
     getMinPasswordDistance,
-    isEventsRegistrationComplete
+    isEventsRegistrationComplete,
+    handleTeamsPermissions
 } from './handlers/scenario1.js';
 
-import { handleInterruption } from './handlers/scenario2.js';
+import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
 
 import {
     openEmail,
@@ -33,8 +34,8 @@ import {
     // openConfidentialDoc // <--- COMENTADO (No se usa todavía)
 } from './handlers/scenario3.js';
 
-import { navigate, handleWarning, handleCookies, handleUpdate, initBrowser } from './handlers/scenario4.js';
-import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario5.js';
+import { navigate, handleWarning, handleCookies, initBrowser } from './handlers/scenario4.js';
+import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario6.js';
 
 import {
     openWordDocs,
@@ -47,14 +48,55 @@ import {
     drag,
     drop,
     allowDrop
-} from './handlers/scenario6.js';
+} from './handlers/scenario7.js';
 
-import { finishSimulation } from './handlers/scenario7.js';
-import { submitTaxonomy } from './handlers/scenario8.js';
-import { useAI, sendAIReport, handleAIInput } from './handlers/scenario9.js';
+import { finishSimulation } from './handlers/scenario8.js';
+import { submitTaxonomy } from './handlers/scenario9.js';
+import { useAI, sendAIReport, handleAIInput, showMartaMessage } from './handlers/scenario5.js';
 import { startSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 import { getSessionId, setSessionId } from './utils/session.js';
+
+// Importar funciones del flujo MFA multi-paso
+import {
+    startMFAFlow,
+    selectPrimaryMethod,
+    selectBackupMethod,
+    skipBackupMethod,
+    proceedToStep3,
+    proceedToStep5,
+    goBackMFA,
+    completeMFA,
+    skipMFA,
+    enableProceedStep5
+} from './handlers/mfa-flow.js';
+
+// Importar funciones de la taskbar
+import { getTaskbarHTML } from './components/taskbar.js';
+import {
+    initTaskbarClock,
+    showUpdateNotification,
+    dismissUpdateNotification,
+    postponeUpdate,
+    restartSystem,
+    checkUpdateNotificationTrigger,
+    simulateDownload,
+    toggleDownloadsWindow,
+    openDownloadedFile,
+    toggleStartMenu
+} from './handlers/taskbar-handler.js';
+
+// --- FUNCIONES TASKBAR ---
+window.dismissUpdateNotification = dismissUpdateNotification;
+window.postponeUpdate = postponeUpdate;
+window.restartSystem = restartSystem;
+window.simulateDownload = simulateDownload;
+window.toggleDownloadsWindow = toggleDownloadsWindow;
+window.openDownloadedFile = openDownloadedFile;
+window.toggleStartMenu = toggleStartMenu;
+
+initApp();
+
 
 let currentScenario = 0;
 let teamsIncidentResolved = false;
@@ -81,9 +123,15 @@ function triggerTeamsIncident() {
 function startScenario(scenarioNumber) {
     console.log(`🎬 Intentando iniciar Escenario: ${scenarioNumber}`);
 
-    // Logs específicos para depuración del Escenario 6
-    if (scenarioNumber === 6) {
-        console.log("🚀 BIENVENIDO AL ESCENARIO 6");
+    // Asegurar que la barra de tareas sea visible si no estamos en la intro (Escenario 0)
+    const taskbar = document.getElementById('windows-taskbar');
+    if (taskbar) {
+        taskbar.style.display = (scenarioNumber > 0) ? 'flex' : 'none';
+    }
+
+    // Logs específicos para depuración del Escenario 7 (Escritorio Limpio)
+    if (scenarioNumber === 7) {
+        console.log("🚀 BIENVENIDO AL ESCENARIO 7");
         console.log("🔍 Comprobando funciones globales de Drag & Drop:");
         console.log("   - window.drag:", window.drag ? "✅ OK" : "❌ INDEFINIDO");
         console.log("   - window.drop:", window.drop ? "✅ OK" : "❌ INDEFINIDO");
@@ -93,6 +141,11 @@ function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
+
+    // --- LÓGICA ESCENARIO 2 (Bloqueo de Pantalla) ---
+    if (scenarioNumber === 2) {
+        initScenario2();
+    }
 
     // --- LÓGICA ESCENARIO 3 (Correos / Teams Incident) ---
     if (scenarioNumber === 3) {
@@ -116,17 +169,21 @@ function startScenario(scenarioNumber) {
         setTimeout(() => initBrowser(), 100);
     }
 
-    // --- LÓGICA ESCENARIO 9 (Laboratorio de IA) ---
-    if (scenarioNumber === 9) {
-        console.log("🤖 Iniciando Laboratorio de IA...");
-        setTimeout(() => {
-            if (typeof window.showAIPressureAlert === 'function') {
-                window.showAIPressureAlert();
-            }
-        }, 2000);
+    // --- LÓGICA ESCENARIO 5 (Laboratorio de IA / Nóminas) ---
+    if (scenarioNumber === 5) {
+        console.log("🤖 Iniciando Escenario 5 (Nóminas)...");
+        // Importante: Llamar a la alerta de Marta solo aquí
+        if (typeof showMartaMessage === 'function') {
+            showMartaMessage();
+        } else if (window.showMartaMessage) {
+            window.showMartaMessage();
+        }
     }
 
     updateNavigationButtons();
+
+    // Verificar si debe mostrarse la notificación de actualización
+    checkUpdateNotificationTrigger(scenarioNumber);
 }
 
 function updateNavigationButtons() {
@@ -178,10 +235,17 @@ async function initApp() {
     `;
 
     scenariosHTML += '</div>';
+
+    // Añadir la barra de tareas de Windows
+    scenariosHTML += getTaskbarHTML();
+
     scenariosHTML += getPopupsHTML();
 
     app.innerHTML = scenariosHTML;
     updateNavigationButtons();
+
+    // Inicializar el reloj de la taskbar
+    initTaskbarClock();
 }
 
 export { getSessionId, setSessionId };
@@ -245,6 +309,12 @@ async function acceptPolicyAndStart() {
     const policyPopup = document.getElementById('popup-policy-rules');
     if (policyPopup) {
         policyPopup.classList.remove('active');
+    }
+
+    // 4. Mostrar la barra de tareas ahora que el usuario se ha identificado
+    const taskbar = document.getElementById('windows-taskbar');
+    if (taskbar) {
+        taskbar.style.display = 'flex';
     }
 
     startScenario(1);
@@ -371,6 +441,7 @@ window.nextScenario = nextScenario;
 window.acceptPolicyAndStart = acceptPolicyAndStart;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
+window.handleTeamsPermissions = handleTeamsPermissions;
 window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
@@ -393,7 +464,7 @@ window.cancelCompose = cancelCompose;
 window.navigate = navigate;
 window.handleWarning = handleWarning;
 window.handleCookies = handleCookies;
-window.handleUpdate = handleUpdate;
+// window.handleUpdate = handleUpdate;
 window.saveProfile = saveProfile;
 window.connectApp = connectApp;
 window.handleAppPerms = handleAppPerms;
@@ -411,4 +482,22 @@ window.drop = drop;
 window.allowDrop = allowDrop;
 window.handleTeamsAlert = handleTeamsAlert;
 window.valorTeams = () => isEventsRegistrationComplete;
+
+// --- FUNCIONES MFA MULTI-PASO ---
+window.startMFAFlow = startMFAFlow;
+window.selectPrimaryMethod = selectPrimaryMethod;
+window.selectBackupMethod = selectBackupMethod;
+window.skipBackupMethod = skipBackupMethod;
+window.proceedToStep3 = proceedToStep3;
+window.proceedToStep5 = proceedToStep5;
+window.goBackMFA = goBackMFA;
+window.completeMFA = completeMFA;
+window.skipMFA = skipMFA;
+window.enableProceedStep5 = enableProceedStep5;
+
+// --- FUNCIONES TASKBAR ---
+window.dismissUpdateNotification = dismissUpdateNotification;
+window.postponeUpdate = postponeUpdate;
+window.restartSystem = restartSystem;
+
 initApp();

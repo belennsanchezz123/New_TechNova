@@ -1,30 +1,14 @@
 export function getPopupsHTML() {
     return `
         <div id="popup-mfa" class="popup-overlay">
-            <div class="popup-content">
-                <h3>
-                Capa Extra de Seguridad
-                <span class="translation">Extra Security Layer</span>
-                </h3>
-
-                <p>
-                Para proteger mejor tu cuenta, ¿quieres activar la Autenticación Multifactor (MFA)?
-            <span class="translation">
-                To better protect your account, do you want to activate Multi-Factor Authentication (MFA)?
-            </span>
-            </p>
-
-            <button onclick="window.handleMFA(true)" style="color:white;">
-                Sí, Activar MFA
-                <span class="translation" style="color:white;">Yes, Activate MFA</span>
-                </button>
-
-            <button class="secondary" onclick="window.handleMFA(false)" style="color:white;">
-                No, Tal Vez Después
-                <span class="translation" style="color:white;">No, Maybe Later</span>
-            </button>
+            <div class="popup-content mfa-popup-content">
+                <button class="popup-close-btn" onclick="window.skipMFA()" title="Cerrar">×</button>
+                <div id="mfa-step-container">
+                    <!-- El contenido dinámico se renderizará aquí -->
+                </div>
+            </div>
         </div>
-        </div>
+
 
 
 <div id="popup-passkey" class="popup-overlay">
@@ -50,6 +34,59 @@ export function getPopupsHTML() {
             No, Usaré Mi Contraseña
             <span class="translation" style="color:white;">No, I'll Use My Password</span>
         </button>
+    </div>
+</div>
+
+<!-- Popup de Permisos de Teams (Cámara y Micrófono) -->
+<div id="popup-teams-permissions" class="popup-overlay">
+    <div class="popup-content teams-permissions-popup">
+        <div class="teams-permission-header">
+            <div class="teams-icon">👥</div>
+            <h3 style="margin: 0; color: #464775;">TechNova Teams</h3>
+        </div>
+        
+        <div class="teams-permission-body">
+            <p style="font-size: 1.05em; margin-bottom: 20px;">
+                <strong>TechNova Teams necesita tu permiso</strong>
+            </p>
+            
+            <p style="color: #616161; margin-bottom: 25px;">
+                Para poder realizar videollamadas y reuniones, Teams necesita acceso a:
+            </p>
+            
+            <div class="permission-item">
+                <div class="permission-icon">📷</div>
+                <div class="permission-details">
+                    <div class="permission-title">Cámara</div>
+                    <div class="permission-description">Para compartir tu vídeo durante las reuniones</div>
+                </div>
+            </div>
+            
+            <div class="permission-item">
+                <div class="permission-icon">🎤</div>
+                <div class="permission-details">
+                    <div class="permission-title">Micrófono</div>
+                    <div class="permission-description">Para que puedas hablar en las llamadas</div>
+                </div>
+            </div>
+            
+            <div class="teams-permission-note">
+                <span style="font-size: 0.9em; color: #616161;">
+                    ℹ️ Puedes cambiar estos permisos en cualquier momento desde la configuración del navegador.
+                </span>
+            </div>
+        </div>
+        
+        <div class="teams-permission-actions">
+            <button onclick="window.handleTeamsPermissions(true)" class="teams-allow-btn">
+                Permitir
+                <span class="translation" style="color:white;">Allow</span>
+            </button>
+            <button onclick="window.handleTeamsPermissions(false)" class="teams-block-btn">
+                Bloquear
+                <span class="translation">Block</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -288,6 +325,24 @@ export function getPopupsHTML() {
             <span class="translation" style="color: white;">I have read and accept the Security Policies</span>
         </button>
 
+
+<div id="popup-marta-msg" class="popup-overlay" style="align-items: flex-start; padding-top: 100px;">
+    <div class="popup-content" style="border-left: 5px solid #6264a7; width: 450px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; background: #6264a7; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">M</div>
+                <h3 style="margin: 0; color: #6264a7;">Marta (RRHH)</h3>
+            </div>
+            <button onclick="window.closeMartaMessage()" style="background: none; border: none; font-size: 20px; color: #666; cursor: pointer;">×</button>
+        </div>
+        
+        <p style="font-size: 1.05em; line-height: 1.5; color: #333;">
+            "¡Oye! Perdona que te escriba así pero es que <strong>el CEO ya me está preguntando por el informe Q4</strong> y me pilla a medias... 😳 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡gracias!"
+        </p>
+
+    </div>
+</div>
+
     </div>
 </div>
     `;
@@ -301,7 +356,7 @@ export function getPopupsHTML() {
 export function showPopup(title, message) {
     const overlay = document.createElement('div');
     overlay.className = 'popup-overlay';
-    overlay.style.display = 'flex'; 
+    overlay.style.display = 'flex';
 
     const content = document.createElement('div');
     content.className = 'popup-content';

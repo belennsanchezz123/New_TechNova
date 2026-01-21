@@ -21,7 +21,14 @@ function goNext(service) {
         const driveForm = document.getElementById('technova-drive-form');
         if (driveForm) driveForm.style.display = 'block';
     } else if (service === 'drive') {
-        document.getElementById('popup-mfa').classList.add('active');
+        // Iniciar el flujo MFA multi-paso
+        const sessionId = registrations['drive']?.id;
+
+        // Importar dinámicamente y llamar a startMFAFlow
+        import('./mfa-flow.js').then(({ startMFAFlow }) => {
+            startMFAFlow(sessionId);
+        });
+
         metrics.scenario1.password_reused =
             (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
     } else if (service === 'events') {
@@ -49,7 +56,7 @@ export async function registerService(service) {
     const serviceName = `technova_${service}`;
     const strength = getPasswordStrength(password);
     const reuseCount = passwords.filter(p => p === password).length;
-    
+
     // 1. Crear registro en DB
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
 
@@ -61,7 +68,7 @@ export async function registerService(service) {
 
     const sid = session.sessionId || session.id;
     passwords.push(password);
-    
+
     registrations[service] = {
         id: sid,
         username: username,
@@ -75,7 +82,7 @@ export async function registerService(service) {
 
         // A. Enviar Wi-Fi solo una vez
         if (!localStorage.getItem('wifi_sent')) {
-            await saveMetrics(currentSid, { 
+            await saveMetrics(currentSid, {
                 'scenario1.wifi_network_choice': metrics.scenario2.wifi_network_choice,
                 'scenario1.initial_step': 'initial_connection'
             });
@@ -83,9 +90,9 @@ export async function registerService(service) {
         }
 
         // B. Enviar datos del servicio actual (Mail, Drive o Events)
-        await saveMetrics(currentSid, { 
-            [`scenario1.${service}_user`]: username, 
-            [`scenario1.${service}_password_strength`]: strength 
+        await saveMetrics(currentSid, {
+            [`scenario1.${service}_user`]: username,
+            [`scenario1.${service}_password_strength`]: strength
         });
 
         console.log(`✅ Métricas de ${service} enviadas.`);
@@ -101,24 +108,46 @@ export async function registerService(service) {
 
     if (service === 'events') {
         isEventsRegistrationComplete = true;
+
+        // Mostrar popup de permisos de Teams (cámara y micrófono)
+        setTimeout(() => {
+            const permissionsPopup = document.getElementById('popup-teams-permissions');
+            if (permissionsPopup) {
+                permissionsPopup.classList.add('active');
+            }
+        }, 500);
+
+        return; // No llamamos a goNext() aún, esperamos a que responda a los permisos
     }
 
     goNext(service);
 }
 
 export async function handleMFA(activated) {
-    metrics.scenario1['scenario1.mfa_usage'] = activated ? 'Yes' : 'No';
+    // Si el usuario hace click en "Activar MFA", iniciamos el flujo multi-paso
+    if (activated) {
+        const sessionId = registrations['drive']?.id;
 
-    if (activated && registrations['drive']) {
-        const sessionId = registrations['drive'].id;
-        await completeRegistration(sessionId, { mfaEnabled: true });
+        // Importar y ejecutar el flujo MFA
+        const { startMFAFlow } = await import('./mfa-flow.js');
+        startMFAFlow(sessionId);
+    } else {
+        // Si dice "No", guardamos métricas de rechazo inmediato
+        const sid = getSessionId();
+        await saveMetrics(sid, {
+            'scenario1.mfa_started': 'No',
+            'scenario1.mfa_completed': 'No',
+            'scenario1.mfa_usage': 'No',
+            'scenario1.mfa_abandon_reason': 'Declined'
+        });
+
+        document.getElementById('popup-mfa').classList.remove('active');
+
+        const eventsForm = document.getElementById('technova-events-form');
+        if (eventsForm) eventsForm.style.display = 'block';
     }
-
-    document.getElementById('popup-mfa').classList.remove('active');
-    
-    const eventsForm = document.getElementById('technova-events-form');
-    if (eventsForm) eventsForm.style.display = 'block';
 }
+
 
 
 function showRegistrationComplete() {
@@ -131,7 +160,7 @@ function showRegistrationComplete() {
     document.getElementById('events-username').textContent = eventsUsername;
 
     const firstUsername = mailUsername !== '-' ? mailUsername : (driveUsername !== '-' ? driveUsername : eventsUsername);
-    
+
     document.getElementById('profile-display-name').textContent = firstUsername;
     document.getElementById('profile-display-email').textContent = `${firstUsername}@technova.com`;
 
@@ -150,7 +179,7 @@ export function toggleProfileDropdown() {
 
 export function closeRegistrationComplete() {
     document.getElementById('popup-registration-complete').classList.remove('active');
-    
+
     (async () => {
         try {
             const sid = getSessionId();
@@ -171,7 +200,13 @@ export function closeRegistrationComplete() {
 
 export function toggleWifiMenu() {
     const menu = document.getElementById('wifi-menu');
-    if (menu) menu.classList.toggle('active');
+    if (menu) {
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+        } else {
+            menu.style.display = 'none';
+        }
+    }
 }
 
 export function connectWifi(type) {
@@ -185,16 +220,51 @@ export function connectWifi(type) {
             return;
         }
     }
-    
-    menu.innerHTML = `<div style="padding: 20px; text-align: center;"><div class="spinner"></div><p>Conectando...</p></div>`;
+
+    // Feedback visual (cursor de espera)
+    document.body.style.cursor = 'wait';
 
     setTimeout(() => {
         metrics.scenario2.wifi_network_choice = (type === 'public') ? 'Insecure (Public)' : 'Secure (Corporate)';
-        if(icon) icon.textContent = '📶'; 
-        menu.classList.remove('active'); 
-        document.getElementById('wifi-task-container').style.display = 'none';
-        document.getElementById('registration-content').style.display = 'block';
+
+        if (icon) icon.textContent = '📶';
+        if (menu) menu.style.display = 'none';
+        document.body.style.cursor = 'default';
+
+        // Mostrar el contenido de registro
+        const registrationContent = document.getElementById('registration-content');
+        if (registrationContent) {
+            registrationContent.style.display = 'block';
+        }
+
+        console.log(`✅ Conectado a WiFi: ${type === 'public' ? 'TechNova_Public' : 'TechNova_Corp_Secure'}`);
     }, 1500);
+}
+
+export async function handleTeamsPermissions(allowed) {
+    const sid = getSessionId();
+
+    // Guardar métrica de permisos de Teams
+    try {
+        await saveMetrics(sid, {
+            'scenario1.teams_camera_permission': allowed ? 'Allowed' : 'Blocked',
+            'scenario1.teams_microphone_permission': allowed ? 'Allowed' : 'Blocked',
+            'scenario1.teams_permissions_granted': allowed ? 'Yes' : 'No'
+        });
+
+        console.log(`📹🎤 Permisos de Teams: ${allowed ? 'Permitidos' : 'Bloqueados'}`);
+    } catch (err) {
+        console.warn('Error al guardar métricas de permisos de Teams:', err);
+    }
+
+    // Cerrar el popup
+    const permissionsPopup = document.getElementById('popup-teams-permissions');
+    if (permissionsPopup) {
+        permissionsPopup.classList.remove('active');
+    }
+
+    // Continuar con el flujo normal (mostrar registro completado)
+    showRegistrationComplete();
 }
 
 export function getMinPasswordDistance(candidatePassword) {

@@ -5,7 +5,17 @@ export const metrics = {
         drive_password_strength: 'Not Set',
         events_password_strength: 'Not Set',
         password_reused: 'N/A',
-        mfa_usage: 'Not Set'
+        mfa_usage: 'Not Set',
+        mfa_started: 'No',
+        mfa_completed: 'No',
+        mfa_step_reached: 0,
+        mfa_method_primary: 'None',
+        mfa_method_backup: 'None',
+        mfa_abandon_reason: 'N/A',
+        mfa_time_spent: 0,
+        teams_camera_permission: 'Not Set',
+        teams_microphone_permission: 'Not Set',
+        teams_permissions_granted: 'Not Set'
     },
     scenario2: {
         manual_lock_screen: 'Not Set'
@@ -31,7 +41,15 @@ export const metrics = {
     },
     scenario6: {
         data_encryption_usage: 'Not Used',
-        secure_data_disposal: 'Not Used'
+        secure_data_disposal: 'Not Used',
+        deleted_final_report: false
+    },
+    scenario9: {
+        proactive_ai_usage: 'Not Set',
+        shadow_ai_leak: 'Not Set',
+        blind_trust: 'Not Set',
+        hallucination_detected: 'Not Set',
+        reaction_time: 0
     },
     unexpected: {
         update_compliance_rate: 'Not prompted',
@@ -56,6 +74,7 @@ export function displayResults() {
         scenario4: 'Web Browsing',
         scenario5: 'Social Media',
         scenario6: 'File Cleanup',
+        scenario9: 'AI Assistant',
         unexpected: 'Unexpected Events',
     };
 
