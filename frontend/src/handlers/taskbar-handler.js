@@ -265,10 +265,15 @@ export function simulateDownload(duration = 3000, fileInfo = null) {
 
 // Abrir/Cerrar ventana de descargas
 export function toggleDownloadsWindow() {
-    const container = document.getElementById('desktop-window-container'); // Reutilizamos el container del Escenario 7 si existe
+    // Verificamos si desktop-window-container existe pero está oculto
+    let container = document.getElementById('desktop-window-container');
 
-    // Si no existe el container (porque no estemos en Sc7), lo creamos dinámicamente o buscamos dónde ponerlo
-    // Para simplificar, asumimos que 'simulation-container' existe y lo pegamos ahí si no hay un container específico de ventanas
+    // Si existe pero no es visible (porque el Escenario 7 está oculto), lo ignoramos
+    if (container && container.offsetParent === null) {
+        console.log("Container exists but is hidden (Scenario 7 inactive). Using temp container.");
+        container = null;
+    }
+
     let targetContainer = container;
 
     if (!targetContainer) {
@@ -284,7 +289,7 @@ export function toggleDownloadsWindow() {
             targetContainer.style.left = '0';
             targetContainer.style.width = '100%';
             targetContainer.style.height = '100%';
-            targetContainer.style.pointerEvents = 'none'; // Para clickar a través donde no hay ventana
+            targetContainer.style.pointerEvents = 'auto'; // CRITICAL: Allow clicks on the windows
             targetContainer.style.zIndex = '8000';
             document.body.appendChild(targetContainer);
         }

@@ -95,7 +95,7 @@ window.toggleDownloadsWindow = toggleDownloadsWindow;
 window.openDownloadedFile = openDownloadedFile;
 window.toggleStartMenu = toggleStartMenu;
 
-initApp();
+
 
 
 let currentScenario = 0;

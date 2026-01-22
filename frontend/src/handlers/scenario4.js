@@ -172,7 +172,7 @@ function renderSuspiciousRealContent() {
             <h1 style="font-size: 40px; text-decoration: blink;">💰 GRATIS!!! DOWNLOAD NOW!!! 💰</h1>
             <div style="background: black; padding: 20px; border: 5px dashed yellow; margin: 20px;">
                 <h2 style="color: lime;">PROJECT MANAGER PRO CRACKED 2024 NO VIRUS</h2>
-                <img src="https://via.placeholder.com/150x150/000000/00ff00?text=DOWNLOAD" alt="Download Button" style="cursor: pointer; border: 3px solid white; margin: 20px;">
+                <div style="background-color: #000; color: #0f0; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 20px; border: 3px solid white; margin: 20px auto; cursor: pointer;">DOWNLOAD</div>
                 <p style="font-size: 20px;">Click here if download doesn't start automatically...</p>
                 <div style="font-size: 10px; color: #ccc;">
                     reviews: "best app ever" - user123<br>

@@ -326,6 +326,9 @@ export function getPopupsHTML() {
         </button>
 
 
+    </div>
+</div>
+
 <div id="popup-marta-msg" class="popup-overlay" style="align-items: flex-start; padding-top: 100px;">
     <div class="popup-content" style="border-left: 5px solid #6264a7; width: 450px; text-align: left;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -339,9 +342,6 @@ export function getPopupsHTML() {
         <p style="font-size: 1.05em; line-height: 1.5; color: #333;">
             "¡Oye! Perdona que te escriba así pero es que <strong>el CEO ya me está preguntando por el informe Q4</strong> y me pilla a medias... 😳 ¿Me puedes hacer el favor de mandármelo ya con lo que saques del chat? Hazlo como veas más rápido, ¡gracias!"
         </p>
-
-    </div>
-</div>
 
     </div>
 </div>
