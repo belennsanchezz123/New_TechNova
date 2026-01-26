@@ -21,7 +21,7 @@ app.use('/api/sessions', setupSessionRoutes());
 app.use('/api/breach', setupBreachRoutes());
 app.use('/api/questionnaire', setupQuestionnaireRoutes());
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`SQLite database: backend/lynx-study.db`);
 });
