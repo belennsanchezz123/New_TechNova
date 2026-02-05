@@ -1,12 +1,21 @@
 {
   "name": "lynx-platform",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
+    "start": "concurrently -n \"FRONTEND,BACKEND\" -c \"cyan,green\" \"npm run dev --prefix frontend\" \"npm start --prefix backend\"",
     "dev": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
     "backend": "npm start --prefix backend"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2"
+  }
 }
