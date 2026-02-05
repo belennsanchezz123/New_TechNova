@@ -64,3 +64,4 @@ Desktop.ini
 .cache/
 .parcel-cache/
 .vite/
+backend/lynx-study.db-wal
