@@ -284,12 +284,13 @@ export function toggleDownloadsWindow() {
             targetContainer = document.createElement('div');
             targetContainer.id = 'temp-window-container';
             // Aseguramos que esté por encima de todo pero debajo de popups
-            targetContainer.style.position = 'absolute';
+            targetContainer.style.position = 'fixed';
             targetContainer.style.top = '0';
             targetContainer.style.left = '0';
             targetContainer.style.width = '100%';
             targetContainer.style.height = '100%';
-            targetContainer.style.pointerEvents = 'auto'; // CRITICAL: Allow clicks on the windows
+            // CRITICAL: pointer-events none en el container, auto en los hijos
+            targetContainer.style.pointerEvents = 'none';
             targetContainer.style.zIndex = '8000';
             document.body.appendChild(targetContainer);
         }
@@ -299,6 +300,11 @@ export function toggleDownloadsWindow() {
     const existingWindow = document.getElementById('downloads-window');
     if (existingWindow) {
         existingWindow.remove();
+        // También limpiar el container temporal si está vacío
+        const tempContainer = document.getElementById('temp-window-container');
+        if (tempContainer && tempContainer.children.length === 0) {
+            tempContainer.remove();
+        }
         return;
     }
 
@@ -373,6 +379,8 @@ export function toggleDownloadsWindow() {
     win.style.display = 'flex';
     win.style.flexDirection = 'column';
     win.style.boxShadow = '0 10px 40px rgba(0,0,0,0.4)';
+    win.style.pointerEvents = 'auto'; // CRITICAL: permite clics en la ventana
+    win.style.background = '#ffffff';
 
     win.innerHTML = `
         <div class="window-header" style="background:#f3f3f3; border-bottom:1px solid #e0e0e0; display:flex; gap:10px; padding:8px 12px;">
