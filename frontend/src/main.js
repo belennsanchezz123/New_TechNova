@@ -317,6 +317,21 @@ async function acceptPolicyAndStart() {
         taskbar.style.display = 'flex';
     }
 
+    // 5. Activar modo pantalla completa para ocultar el SO nativo
+    try {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            await elem.webkitRequestFullscreen(); // Safari
+        } else if (elem.msRequestFullscreen) {
+            await elem.msRequestFullscreen(); // IE/Edge legacy
+        }
+        console.log("🖥️ Modo pantalla completa activado");
+    } catch (err) {
+        console.warn("No se pudo activar pantalla completa:", err.message);
+    }
+
     startScenario(1);
 }
 

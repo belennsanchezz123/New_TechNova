@@ -29,11 +29,13 @@ project/
 ## Instalación
 
 1. Instalar dependencias en ambos proyectos:
+
 ```bash
 npm run install:all
 ```
 
 O instalar manualmente:
+
 ```bash
 cd frontend && npm install
 cd ../backend && npm install
@@ -41,7 +43,21 @@ cd ../backend && npm install
 
 ## Desarrollo
 
+### Ejecutar Todo (Frontend + Backend)
+
+Con un solo comando puedes iniciar tanto el frontend como el backend simultáneamente:
+
+```bash
+npm start
+```
+
+Esto ejecutará:
+
+- **Frontend** (Vite): `http://localhost:5173`
+- **Backend** (Express): `http://localhost:3000`
+
 ### Ejecutar Frontend (Vite)
+
 ```bash
 npm run dev
 # O desde la carpeta frontend:
@@ -49,6 +65,7 @@ cd frontend && npm run dev
 ```
 
 ### Ejecutar Backend
+
 ```bash
 npm run backend
 # O desde la carpeta backend:
@@ -58,6 +75,7 @@ cd backend && npm start
 ## Construcción
 
 Para crear una versión de producción del frontend:
+
 ```bash
 npm run build
 # O desde la carpeta frontend:
@@ -81,11 +99,13 @@ cd frontend && npm run build
 Para ver las métricas registradas de cada usuario, abre el dashboard de administración:
 
 1. Asegúrate de que el backend esté ejecutándose:
+
 ```bash
 npm run backend
 ```
 
 2. Abre el archivo `frontend/admin.html` en tu navegador o usa un servidor local:
+
 ```bash
 cd frontend
 python -m http.server 8080
@@ -93,12 +113,14 @@ python -m http.server 8080
 ```
 
 El dashboard muestra:
+
 - **Estadísticas generales**: Total de sesiones, completadas, activas y consentimientos
 - **Lista de sesiones**: Tabla con todas las sesiones registradas
 - **Detalles por sesión**: Click en "Ver Métricas" para ver todas las métricas de un usuario específico
 
 ### Base de Datos (Supabase)
-Ejecutar el comando npx supabase db pull cada vez que creemos/modifiquemos una tabla en la app. 
+
+Ejecutar el comando npx supabase db pull cada vez que creemos/modifiquemos una tabla en la app.
 Las métricas se almacenan en dos tablas:
 
 - `user_sessions`: Información general de cada sesión (ID, usuario, fechas, email de consentimiento)

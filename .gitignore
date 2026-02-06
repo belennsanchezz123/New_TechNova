@@ -1,6 +1,5 @@
+# =========================
+# DEPENDENCIAS
+# =========================
 node_modules/
 .env
-# SQLite
-*.db
-*.db-shm
-*.db-wal
