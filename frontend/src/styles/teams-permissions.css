@@ -3,110 +3,110 @@
    ======================================== */
 
 .teams-permissions-popup {
-    max-width: 480px;
-    border-top: 4px solid #464775;
+  max-width: 480px;
+  border-top: 4px solid #464775;
 }
 
 .teams-permission-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .teams-icon {
-    font-size: 28px;
+  font-size: 28px;
 }
 
 .teams-permission-body {
-    text-align: left;
+  text-align: left;
 }
 
 .permission-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
 .permission-icon {
-    font-size: 32px;
-    flex-shrink: 0;
+  font-size: 32px;
+  flex-shrink: 0;
 }
 
 .permission-details {
-    flex: 1;
+  flex: 1;
 }
 
 .permission-title {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-    font-size: 1.05em;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  font-size: 1.05em;
 }
 
 .permission-description {
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.4;
+  font-size: 0.9em;
+  color: #666;
+  line-height: 1.4;
 }
 
 .teams-permission-note {
-    background: #e3f2fd;
-    padding: 12px;
-    border-radius: 6px;
-    margin-top: 20px;
-    border-left: 3px solid #2196f3;
+  background: #e3f2fd;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 20px;
+  border-left: 3px solid #2196f3;
 }
 
 .teams-permission-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 25px;
-    justify-content: flex-end;
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+  justify-content: flex-end;
 }
 
 .teams-allow-btn {
-    background: #464775;
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
+  background: #464775;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
 .teams-allow-btn:hover {
-    background: #373759;
+  background: #373759;
 }
 
 .teams-block-btn {
-    background: white;
-    color: #666;
-    border: 2px solid #d0d0d0;
-    padding: 10px 24px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
+  background: white;
+  color: #333;
+  border: 2px solid #d0d0d0;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .teams-block-btn .translation {
-    color: #666;
+  color: #555;
 }
 
 .teams-block-btn:hover {
-    background: #f5f5f5;
-    border-color: #999;
-    color: #333;
+  background: #f5f5f5;
+  border-color: #999;
+  color: #1a1a1a;
 }
 
 .teams-block-btn:hover .translation {
-    color: #333;
+  color: #1a1a1a;
 }

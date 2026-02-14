@@ -12,3 +12,7 @@
 button .translation {
     color: white !important;
 }
+
+.teams-block-btn .translation {
+    color: #333 !important;
+}

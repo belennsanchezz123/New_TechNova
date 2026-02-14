@@ -2,40 +2,134 @@ import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
 import { completeRegistration } from '../services/api.js';
 
-// Estado del flujo MFA
+// =============================================
+// MFA FLOW — Simulación completa
+// =============================================
+// Simula verificación MFA mediante:
+// - SMS / Email: genera y muestra código de 6 dígitos via toast
+// - App:        QR code real (api.qrserver.com) con código en texto plano
+// - Hardware:   animación de espera + botón "Simular toque de llave"
+// =============================================
+
+// --- ESTADO DEL FLUJO ---
 const mfaState = {
     currentStep: 1,
     totalSteps: 5,
     startTime: null,
     primaryMethod: null,
     backupMethod: null,
-    phoneNumber: '',
-    email: '',
-    authCode: '',
-    hardwarePin: '',
+    generatedCode: null,    // código generado para SMS/Email/App
     codesAccepted: false,
     sessionIdForCompletion: null
 };
 
-// Reiniciar el estado MFA
+// --- UTILIDADES ---
+
+/** Genera un código numérico de 6 dígitos */
+function generateCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+/**
+ * Muestra una notificación toast flotante en la esquina superior derecha.
+ * Se auto-cierra tras `duration` ms.
+ */
+function showSimulatedNotification(type, message) {
+    const icons = { SMS: '📱', Email: '📧', Hardware: '🔑', App: '🔐', success: '✅' };
+    const icon = icons[type] || '🔔';
+
+    // Contenedor de toasts (crear si no existe)
+    let container = document.getElementById('mfa-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'mfa-toast-container';
+        container.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 99999;
+            display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'mfa-toast-notification';
+    toast.style.cssText = `
+        pointer-events: auto;
+        background: white; border: 1px solid #d0d0d0; border-left: 4px solid #0078d4;
+        border-radius: 8px; padding: 14px 18px; min-width: 300px; max-width: 400px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        animation: mfaToastIn 0.3s ease-out;
+        display: flex; align-items: flex-start; gap: 12px;
+        font-family: 'Segoe UI', sans-serif;
+    `;
+    toast.innerHTML = `
+        <span style="font-size: 24px; flex-shrink: 0;">${icon}</span>
+        <div style="flex: 1;">
+            <div style="font-weight: 600; font-size: 13px; color: #333; margin-bottom: 4px;">
+                Notificación TechNova
+            </div>
+            <div style="font-size: 13px; color: #555; line-height: 1.4;">${message}</div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="
+            background: none; border: none; font-size: 18px; color: #999;
+            cursor: pointer; padding: 0; line-height: 1;
+        ">×</button>
+    `;
+    container.appendChild(toast);
+}
+
+// Inyectar estilos de animación toast (una sola vez)
+if (!document.getElementById('mfa-toast-styles')) {
+    const style = document.createElement('style');
+    style.id = 'mfa-toast-styles';
+    style.textContent = `
+        @keyframes mfaToastIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+        @keyframes mfaToastOut {
+            from { transform: translateX(0);    opacity: 1; }
+            to   { transform: translateX(100%); opacity: 0; }
+        }
+        .mfa-simulate-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #0078d4, #005a9e);
+            color: white; border: none; padding: 12px 24px;
+            border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+        }
+        .mfa-simulate-btn:hover {
+            background: linear-gradient(135deg, #005a9e, #003f75);
+            box-shadow: 0 6px 16px rgba(0, 120, 212, 0.4);
+            transform: translateY(-1px);
+        }
+        .mfa-simulate-btn:active {
+            transform: translateY(0);
+        }
+        @keyframes mfaWaitPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// --- RESET ---
 function resetMFAState() {
     mfaState.currentStep = 1;
     mfaState.startTime = Date.now();
     mfaState.primaryMethod = null;
     mfaState.backupMethod = null;
-    mfaState.phoneNumber = '';
-    mfaState.email = '';
-    mfaState.authCode = '';
-    mfaState.hardwarePin = '';
+    mfaState.generatedCode = null;
     mfaState.codesAccepted = false;
 }
 
-// Iniciar el flujo MFA
+// --- INICIAR ---
 export function startMFAFlow(sessionId) {
     resetMFAState();
     mfaState.sessionIdForCompletion = sessionId;
 
-    // Guardar métrica: MFA iniciado
     saveMetrics(getSessionId(), {
         'scenario1.mfa_started': 'Yes'
     }).catch(err => console.warn('Error saving mfa_started metric:', err));
@@ -47,36 +141,23 @@ export function startMFAFlow(sessionId) {
     }
 }
 
-// Renderizar un paso específico del flujo MFA
+// --- RENDERIZAR PASO ---
 export function renderMFAStep(step) {
     mfaState.currentStep = step;
     const container = document.getElementById('mfa-step-container');
-
     if (!container) return;
 
     let html = '';
-
     switch (step) {
-        case 1:
-            html = getMFAStep1HTML();
-            break;
-        case 2:
-            html = getMFAStep2HTML();
-            break;
-        case 3:
-            html = getMFAStep3HTML();
-            break;
-        case 4:
-            html = getMFAStep4HTML();
-            break;
-        case 5:
-            html = getMFAStep5HTML();
-            break;
+        case 1: html = getMFAStep1HTML(); break;
+        case 2: html = getMFAStep2HTML(); break;
+        case 3: html = getMFAStep3HTML(); break;
+        case 4: html = getMFAStep4HTML(); break;
+        case 5: html = getMFAStep5HTML(); break;
     }
-
     container.innerHTML = html;
 
-    // Adjuntar event listener para el checkbox del paso 4
+    // Post-render: checkbox del paso 4
     if (step === 4) {
         setTimeout(() => {
             const checkbox = document.getElementById('mfa-codes-saved');
@@ -88,9 +169,21 @@ export function renderMFAStep(step) {
             }
         }, 100);
     }
+
+    // Post-render: botón hardware del paso 2
+    if (step === 2 && mfaState.primaryMethod === 'Hardware') {
+        setTimeout(() => {
+            const btn = document.getElementById('mfa-hw-simulate-btn');
+            if (btn) {
+                btn.addEventListener('click', () => handleHardwareSimulation());
+            }
+        }, 100);
+    }
 }
 
-// --- PASO 1: Selección de Método Principal ---
+// =============================================
+// PASO 1: Selección de Método Principal
+// =============================================
 function getMFAStep1HTML() {
     return `
         <div class="mfa-progress">Paso 1 de ${mfaState.totalSteps}</div>
@@ -129,12 +222,28 @@ function getMFAStep1HTML() {
     `;
 }
 
-// --- PASO 2: Configuración del Método Elegido ---
+// =============================================
+// PASO 2: Configuración del Método Elegido
+// =============================================
 function getMFAStep2HTML() {
     const method = mfaState.primaryMethod;
+
+    // Generar código para SMS, Email y App
+    if (method === 'SMS' || method === 'Email' || method === 'App') {
+        mfaState.generatedCode = generateCode();
+    }
+
     let content = '';
 
     if (method === 'SMS') {
+        // Toast inmediato con el código
+        setTimeout(() => {
+            showSimulatedNotification('SMS',
+                `📲 <strong>SMS recibido</strong> de TechNova Security:<br>
+                Tu código de verificación es: <strong style="font-size: 16px; letter-spacing: 2px;">${mfaState.generatedCode}</strong>`
+            );
+        }, 800);
+
         content = `
             <h3>Configurar SMS</h3>
             <p>Introduce tu número de teléfono móvil:</p>
@@ -156,12 +265,21 @@ function getMFAStep2HTML() {
             </div>
             
             <div class="mfa-form-group">
-                <label>Código de Verificación (enviado a tu teléfono)</label>
-                <input type="text" id="mfa-sms-code" class="mfa-input" placeholder="123456" maxlength="6">
-                <small>Este código expira en 10 minutos</small>
+                <label>Código de Verificación (revisa la notificación ↗)</label>
+                <input type="text" id="mfa-sms-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                <small>📱 Hemos enviado un SMS con tu código. Míralo en la notificación arriba a la derecha.</small>
             </div>
         `;
+
     } else if (method === 'Email') {
+        setTimeout(() => {
+            showSimulatedNotification('Email',
+                `📨 <strong>Nuevo correo</strong> de security@technova.com:<br>
+                Tu código de verificación es: <strong style="font-size: 16px; letter-spacing: 2px;">${mfaState.generatedCode}</strong>`
+            );
+        }, 800);
+
         content = `
             <h3>Configurar Email</h3>
             <p>Confirma o añade un email alternativo:</p>
@@ -177,65 +295,102 @@ function getMFAStep2HTML() {
             </div>
             
             <div class="mfa-form-group">
-                <label>Código de Verificación (enviado por email)</label>
-                <input type="text" id="mfa-email-code" class="mfa-input" placeholder="123456" maxlength="6">
-                <small>Revisa tu bandeja de entrada y spam</small>
+                <label>Código de Verificación (revisa la notificación ↗)</label>
+                <input type="text" id="mfa-email-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                <small>📧 Hemos enviado un email con tu código. Míralo en la notificación arriba a la derecha.</small>
             </div>
         `;
+
     } else if (method === 'App') {
+        const codeText = `Tu código TechNova es: ${mfaState.generatedCode}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codeText)}`;
+
         content = `
             <h3>Configurar App de Autenticación</h3>
-            <p>Escanea este código QR con tu app de autenticación:</p>
+            <p>Escanea este código QR con la cámara de tu móvil para obtener el código:</p>
             
-            <div class="mfa-qr-container">
-                <div class="mfa-qr-code">
-                    <div class="qr-pixel-art">
-                        ████&nbsp;&nbsp;██&nbsp;&nbsp;██&nbsp;&nbsp;████<br>
-                        ██&nbsp;&nbsp;████&nbsp;&nbsp;&nbsp;&nbsp;██&nbsp;&nbsp;██<br>
-                        ██&nbsp;&nbsp;██&nbsp;&nbsp;████&nbsp;&nbsp;██&nbsp;&nbsp;██<br>
-                        ████&nbsp;&nbsp;██&nbsp;&nbsp;██&nbsp;&nbsp;████
-                    </div>
-                </div>
-                <small style="display:block; margin-top:10px;">Clave manual: JBSW Y3DP EHPK 3PXP</small>
-            </div>
-            
-            <div class="mfa-form-group">
-                <label>Introduce el código de 6 dígitos de la app</label>
-                <input type="text" id="mfa-app-code" class="mfa-input" placeholder="123456" maxlength="6" style="text-align:center; font-size:20px; letter-spacing: 5px;">
-            </div>
-        `;
-    } else if (method === 'Hardware') {
-        content = `
-            <h3>Configurar Llave de Seguridad</h3>
-            <p>Inserta tu llave de seguridad USB en el ordenador:</p>
-            
-            <div class="mfa-hardware-animation">
-                <div class="usb-icon">🔌</div>
-                <p style="margin-top: 15px;">Esperando detección del dispositivo...</p>
-                <div class="spinner" style="margin: 20px auto;"></div>
+            <div class="mfa-qr-container" style="text-align: center;">
+                <img src="${qrUrl}" alt="Código QR" 
+                     style="width: 200px; height: 200px; border: 4px solid #f0f0f0; border-radius: 8px; margin: 10px auto; display: block;">
+                <small style="display:block; margin-top:10px; color:#666;">
+                    Al escanearlo verás el código de verificación en texto plano.
+                </small>
             </div>
             
             <div class="mfa-form-group" style="margin-top: 20px;">
-                <label>PIN de la Llave de Seguridad</label>
-                <input type="password" id="mfa-hardware-pin" class="mfa-input" placeholder="Introduce tu PIN" maxlength="8">
-                <small>Normalmente tiene entre 4-8 dígitos</small>
+                <label>Introduce el código de 6 dígitos</label>
+                <input type="text" id="mfa-app-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+            </div>
+        `;
+
+    } else if (method === 'Hardware') {
+        content = `
+            <h3>Configurar Llave de Seguridad</h3>
+            <p>Inserta tu llave de seguridad USB y toca el botón cuando esté lista:</p>
+            
+            <div class="mfa-hardware-animation" style="text-align: center; padding: 30px 0;">
+                <div style="font-size: 48px;">🔌</div>
+                <p id="mfa-hw-status" style="margin-top: 15px; animation: mfaWaitPulse 2s ease-in-out infinite; color: #666;">
+                    Esperando dispositivo...
+                </p>
+                <div class="spinner" style="margin: 15px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0078d4; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;" id="mfa-hw-spinner"></div>
+                
+                <button class="mfa-simulate-btn" id="mfa-hw-simulate-btn" style="margin-top: 20px;">
+                    🔑 Simular toque de llave
+                </button>
             </div>
         `;
     }
 
-    return `
-        <div class="mfa-progress">Paso 2 de ${mfaState.totalSteps}</div>
-        ${content}
-        
+    // Hardware no muestra botón "Continuar" (auto-avanza al simular toque)
+    const actions = method === 'Hardware' ? `
+        <div class="mfa-actions">
+            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
+            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
+        </div>
+    ` : `
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.proceedToStep3()">Continuar →</button>
             <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
         </div>
     `;
+
+    return `
+        <div class="mfa-progress">Paso 2 de ${mfaState.totalSteps}</div>
+        ${content}
+        ${actions}
+    `;
 }
 
-// --- PASO 3: Método de Respaldo ---
+/** Simula la detección de la llave hardware */
+function handleHardwareSimulation() {
+    const btn = document.getElementById('mfa-hw-simulate-btn');
+    const status = document.getElementById('mfa-hw-status');
+    const spinner = document.getElementById('mfa-hw-spinner');
+
+    if (btn) btn.disabled = true;
+    if (status) {
+        status.textContent = '✅ Dispositivo verificado correctamente';
+        status.style.animation = 'none';
+        status.style.color = '#2e7d32';
+        status.style.fontWeight = '600';
+    }
+    if (spinner) spinner.style.display = 'none';
+
+    showSimulatedNotification('Hardware', '🔑 <strong>Llave de seguridad verificada</strong><br>Tu dispositivo ha sido registrado correctamente.');
+
+    // Auto-avanzar tras 1 segundo
+    setTimeout(() => {
+        renderMFAStep(3);
+    }, 1000);
+}
+
+// =============================================
+// PASO 3: Método de Respaldo
+// =============================================
 function getMFAStep3HTML() {
     const primaryMethod = mfaState.primaryMethod;
 
@@ -283,13 +438,14 @@ function getMFAStep3HTML() {
     `;
 }
 
-// --- PASO 4: Códigos de Recuperación ---
+// =============================================
+// PASO 4: Códigos de Recuperación
+// =============================================
 function getMFAStep4HTML() {
-    // Generar códigos de recuperación simulados
-    const recoveryCodes = Array.from({ length: 10 }, (_, i) => {
-        const random1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const random2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        return `${random1}-${random2}`;
+    const recoveryCodes = Array.from({ length: 10 }, () => {
+        const r1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const r2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `${r1}-${r2}`;
     });
 
     return `
@@ -299,8 +455,8 @@ function getMFAStep4HTML() {
         
         <div class="mfa-recovery-codes">
             ${recoveryCodes.map((code, idx) =>
-        `<div class="recovery-code-item">${idx + 1}. ${code}</div>`
-    ).join('')}
+                `<div class="recovery-code-item">${idx + 1}. ${code}</div>`
+            ).join('')}
         </div>
         
         <div class="mfa-warning">
@@ -322,7 +478,9 @@ function getMFAStep4HTML() {
     `;
 }
 
-// --- PASO 5: Confirmación Final ---
+// =============================================
+// PASO 5: Confirmación Final
+// =============================================
 function getMFAStep5HTML() {
     return `
         <div class="mfa-progress">Paso 5 de ${mfaState.totalSteps}</div>
@@ -358,7 +516,9 @@ function getMFAStep5HTML() {
     `;
 }
 
-// --- FUNCIONES DE NAVEGACIÓN ---
+// =============================================
+// FUNCIONES DE NAVEGACIÓN
+// =============================================
 
 export function selectPrimaryMethod(method) {
     mfaState.primaryMethod = method;
@@ -376,39 +536,35 @@ export function skipBackupMethod() {
 }
 
 export function proceedToStep3() {
-    // Validar inputs del paso 2 según el método elegido
     const method = mfaState.primaryMethod;
 
     if (method === 'SMS') {
         const phone = document.getElementById('mfa-phone')?.value;
         const code = document.getElementById('mfa-sms-code')?.value;
-        if (!phone || !code || code.length !== 6) {
-            alert('Por favor, completa todos los campos requeridos.');
+        if (!phone) {
+            alert('Por favor, introduce tu número de teléfono.');
             return;
         }
-        mfaState.phoneNumber = phone;
+        if (code !== mfaState.generatedCode) {
+            alert(`Código incorrecto. Revisa la notificación en la esquina superior derecha.`);
+            return;
+        }
+
     } else if (method === 'Email') {
         const code = document.getElementById('mfa-email-code')?.value;
-        if (!code || code.length !== 6) {
-            alert('Por favor, introduce el código de verificación.');
+        if (code !== mfaState.generatedCode) {
+            alert(`Código incorrecto. Revisa la notificación en la esquina superior derecha.`);
             return;
         }
-        mfaState.email = document.getElementById('mfa-alt-email')?.value || '';
+
     } else if (method === 'App') {
         const code = document.getElementById('mfa-app-code')?.value;
-        if (!code || code.length !== 6) {
-            alert('Por favor, introduce el código de 6 dígitos de la app.');
+        if (code !== mfaState.generatedCode) {
+            alert(`Código incorrecto. Escanea el QR con la cámara de tu móvil para ver el código.`);
             return;
         }
-        mfaState.authCode = code;
-    } else if (method === 'Hardware') {
-        const pin = document.getElementById('mfa-hardware-pin')?.value;
-        if (!pin || pin.length < 4) {
-            alert('Por favor, introduce un PIN válido.');
-            return;
-        }
-        mfaState.hardwarePin = pin;
     }
+    // Hardware se gestiona con handleHardwareSimulation, no llega aquí
 
     renderMFAStep(3);
 }
@@ -419,7 +575,6 @@ export function proceedToStep5() {
         alert('Debes confirmar que has guardado tus códigos de recuperación.');
         return;
     }
-
     mfaState.codesAccepted = true;
     renderMFAStep(5);
 }
@@ -430,11 +585,14 @@ export function goBackMFA() {
     }
 }
 
+// =============================================
+// COMPLETAR / OMITIR MFA
+// =============================================
+
 export async function completeMFA() {
     const timeSpent = Math.floor((Date.now() - mfaState.startTime) / 1000);
     const sid = getSessionId();
 
-    // Guardar métricas finales
     try {
         await saveMetrics(sid, {
             'scenario1.mfa_completed': 'Yes',
@@ -446,18 +604,23 @@ export async function completeMFA() {
             'scenario1.mfa_usage': 'Yes'
         });
 
-        // Completar el registro con MFA habilitado
         if (mfaState.sessionIdForCompletion) {
             await completeRegistration(mfaState.sessionIdForCompletion, { mfaEnabled: true });
         }
 
-        console.log('✅ MFA completado - Métricas guardadas');
+        // --- Persistir en localStorage ---
+        localStorage.setItem('mfa_config', JSON.stringify({
+            active: true,
+            method: mfaState.primaryMethod
+        }));
+
+        console.log('✅ MFA completado — config guardada en localStorage');
     } catch (err) {
         console.warn('Error al guardar métricas MFA:', err);
     }
 
-    // Cerrar popup y continuar
     closeMFAPopup();
+    showSimulatedNotification('success', '🎉 <strong>MFA Activado</strong><br>Tu cuenta está ahora protegida con autenticación multifactor.');
 
     const eventsForm = document.getElementById('technova-events-form');
     if (eventsForm) eventsForm.style.display = 'block';
@@ -467,7 +630,6 @@ export async function skipMFA() {
     const timeSpent = mfaState.startTime ? Math.floor((Date.now() - mfaState.startTime) / 1000) : 0;
     const sid = getSessionId();
 
-    // Guardar métricas de abandono
     try {
         await saveMetrics(sid, {
             'scenario1.mfa_completed': 'No',
@@ -478,7 +640,6 @@ export async function skipMFA() {
             'scenario1.mfa_time_spent': timeSpent,
             'scenario1.mfa_usage': 'No'
         });
-
         console.log(`⚠️ MFA omitido en paso ${mfaState.currentStep}`);
     } catch (err) {
         console.warn('Error al guardar métricas de abandono:', err);
@@ -495,11 +656,10 @@ function closeMFAPopup() {
     if (popup) popup.classList.remove('active');
 }
 
-// Habilitar el botón de continuar cuando se marque el checkbox de códigos
+// Función legacy (mantenida por compatibilidad)
 export function enableProceedStep5() {
     const checkbox = document.getElementById('mfa-codes-saved');
     const btn = document.getElementById('proceed-step5-btn');
-
     if (checkbox && btn) {
         checkbox.addEventListener('change', () => {
             btn.disabled = !checkbox.checked;

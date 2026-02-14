@@ -580,3 +580,54 @@
 .file-name {
     color: #333;
 }
+
+/* ========================================
+   WIFI HIGHLIGHT INDICATOR
+   ======================================== */
+
+.wifi-highlight-box {
+    position: absolute;
+    bottom: 52px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    padding: 8px 16px;
+    white-space: nowrap;
+    animation: wifiPulse 1.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 9600;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+/* Flecha triangular apuntando hacia abajo al icono */
+.wifi-highlight-box::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #ffc107;
+}
+
+.wifi-highlight-arrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: #856404;
+}
+
+@keyframes wifiPulse {
+    0%, 100% {
+        border-color: #ffc107;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+    50% {
+        border-color: #ff9800;
+        box-shadow: 0 4px 20px rgba(255, 152, 0, 0.5);
+    }
+}

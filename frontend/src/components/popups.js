@@ -320,10 +320,12 @@ export function getPopupsHTML() {
             </ul>
         </div>
 
+        <div style="text-align: center;">
         <button onclick="window.acceptPolicyAndStart()" style="margin-top: 25px; color: white;">
             He leído y acepto las Políticas de Seguridad
             <span class="translation" style="color: white;">I have read and accept the Security Policies</span>
         </button>
+        </div>
 
 
     </div>

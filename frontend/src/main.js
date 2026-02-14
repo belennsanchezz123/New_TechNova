@@ -3,6 +3,7 @@ import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
 import { renderEmails } from './utils/emails.js';
 import { saveMetrics } from './services/api.js';
+import { setPasswordStrategy, getAvailableStrategies, getActiveStrategy } from './utils/validation.js';
 import {
     registerService,
     handleMFA,
@@ -142,6 +143,11 @@ function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
 
+    // --- LÓGICA ESCENARIO 1 (WiFi highlight) ---
+    if (scenarioNumber === 1) {
+        showWifiHighlight();
+    }
+
     // --- LÓGICA ESCENARIO 2 (Bloqueo de Pantalla) ---
     if (scenarioNumber === 2) {
         initScenario2();
@@ -186,6 +192,26 @@ function startScenario(scenarioNumber) {
     checkUpdateNotificationTrigger(scenarioNumber);
 }
 
+// --- WiFi Highlight (señalar el icono WiFi durante 10s) ---
+function showWifiHighlight() {
+    const wifiBtn = document.getElementById('wifi-icon-taskbar');
+    if (!wifiBtn) return;
+
+    // Crear el recuadro highlight
+    const highlight = document.createElement('div');
+    highlight.id = 'wifi-highlight-box';
+    highlight.className = 'wifi-highlight-box';
+    highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Haz clic aquí para conectarte</span>';
+    wifiBtn.style.position = 'relative';
+    wifiBtn.appendChild(highlight);
+
+    // Auto-remover tras 10 segundos
+    setTimeout(() => {
+        const existing = document.getElementById('wifi-highlight-box');
+        if (existing) existing.remove();
+    }, 10000);
+}
+
 function updateNavigationButtons() {
     const prevBtn = document.getElementById('prev-scenario-btn');
     const nextBtn = document.getElementById('next-scenario-btn');
@@ -208,6 +234,15 @@ function previousScenario() {
 }
 
 function nextScenario() {
+    // WiFi Gate: no se puede avanzar del escenario 1 sin conectar WiFi
+    if (currentScenario === 1) {
+        const wifiStatus = window.misMetricas?.scenario2?.wifi_network_choice;
+        if (!wifiStatus || wifiStatus === 'Not Set') {
+            alert('⚠️ Debes conectarte a una red WiFi antes de continuar. Busca el icono de red (📡) en la barra de tareas.');
+            showWifiHighlight();
+            return;
+        }
+    }
     if (currentScenario < TOTAL_SCENARIOS - 1) {
         startScenario(currentScenario + 1);
     }
@@ -495,6 +530,11 @@ window.submitTaxonomy = submitTaxonomy;
 window.drag = drag;
 window.drop = drop;
 window.allowDrop = allowDrop;
+
+// --- Password Strategy (accesible desde consola para investigadores) ---
+window.setPasswordStrategy = setPasswordStrategy;
+window.getAvailableStrategies = getAvailableStrategies;
+window.getActiveStrategy = getActiveStrategy;
 window.handleTeamsAlert = handleTeamsAlert;
 window.valorTeams = () => isEventsRegistrationComplete;
 
