@@ -38,15 +38,21 @@ export function setupSessionRoutes() {
 
                 // Si además estamos registrando un servicio real
                 if (service && service !== 'initial_setup') {
-                db.prepare(`
-                UPDATE registrations 
-                SET username = ?, service = ?, password_strength = ?, password_reuse_count = ?
-                WHERE id = ?
-                `).run(pid, service, passwordStrength || 'pending', passwordReuseCount || 0, existing.id);
-    }
+                    db.prepare(`
+                    UPDATE registrations 
+                    SET username = ?, service = ?, password_strength = ?, password_reuse_count = ?
+                    WHERE id = ?
+                    `).run(pid, service, passwordStrength || 'pending', passwordReuseCount || 0, existing.id);
+                }
 
-                const updated = db.prepare('SELECT * FROM registrations WHERE id = ?').get(existing.id);
-                return res.json({ success: true, session: existing, created: false });
+                // Recuperar el objeto actualizado para devolverlo con la estructura correcta
+                const updatedSession = db.prepare(`
+                    SELECT id, username, participant_id, service, created_at AS started_at, 
+                    COALESCE(participant_id, username) AS user_identifier 
+                    FROM registrations WHERE id = ?
+                `).get(existing.id);
+
+                return res.json({ success: true, session: updatedSession, created: false });
             }
 
             // 3. Crear nueva sesión
