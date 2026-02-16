@@ -142,6 +142,8 @@ export function startMFAFlow(sessionId) {
 }
 
 // --- RENDERIZAR PASO ---
+// Pasos: 1=Seleccionar principal, 2=Configurar principal, 3=Seleccionar respaldo,
+//        6=Configurar respaldo (interno), 4=Códigos de recuperación, 5=Confirmación
 export function renderMFAStep(step) {
     mfaState.currentStep = step;
     const container = document.getElementById('mfa-step-container');
@@ -154,6 +156,7 @@ export function renderMFAStep(step) {
         case 3: html = getMFAStep3HTML(); break;
         case 4: html = getMFAStep4HTML(); break;
         case 5: html = getMFAStep5HTML(); break;
+        case 6: html = getMFAStep6BackupConfigHTML(); break;
     }
     container.innerHTML = html;
 
@@ -170,12 +173,22 @@ export function renderMFAStep(step) {
         }, 100);
     }
 
-    // Post-render: botón hardware del paso 2
+    // Post-render: botón hardware del paso 2 (método principal)
     if (step === 2 && mfaState.primaryMethod === 'Hardware') {
         setTimeout(() => {
             const btn = document.getElementById('mfa-hw-simulate-btn');
             if (btn) {
-                btn.addEventListener('click', () => handleHardwareSimulation());
+                btn.addEventListener('click', () => handleHardwareSimulation('primary'));
+            }
+        }, 100);
+    }
+
+    // Post-render: botón hardware del paso 6 (método de respaldo)
+    if (step === 6 && mfaState.backupMethod === 'Hardware') {
+        setTimeout(() => {
+            const btn = document.getElementById('mfa-hw-simulate-btn');
+            if (btn) {
+                btn.addEventListener('click', () => handleHardwareSimulation('backup'));
             }
         }, 100);
     }
@@ -366,7 +379,7 @@ function getMFAStep2HTML() {
 }
 
 /** Simula la detección de la llave hardware */
-function handleHardwareSimulation() {
+function handleHardwareSimulation(context = 'primary') {
     const btn = document.getElementById('mfa-hw-simulate-btn');
     const status = document.getElementById('mfa-hw-status');
     const spinner = document.getElementById('mfa-hw-spinner');
@@ -382,9 +395,13 @@ function handleHardwareSimulation() {
 
     showSimulatedNotification('Hardware', '🔑 <strong>Llave de seguridad verificada</strong><br>Tu dispositivo ha sido registrado correctamente.');
 
-    // Auto-avanzar tras 1 segundo
+    // Auto-avanzar tras 1 segundo al paso correcto
     setTimeout(() => {
-        renderMFAStep(3);
+        if (context === 'backup') {
+            renderMFAStep(4); // De respaldo → códigos de recuperación
+        } else {
+            renderMFAStep(3); // De principal → selección de respaldo
+        }
     }, 1000);
 }
 
@@ -435,6 +452,148 @@ function getMFAStep3HTML() {
             <button class="secondary" onclick="window.skipBackupMethod()">No configurar backup</button>
             <button class="secondary" onclick="window.skipMFA()">Omitir MFA</button>
         </div>
+    `;
+}
+
+// =============================================
+// PASO 3b (interno: step 6): Configuración del Método de Respaldo
+// =============================================
+function getMFAStep6BackupConfigHTML() {
+    const method = mfaState.backupMethod;
+
+    // Generar código para SMS, Email y App
+    if (method === 'SMS' || method === 'Email' || method === 'App') {
+        mfaState.generatedCode = generateCode();
+    }
+
+    let content = '';
+
+    if (method === 'SMS') {
+        setTimeout(() => {
+            showSimulatedNotification('SMS',
+                `📲 <strong>SMS recibido</strong> de TechNova Security:<br>
+                Tu código de verificación es: <strong style="font-size: 16px; letter-spacing: 2px;">${mfaState.generatedCode}</strong>`
+            );
+        }, 800);
+
+        content = `
+            <h3>Configurar SMS (Respaldo)</h3>
+            <p>Introduce tu número de teléfono móvil para el método de respaldo:</p>
+            
+            <div class="mfa-form-group">
+                <label>Código de País</label>
+                <select id="mfa-country-code" class="mfa-input">
+                    <option value="+34">🇪🇸 España (+34)</option>
+                    <option value="+1">🇺🇸 Estados Unidos (+1)</option>
+                    <option value="+44">🇬🇧 Reino Unido (+44)</option>
+                    <option value="+33">🇫🇷 Francia (+33)</option>
+                    <option value="+49">🇩🇪 Alemania (+49)</option>
+                </select>
+            </div>
+            
+            <div class="mfa-form-group">
+                <label>Número de Teléfono</label>
+                <input type="tel" id="mfa-phone" class="mfa-input" placeholder="600123456" maxlength="12">
+            </div>
+            
+            <div class="mfa-form-group">
+                <label>Código de Verificación (revisa la notificación ↗)</label>
+                <input type="text" id="mfa-sms-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                <small>📱 Hemos enviado un SMS con tu código. Míralo en la notificación arriba a la derecha.</small>
+            </div>
+        `;
+
+    } else if (method === 'Email') {
+        setTimeout(() => {
+            showSimulatedNotification('Email',
+                `📨 <strong>Nuevo correo</strong> de security@technova.com:<br>
+                Tu código de verificación es: <strong style="font-size: 16px; letter-spacing: 2px;">${mfaState.generatedCode}</strong>`
+            );
+        }, 800);
+
+        content = `
+            <h3>Configurar Email (Respaldo)</h3>
+            <p>Confirma o añade un email alternativo para el método de respaldo:</p>
+            
+            <div class="mfa-form-group">
+                <label>Email Principal (tu cuenta actual)</label>
+                <input type="email" class="mfa-input" value="usuario@technova.com" disabled>
+            </div>
+            
+            <div class="mfa-form-group">
+                <label>Email Alternativo (recomendado)</label>
+                <input type="email" id="mfa-alt-email" class="mfa-input" placeholder="tu.email.personal@ejemplo.com">
+            </div>
+            
+            <div class="mfa-form-group">
+                <label>Código de Verificación (revisa la notificación ↗)</label>
+                <input type="text" id="mfa-email-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                <small>📧 Hemos enviado un email con tu código. Míralo en la notificación arriba a la derecha.</small>
+            </div>
+        `;
+
+    } else if (method === 'App') {
+        const codeText = `Tu código TechNova (respaldo) es: ${mfaState.generatedCode}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codeText)}`;
+
+        content = `
+            <h3>Configurar App de Autenticación (Respaldo)</h3>
+            <p>Escanea este código QR con la cámara de tu móvil para obtener el código:</p>
+            
+            <div class="mfa-qr-container" style="text-align: center;">
+                <img src="${qrUrl}" alt="Código QR" 
+                     style="width: 200px; height: 200px; border: 4px solid #f0f0f0; border-radius: 8px; margin: 10px auto; display: block;">
+                <small style="display:block; margin-top:10px; color:#666;">
+                    Al escanearlo verás el código de verificación en texto plano.
+                </small>
+            </div>
+            
+            <div class="mfa-form-group" style="margin-top: 20px;">
+                <label>Introduce el código de 6 dígitos</label>
+                <input type="text" id="mfa-app-code" class="mfa-input" placeholder="______" maxlength="6"
+                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+            </div>
+        `;
+
+    } else if (method === 'Hardware') {
+        content = `
+            <h3>Configurar Llave de Seguridad (Respaldo)</h3>
+            <p>Inserta tu llave de seguridad USB de respaldo y toca el botón cuando esté lista:</p>
+            
+            <div class="mfa-hardware-animation" style="text-align: center; padding: 30px 0;">
+                <div style="font-size: 48px;">🔌</div>
+                <p id="mfa-hw-status" style="margin-top: 15px; animation: mfaWaitPulse 2s ease-in-out infinite; color: #666;">
+                    Esperando dispositivo...
+                </p>
+                <div class="spinner" style="margin: 15px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0078d4; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;" id="mfa-hw-spinner"></div>
+                
+                <button class="mfa-simulate-btn" id="mfa-hw-simulate-btn" style="margin-top: 20px;">
+                    🔑 Simular toque de llave
+                </button>
+            </div>
+        `;
+    }
+
+    // Hardware no muestra botón "Continuar" (auto-avanza al simular toque)
+    const actions = method === 'Hardware' ? `
+        <div class="mfa-actions">
+            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
+            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
+        </div>
+    ` : `
+        <div class="mfa-actions">
+            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
+            <button onclick="window.proceedFromBackupConfig()">Continuar →</button>
+            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
+        </div>
+    `;
+
+    return `
+        <div class="mfa-progress">Paso 3 de ${mfaState.totalSteps} — Configurar Respaldo</div>
+        ${content}
+        ${actions}
     `;
 }
 
@@ -527,7 +686,7 @@ export function selectPrimaryMethod(method) {
 
 export function selectBackupMethod(method) {
     mfaState.backupMethod = method;
-    renderMFAStep(4);
+    renderMFAStep(6); // Ir a configurar el método de respaldo
 }
 
 export function skipBackupMethod() {
@@ -535,38 +694,44 @@ export function skipBackupMethod() {
     renderMFAStep(4);
 }
 
-export function proceedToStep3() {
-    const method = mfaState.primaryMethod;
-
+/** Valida el código introducido en un paso de configuración */
+function validateMethodCode(method) {
     if (method === 'SMS') {
         const phone = document.getElementById('mfa-phone')?.value;
         const code = document.getElementById('mfa-sms-code')?.value;
         if (!phone) {
             alert('Por favor, introduce tu número de teléfono.');
-            return;
+            return false;
         }
         if (code !== mfaState.generatedCode) {
-            alert(`Código incorrecto. Revisa la notificación en la esquina superior derecha.`);
-            return;
+            alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
+            return false;
         }
-
     } else if (method === 'Email') {
         const code = document.getElementById('mfa-email-code')?.value;
         if (code !== mfaState.generatedCode) {
-            alert(`Código incorrecto. Revisa la notificación en la esquina superior derecha.`);
-            return;
+            alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
+            return false;
         }
-
     } else if (method === 'App') {
         const code = document.getElementById('mfa-app-code')?.value;
         if (code !== mfaState.generatedCode) {
-            alert(`Código incorrecto. Escanea el QR con la cámara de tu móvil para ver el código.`);
-            return;
+            alert('Código incorrecto. Escanea el QR con la cámara de tu móvil para ver el código.');
+            return false;
         }
     }
-    // Hardware se gestiona con handleHardwareSimulation, no llega aquí
+    return true;
+}
 
+export function proceedToStep3() {
+    if (!validateMethodCode(mfaState.primaryMethod)) return;
     renderMFAStep(3);
+}
+
+/** Avanza desde la configuración del método de respaldo a los códigos de recuperación */
+export function proceedFromBackupConfig() {
+    if (!validateMethodCode(mfaState.backupMethod)) return;
+    renderMFAStep(4);
 }
 
 export function proceedToStep5() {
@@ -580,8 +745,19 @@ export function proceedToStep5() {
 }
 
 export function goBackMFA() {
-    if (mfaState.currentStep > 1) {
-        renderMFAStep(mfaState.currentStep - 1);
+    const step = mfaState.currentStep;
+    if (step === 6) {
+        // Desde configurar respaldo → volver a selección de respaldo
+        renderMFAStep(3);
+    } else if (step === 4) {
+        // Desde códigos de recuperación → volver a config respaldo (o selección si se omitió)
+        if (mfaState.backupMethod && mfaState.backupMethod !== 'None') {
+            renderMFAStep(6);
+        } else {
+            renderMFAStep(3);
+        }
+    } else if (step > 1) {
+        renderMFAStep(step - 1);
     }
 }
 

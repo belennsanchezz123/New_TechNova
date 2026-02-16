@@ -1,11 +1,9 @@
 // frontend/src/services/api.js
-const API_URL = 'http://127.0.0.1:3000/api';
-//const API_URL = '/api';
+const API_URL = '/api';
 import { getParticipantId } from '../utils/participant.js';
 
 /**
  * Inicia la sesión global al aceptar las políticas.
- * Vincula el P00x al inicio del experimento.
  */
 export async function startSession(userIdentifier) {
     try {
@@ -23,7 +21,6 @@ export async function startSession(userIdentifier) {
 
 /**
  * Crea o actualiza un registro de servicio (mail, drive, events).
- * Reutiliza la sesión activa del participante.
  */
 export async function createRegistration(username, serviceName, passwordStrength, passwordReuseCount) {
     const participantId = getParticipantId();
@@ -47,31 +44,18 @@ export async function createRegistration(username, serviceName, passwordStrength
 }
 
 /**
- * FUNCIÓN ÚNICA UNIVERSAL PARA MÉTRICAS
- * Guarda cualquier objeto de métricas (Wi-Fi, Passwords, clics, etc.)
+ * Guarda cualquier objeto de métricas.
  */
 export async function saveMetrics(sessionId, metricsObject) {
-    if (!sessionId) {
-        console.error('saveMetrics: No hay sessionId activo.');
-        return { success: false };
-    }
+    if (!sessionId) return { success: false };
 
     try {
         const response = await fetch(`${API_URL}/sessions/metrics`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                sessionId: sessionId, 
-                metrics: metricsObject 
-            })
+            body: JSON.stringify({ sessionId, metrics: metricsObject })
         });
-
-        const data = await response.json();
-        if (data.success) {
-            console.log(`%c✅ Métricas guardadas [SID: ${sessionId}]`, "color: green; font-weight: bold;");
-            console.table(metricsObject); // Log visual para confirmar qué se envió
-        }
-        return data;
+        return await response.json();
     } catch (error) {
         console.error('Error en saveMetrics:', error);
         return { success: false };
@@ -79,7 +63,7 @@ export async function saveMetrics(sessionId, metricsObject) {
 }
 
 /**
- * Actualiza estados de la sesión (MFA, completado, etc.)
+ * Actualiza estados de la sesión.
  */
 export async function completeRegistration(sessionId, patch = {}) {
     try {
@@ -96,31 +80,26 @@ export async function completeRegistration(sessionId, patch = {}) {
 }
 
 /**
- * Guarda los resultados del cuestionario final
+ * Guarda los resultados del cuestionario final.
  */
 export async function saveQuestionnaire(questionnaireData) {
     try {
-        // Cambiamos /save por /submit para coincidir con el backend
         const response = await fetch(`${API_URL}/questionnaire/submit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(questionnaireData),
         });
-
-        if (!response.ok) {
-            throw new Error(`Error en el servidor: ${response.status}`);
-        }
-
         return await response.json();
     } catch (error) {
         console.error('Error al guardar el cuestionario:', error);
         throw error;
     }
 }
+
 /**
- * Finaliza la sesión anotando el correo de consentimiento (si existe)
+ * Finaliza la sesión anotando el correo de consentimiento.
  */
-export async function completeSession(sessionId, consentEmail) {
+export async function completeSession(sessionId, consentEmail = null) {
     try {
         const response = await fetch(`${API_URL}/sessions/complete`, {
             method: 'POST',

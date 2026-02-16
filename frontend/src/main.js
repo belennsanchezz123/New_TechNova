@@ -54,7 +54,7 @@ import {
 import { finishSimulation } from './handlers/scenario8.js';
 import { submitTaxonomy } from './handlers/scenario9.js';
 import { useAI, sendAIReport, handleAIInput, showMartaMessage } from './handlers/scenario5.js';
-import { startSession } from './services/api.js';
+import { startSession, completeSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 import { getSessionId, setSessionId } from './utils/session.js';
 
@@ -66,6 +66,7 @@ import {
     skipBackupMethod,
     proceedToStep3,
     proceedToStep5,
+    proceedFromBackupConfig,
     goBackMFA,
     completeMFA,
     skipMFA,
@@ -531,6 +532,14 @@ window.drag = drag;
 window.drop = drop;
 window.allowDrop = allowDrop;
 
+window.finalizeSession = async function() {
+    const sid = getSessionId();
+    if (sid) {
+        await completeSession(sid);
+    }
+    location.reload();
+};
+
 // --- Password Strategy (accesible desde consola para investigadores) ---
 window.setPasswordStrategy = setPasswordStrategy;
 window.getAvailableStrategies = getAvailableStrategies;
@@ -545,6 +554,7 @@ window.selectBackupMethod = selectBackupMethod;
 window.skipBackupMethod = skipBackupMethod;
 window.proceedToStep3 = proceedToStep3;
 window.proceedToStep5 = proceedToStep5;
+window.proceedFromBackupConfig = proceedFromBackupConfig;
 window.goBackMFA = goBackMFA;
 window.completeMFA = completeMFA;
 window.skipMFA = skipMFA;

@@ -1,7 +1,7 @@
 import { metrics } from '../utils/metrics.js';
 import { getSessionId } from '../utils/session.js';
 import { getParticipantId } from '../utils/participant.js';
-import { saveQuestionnaire } from '../services/api.js';
+import { saveQuestionnaire, completeSession } from '../services/api.js';
 
 // ESTA ES LA FUNCIÓN QUE MUESTRA LOS RESULTADOS EN EL ESCENARIO 9
 function showResults() {
@@ -82,6 +82,11 @@ export async function submitTaxonomy() {
         });
 
         alert('Cuestionario enviado. ¡Gracias por completar la simulación!');
+        
+        // Marcamos la sesión como completada en el backend
+        if (sessionId) {
+            await completeSession(sessionId);
+        }
 
         // 5. Pasa a la pantalla de resultados (Escenario 9)
         window.startScenario(10);

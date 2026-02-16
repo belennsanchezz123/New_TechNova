@@ -856,7 +856,7 @@ export function getScenarioHTML(scenarioNumber) {
     <h2>¡Simulación Completada!</h2>
     <p>Gracias por tu participación. Tus respuestas y acciones han sido registradas correctamente para nuestro estudio sobre ciberseguridad.</p>
             <p>Ya puedes cerrar esta ventana o informar al investigador.</p>
-            <button class="btn-primary" onclick="location.reload()">Finalizar Sesión</button>
+            <button class="btn-primary" onclick="window.finalizeSession()">Finalizar Sesión</button>
         </div>   
         `,
     };

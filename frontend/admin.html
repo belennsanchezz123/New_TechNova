@@ -1,321 +1,394 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LYNX Admin Dashboard</title>
     <style>
-        :root {
-            --primary: #007bff;
-            --secondary: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
-            --dark: #343a4e;
-            --light: #f8f9fa;
-            --background: #eef2f5;
-        }
+      :root {
+        --primary: #007bff;
+        --secondary: #6c757d;
+        --success: #28a745;
+        --danger: #dc3545;
+        --dark: #343a4e;
+        --light: #f8f9fa;
+        --background: #eef2f5;
+      }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            padding: 20px;
-        }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        padding: 20px;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
 
-        header {
-            background: var(--dark);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+      header {
+        background: var(--dark);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
 
-        h1 {
-            margin: 0;
-            font-size: 2em;
-        }
+      h1 {
+        margin: 0;
+        font-size: 2em;
+      }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
 
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
 
-        .stat-card h3 {
-            color: var(--secondary);
-            font-size: 0.9em;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
+      .stat-card h3 {
+        color: var(--secondary);
+        font-size: 0.9em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
 
-        .stat-card .value {
-            font-size: 2em;
-            font-weight: bold;
-            color: var(--dark);
-        }
+      .stat-card .value {
+        font-size: 2em;
+        font-weight: bold;
+        color: var(--dark);
+      }
 
-        .sessions-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+      .sessions-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
 
-        .sessions-container h2 {
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
+      .sessions-container h2 {
+        margin-bottom: 20px;
+        color: var(--dark);
+      }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
-        th {
-            background: var(--light);
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
-            font-weight: 600;
-        }
+      th {
+        background: var(--light);
+        padding: 12px;
+        text-align: left;
+        border-bottom: 2px solid #ddd;
+        font-weight: 600;
+      }
 
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
 
-        tr:hover {
-            background: var(--light);
-        }
+      tr:hover {
+        background: var(--light);
+      }
 
-        .view-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
+      .view-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
 
-        .view-btn:hover {
-            background: #0056b3;
-        }
+      .view-btn:hover {
+        background: #0056b3;
+      }
 
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 600;
+      }
 
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
-        }
+      .status-completed {
+        background: #d4edda;
+        color: #155724;
+      }
 
-        .status-active {
-            background: #fff3cd;
-            color: #856404;
-        }
+      .status-active {
+        background: #fff3cd;
+        color: #856404;
+      }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--secondary);
-        }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--secondary);
+      }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            overflow-y: auto;
-        }
+      /* Estilos para botones de acción */
+      .admin-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
 
-        .modal.active {
-            display: block;
-        }
+      .btn-action {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: none;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-size: 0.95em;
+      }
 
-        .modal-content {
-            background: white;
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
+      .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        filter: brightness(1.1);
+      }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--light);
-        }
+      .btn-action:active {
+        transform: translateY(0);
+      }
 
-        .close-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+      .btn-success { background: var(--success); }
+      .btn-danger { background: var(--danger); }
+      .btn-primary { background: var(--primary); }
 
-        .metrics-grid {
-            display: grid;
-            gap: 10px;
-        }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        overflow-y: auto;
+      }
 
-        .metric-row {
-            display: grid;
-            grid-template-columns: 200px 200px 1fr;
-            gap: 15px;
-            padding: 10px;
-            background: var(--light);
-            border-radius: 4px;
-        }
+      .modal.active {
+        display: block;
+      }
 
-        .metric-row:nth-child(even) {
-            background: white;
-        }
+      .modal-content {
+        background: white;
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
 
-        .metric-category {
-            font-weight: 600;
-            color: var(--dark);
-        }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--light);
+      }
 
-        .metric-name {
-            color: var(--secondary);
-        }
+      .close-btn {
+        background: var(--secondary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-        .metric-value {
-            font-weight: 500;
-        }
+      .metrics-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: 200px 200px 1fr;
+        gap: 15px;
+        padding: 10px;
+        background: var(--light);
+        border-radius: 4px;
+      }
+
+      .metric-row:nth-child(even) {
+        background: white;
+      }
+
+      .metric-category {
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .metric-name {
+        color: var(--secondary);
+      }
+
+      .metric-value {
+        font-weight: 500;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <header>
+      <header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
             <h1>🦁 LYNX Admin Dashboard</h1>
             <p>Visualización de sesiones y métricas de usuarios</p>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Sesiones</h3>
-                <div class="value" id="total-sessions">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Sesiones Completadas</h3>
-                <div class="value" id="completed-sessions">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Sesiones Activas</h3>
-                <div class="value" id="active-sessions">0</div>
-            </div>
-            <div class="stat-card">
-                <h3>Consentimientos</h3>
-                <div class="value" id="consent-count">0</div>
-            </div>
+          </div>
+          <div class="admin-actions">
+            <button class="btn-action btn-success" onclick="window.viewAllQuestionnaires()">
+              📊 Ver Taxonomía
+            </button>
+            <button class="btn-action btn-danger" onclick="window.clearAllData()">
+              🗑️ Reset Datos
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div class="sessions-container">
-            <h2>Sesiones Registradas</h2>
-            <div id="sessions-list">
-                <div class="loading">Cargando sesiones...</div>
-            </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Sesiones</h3>
+          <div class="value" id="total-sessions">0</div>
         </div>
+        <div class="stat-card">
+          <h3>Sesiones Completadas</h3>
+          <div class="value" id="completed-sessions">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Sesiones Activas</h3>
+          <div class="value" id="active-sessions">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Consentimientos</h3>
+          <div class="value" id="consent-count">0</div>
+        </div>
+      </div>
+
+      <div class="sessions-container">
+        <h2>Sesiones Registradas</h2>
+        <div id="sessions-list">
+          <div class="loading">Cargando sesiones...</div>
+        </div>
+      </div>
     </div>
 
     <div id="metrics-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Detalles de Sesión</h2>
-                <button class="close-btn" onclick="closeModal()">Cerrar</button>
-            </div>
-            <div id="session-details"></div>
-            <div id="metrics-details"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Detalles de Sesión</h2>
+          <button class="close-btn" onclick="closeModal()">Cerrar</button>
         </div>
+        <div id="session-details"></div>
+        <div id="metrics-details"></div>
+      </div>
     </div>
 
-    <button class="view-btn" onclick="window.viewAllQuestionnaires()"
-        style="background: var(--success); margin-bottom: 20px;">
-        📊 Ver Respuestas Taxonomía
-    </button>
-
     <script type="module">
-        const API_URL = '/api';
+      const API_URL = '/api';
 
-        async function loadSessions() {
-            try {
-                const response = await fetch(`${API_URL}/sessions/all?t=${Date.now()}`);
-                const data = await response.json();
+      function formatLocalDate(dateStr) {
+        if (!dateStr) return '-';
+        // SQLite datetime('now') retorna "YYYY-MM-DD HH:MM:SS" en UTC.
+        // Para que el navegador lo entienda bien como UTC, cambiamos el espacio por 'T' y añadimos 'Z'.
+        let isoStr = dateStr;
+        if (dateStr.includes(' ') && !dateStr.includes('T')) {
+          isoStr = dateStr.replace(' ', 'T') + 'Z';
+        }
+        const date = new Date(isoStr);
+        if (isNaN(date.getTime())) return dateStr;
 
-                if (data.success) {
-                    // Ordenamos para que lo más reciente salga primero
-                    const sortedSessions = data.sessions.sort((a, b) => {
-                        return new Date(b.started_at || b.created_at) - new Date(a.started_at || a.created_at);
-                    });
+        return date.toLocaleString('es-ES', {
+          timeZone: 'Europe/Madrid',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+      }
 
-                    displaySessions(sortedSessions);
-                    updateStats(sortedSessions);
-                }
-            } catch (error) {
-                console.error('Error loading sessions:', error);
-                document.getElementById('sessions-list').innerHTML =
-                    '<div class="loading">Error al cargar sesiones</div>';
-            }
+      async function loadSessions() {
+        try {
+          const response = await fetch(
+            `${API_URL}/sessions/all?t=${Date.now()}`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            // Ordenamos para que lo más reciente salga primero
+            const sortedSessions = data.sessions.sort((a, b) => {
+              const dateA = new Date(
+                (a.started_at || '').replace(' ', 'T') + 'Z'
+              );
+              const dateB = new Date(
+                (b.started_at || '').replace(' ', 'T') + 'Z'
+              );
+              return dateB - dateA;
+            });
+
+            displaySessions(sortedSessions);
+            updateStats(sortedSessions);
+          }
+        } catch (error) {
+          console.error('Error loading sessions:', error);
+          document.getElementById('sessions-list').innerHTML =
+            '<div class="loading">Error al cargar sesiones</div>';
+        }
+      }
+
+      function updateStats(sessions) {
+        const total = sessions.length;
+        const completed = sessions.filter((s) => s.completed_at).length;
+        const active = total - completed;
+        const consent = sessions.filter((s) => s.consent_email).length;
+
+        document.getElementById('total-sessions').textContent = total;
+        document.getElementById('completed-sessions').textContent = completed;
+        document.getElementById('active-sessions').textContent = active;
+        document.getElementById('consent-count').textContent = consent;
+      }
+
+      function displaySessions(sessions) {
+        if (sessions.length === 0) {
+          document.getElementById('sessions-list').innerHTML =
+            '<div class="loading">No hay sesiones registradas</div>';
+          return;
         }
 
-        function updateStats(sessions) {
-            const total = sessions.length;
-            const completed = sessions.filter(s => s.completed_at).length;
-            const active = total - completed;
-            const consent = sessions.filter(s => s.consent_email).length;
-
-            document.getElementById('total-sessions').textContent = total;
-            document.getElementById('completed-sessions').textContent = completed;
-            document.getElementById('active-sessions').textContent = active;
-            document.getElementById('consent-count').textContent = consent;
-        }
-
-        function displaySessions(sessions) {
-            if (sessions.length === 0) {
-                document.getElementById('sessions-list').innerHTML =
-                    '<div class="loading">No hay sesiones registradas</div>';
-                return;
-            }
-
-            const table = `
+        const table = `
                 <table>
                     <thead>
                         <tr>
@@ -327,13 +400,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${sessions.map(session => {
-                const sessionDate = new Date(session.created_at || session.started_at);
-                const dateStr = isNaN(sessionDate.getTime())
-                    ? (session.created_at || session.started_at || '-')
-                    : sessionDate.toLocaleString();
+                        ${sessions
+                          .map((session) => {
+                            const dateStr = formatLocalDate(session.started_at);
 
-                return `
+                            return `
                             <tr>
                                 <td>${session.id || '-'}</td>
                                 <td style="font-weight: bold; color: #464775;">${session.participant_id || session.user_identifier || '-'}</td>
@@ -350,91 +421,104 @@
                                 </td>
                             </tr>
                             `;
-            }).join('')}
+                          })
+                          .join('')}
                     </tbody>
                 </table>
             `;
-            document.getElementById('sessions-list').innerHTML = table;
+        document.getElementById('sessions-list').innerHTML = table;
+      }
+
+      async function viewParticipantMetrics(participantId, sessionId) {
+        try {
+          const response = await fetch(
+            `${API_URL}/sessions/${sessionId}/metrics`
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            const sessionInfo = data.session || {
+              id: sessionId,
+              participant_id: participantId,
+            };
+            displayMetricsModal(sessionInfo, data.metrics);
+          } else {
+            alert('No se encontraron métricas para esta sesión.');
+          }
+        } catch (error) {
+          console.error('Error loading metrics:', error);
+          alert('Error al cargar las métricas. Revisa la consola.');
         }
+      }
 
-        async function viewParticipantMetrics(participantId, sessionId) {
-            try {
-                const response = await fetch(`${API_URL}/sessions/${sessionId}/metrics`);
-                const data = await response.json();
-
-                if (data.success) {
-
-                    const sessionInfo = data.session || { id: sessionId, participant_id: participantId };
-                    displayMetricsModal(sessionInfo, data.metrics);
-                } else {
-                    alert("No se encontraron métricas para esta sesión.");
-                }
-            } catch (error) {
-                console.error('Error loading metrics:', error);
-                alert("Error al cargar las métricas. Revisa la consola.");
-            }
-        }
-
-        function displayParticipantMetricsModal(participant, sessions, metrics) {
-            const sessionDetails = `
+      function displayParticipantMetricsModal(participant, sessions, metrics) {
+        const sessionDetails = `
                 <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
                     <p><strong>Participante:</strong> ${participant.participant_id}</p>
                     <p><strong>Total Sesiones:</strong> ${sessions.length}</p>
                 </div>
             `;
-            renderMetricsRows(sessionDetails, metrics);
+        renderMetricsRows(sessionDetails, metrics);
+      }
+
+      function displayMetricsModal(session, metrics) {
+        if (!session) {
+          session = { id: '?', participant_id: 'Desconocido' };
         }
 
-        function displayMetricsModal(session, metrics) {
-            if (!session) {
-                session = { id: '?', participant_id: 'Desconocido' };
-            }
-
-            const sessionDetails = `
+        const sessionDetails = `
         <div style="margin-bottom: 20px; padding: 15px; background: var(--light); border-radius: 4px;">
             <p><strong>Participante:</strong> ${session.participant_id || session.user_identifier || 'P00x'}</p>
             <p><strong>ID Sesión:</strong> ${session.id}</p>
-            <p><strong>Fecha:</strong> ${session.created_at ? new Date(session.created_at).toLocaleString() : 'Reciente'}</p>
+            <p><strong>Última actividad:</strong> ${formatLocalDate(session.created_at || session.started_at)}</p>
         </div>
     `;
 
-            const metricsHTML = `
+        const metricsHTML = `
         <h3>Métricas Registradas</h3>
         <div class="metrics-grid">
-            ${metrics && metrics.length > 0 ? metrics.map(m => `
+            ${
+              metrics && metrics.length > 0
+                ? metrics
+                    .map(
+                      (m) => `
                 <div class="metric-row">
                     <div class="metric-category">${formatScenarioName(m.scenario)}</div>
                     <div class="metric-name">${formatMetricName(m.metric_name)}</div>
                     <div class="metric-value">${m.metric_value}</div>
                 </div>
-            `).join('') : '<p style="padding:10px;">No hay métricas detalladas para mostrar.</p>'}
+            `
+                    )
+                    .join('')
+                : '<p style="padding:10px;">No hay métricas detalladas para mostrar.</p>'
+            }
         </div>
     `;
 
-            document.getElementById('session-details').innerHTML = sessionDetails;
-            document.getElementById('metrics-details').innerHTML = metricsHTML;
-            document.getElementById('metrics-modal').classList.add('active');
-        }
+        document.getElementById('session-details').innerHTML = sessionDetails;
+        document.getElementById('metrics-details').innerHTML = metricsHTML;
+        document.getElementById('metrics-modal').classList.add('active');
+      }
 
-        function formatScenarioName(scenario) {
-            const names = {
-                'scenario1': 'Cuentas y Seguridad',
-                'scenario2': 'Interrupciones & Elementos externos',
-                'scenario3': 'Email & Comunicaciones',
-                'scenario4': 'Navegación Web',
-                'scenario5': 'Privacidad en Redes Sociales',
-                'scenario6': 'Limpieza y Gestion de archivos',
-                'scenario9': 'Uso de IA',
-                'unexpected': 'Eventos Inesperados'
-            };
-            return names[scenario] || scenario || 'General';
-        }
+      function formatScenarioName(scenario) {
+        const names = {
+          scenario1: 'Cuentas y Seguridad',
+          scenario2: 'Interrupciones & Elementos externos',
+          scenario3: 'Email & Comunicaciones',
+          scenario4: 'Navegación Web',
+          scenario5: 'Privacidad en Redes Sociales',
+          scenario6: 'Limpieza y Gestion de archivos',
+          scenario9: 'Uso de IA',
+          unexpected: 'Eventos Inesperados',
+        };
+        return names[scenario] || scenario || 'General';
+      }
 
-        function formatMetricName(name) {
-            return name.replace(/_/g, ' ').replace(/\./g, ' ');
-        }
-        //Nueva funcion para traducir las metricas especificas 
-        /*
+      function formatMetricName(name) {
+        return name.replace(/_/g, ' ').replace(/\./g, ' ');
+      }
+      //Nueva funcion para traducir las metricas especificas
+      /*
         function formatMetricName(name) {
         // Diccionario de traducción para métricas específicas
         const translations = {
@@ -471,18 +555,46 @@
 }
 */
 
-        window.closeModal = () => document.getElementById('metrics-modal').classList.remove('active');
-        window.viewParticipantMetrics = viewParticipantMetrics;
+      window.closeModal = () =>
+        document.getElementById('metrics-modal').classList.remove('active');
+      window.viewParticipantMetrics = viewParticipantMetrics;
 
-        loadSessions();
-        setInterval(loadSessions, 5000);
-        window.viewAllQuestionnaires = async function () {
-            try {
-                const response = await fetch(`${API_URL}/questionnaire/all`);
-                const data = await response.json();
+      window.clearAllData = async function () {
+        if (
+          !confirm(
+            '⚠️ ¿ESTÁS SEGURO? Esto borrará todas las sesiones, métricas y cuestionarios registrados permanentemente.'
+          )
+        ) {
+          return;
+        }
 
-                if (data.success) {
-                    let html = `
+        try {
+          const response = await fetch(`${API_URL}/sessions/clear-all`, {
+            method: 'DELETE',
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            alert('✅ Base de datos reseteada correctamente.');
+            loadSessions();
+          } else {
+            alert('❌ Error al borrar datos: ' + data.error);
+          }
+        } catch (error) {
+          console.error('Error clearing data:', error);
+          alert('Error de conexión al intentar borrar los datos.');
+        }
+      };
+
+      loadSessions();
+      setInterval(loadSessions, 5000);
+      window.viewAllQuestionnaires = async function () {
+        try {
+          const response = await fetch(`${API_URL}/questionnaire/all`);
+          const data = await response.json();
+
+          if (data.success) {
+            let html = `
                 <div style="overflow-x:auto;">
                     <table style="width:100%; font-size: 0.8em;">
                         <thead>
@@ -494,34 +606,34 @@
                         </thead>
                         <tbody>`;
 
-                    data.responses.forEach(r => {
-                        // Intentamos parsear el JSON de respuestas para mostrarlo bonito
-                        const answers = JSON.parse(r.answers_json || '{}');
-                        const prettyAnswers = Object.entries(answers)
-                            .map(([q, v]) => `<b>${q}:</b> ${v}`)
-                            .join(' | ');
+            data.responses.forEach((r) => {
+              // Intentamos parsear el JSON de respuestas para mostrarlo bonito
+              const answers = JSON.parse(r.answers_json || '{}');
+              const prettyAnswers = Object.entries(answers)
+                .map(([q, v]) => `<b>${q}:</b> ${v}`)
+                .join(' | ');
 
-                        html += `
+              html += `
                     <tr>
                         <td>${r.participant_id}</td>
-                        <td>${new Date(r.submitted_at).toLocaleString()}</td>
+                        <td>${formatLocalDate(r.submitted_at)}</td>
                         <td><small>${prettyAnswers}</small></td>
                     </tr>`;
-                    });
+            });
 
-                    html += `</tbody></table></div>`;
+            html += `</tbody></table></div>`;
 
-                    // Reutilizamos el modal que ya tienes
-                    document.getElementById('session-details').innerHTML = "<h2>Respuestas de Taxonomía</h2>";
-                    document.getElementById('metrics-details').innerHTML = html;
-                    document.getElementById('metrics-modal').classList.add('active');
-                }
-            } catch (error) {
-                alert("Error al cargar los cuestionarios");
-                console.error(error);
-            }
+            // Reutilizamos el modal que ya tienes
+            document.getElementById('session-details').innerHTML =
+              '<h2>Respuestas de Taxonomía</h2>';
+            document.getElementById('metrics-details').innerHTML = html;
+            document.getElementById('metrics-modal').classList.add('active');
+          }
+        } catch (error) {
+          alert('Error al cargar los cuestionarios');
+          console.error(error);
         }
+      };
     </script>
-</body>
-
+  </body>
 </html>

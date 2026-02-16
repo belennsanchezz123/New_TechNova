@@ -174,8 +174,23 @@ export function setupSessionRoutes() {
     router.get('/:sessionId/metrics', async (req, res) => {
         try {
             const { sessionId } = req.params;
+            const session = db.prepare('SELECT id, participant_id, username AS user_identifier, created_at AS started_at, completed_at FROM registrations WHERE id = ?').get(sessionId);
             const metrics = db.prepare('SELECT * FROM session_metrics WHERE session_id = ? ORDER BY recorded_at DESC').all(sessionId);
-            res.json({ success: true, metrics });
+            res.json({ success: true, session, metrics });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA ELIMINAR TODO (Admin)
+    router.delete('/clear-all', async (req, res) => {
+        try {
+            db.transaction(() => {
+                db.prepare('DELETE FROM session_metrics').run();
+                db.prepare('DELETE FROM questionnaire_responses').run();
+                db.prepare('DELETE FROM registrations').run();
+            })();
+            res.json({ success: true, message: 'Todos los datos han sido eliminados' });
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
