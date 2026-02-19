@@ -27,36 +27,78 @@ function generateQuestionGroup(title, questions, groupIndex) {
 export function getScenarioHTML(scenarioNumber) {
     const scenarios = {
         0: `
-            <h2>
-                ¡Bienvenido a TechNova!
-                <span class="translation">Welcome to TechNova!</span>
-            </h2>
-            <p>
-                Este laboratorio virtual simula tu primer día laboral en la empresa tecnológica TechNova.
-                <span class="translation">This virtual lab simulates your first working day at the tech company TechNova.</span>
-            </p>
-            
-            <p>A lo largo de tu jornada, deberás completar varias tareas típicas de incorporación digital.
-                <span class="translation">Throughout your day, you will need to complete several typical digital onboarding tasks.</span>
-            </p>
+            <div class="welcome-screen">
 
-            <div class="participant-id-form" style="margin: 30px 0;">
-                <label for="participant-id-input" style="display: block; margin-bottom: 8px; font-weight: bold;">
-                    ID de Participante (proporcionado por el investigador):
-                    <span class="translation">Participant ID (provided by the researcher):</span>
-                </label>
-                <input type="text" id="participant-id-input" placeholder="e.g., P001" style="padding: 8px; width: 200px; margin-bottom: 5px;" />
-                <p class="error-message" id="participant-id-error" style="display: none; color: #d32f2f; margin: 5px 0; font-size: 0.9em;">
-                    Por favor, introduce un ID de Participante válido
-                    <span class="translation">Please enter a valid Participant ID</span>
-                </p>
+                <!-- Logo Badge -->
+                <div class="welcome-logo-badge">TN</div>
+
+                <!-- Title -->
+                <h2 class="welcome-title">
+                    ¡Bienvenido a <span class="welcome-brand">TechNova</span>!
+                    <span class="translation">Welcome to TechNova!</span>
+                </h2>
+
+                <!-- Subtitle -->
+                <div class="welcome-subtitle">Simulación de Incorporación Digital</div>
+
+                <!-- Glassmorphism Card -->
+                <div class="welcome-card">
+
+                    <!-- Info Block 1 -->
+                    <div class="welcome-info-block">
+                        <div class="welcome-info-icon">🏢</div>
+                        <div class="welcome-info-text">
+                            Este laboratorio virtual simula tu <strong>primer día laboral</strong> en la empresa tecnológica TechNova.
+                            <span class="translation">This virtual lab simulates your first working day at the tech company TechNova.</span>
+                        </div>
+                    </div>
+
+                    <!-- Info Block 2 -->
+                    <div class="welcome-info-block">
+                        <div class="welcome-info-icon">📋</div>
+                        <div class="welcome-info-text">
+                            A lo largo de tu jornada, deberás completar varias <strong>tareas típicas de incorporación digital</strong>.
+                            <span class="translation">Throughout your day, you will need to complete several typical digital onboarding tasks.</span>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="welcome-divider"></div>
+
+                    <!-- Participant Input -->
+                    <div class="welcome-input-group">
+                        <label class="welcome-input-label" for="participant-id-input">
+                            ID de Participante
+                            <span class="translation">Participant ID (provided by the researcher)</span>
+                        </label>
+                        <div class="welcome-input-wrapper">
+                            <span class="welcome-input-icon">👤</span>
+                            <input type="text" id="participant-id-input" placeholder="Ej: P001" autocomplete="off" />
+                        </div>
+                        <p class="welcome-input-error" id="participant-id-error">
+                            Por favor, introduce un ID de Participante válido
+                            <span class="translation">Please enter a valid Participant ID</span>
+                        </p>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <button class="welcome-cta-btn" onclick="window.validateAndStart()">
+                        <span>🚀</span>
+                        <span>
+                            <span class="welcome-cta-text-main">Comenzar Simulación</span>
+                            <span class="welcome-cta-text-sub">Begin Simulation</span>
+                        </span>
+                    </button>
+
+                </div>
+
+                <!-- Security Footer -->
+                <div class="welcome-security-footer">
+                    <span>🔒</span>
+                    <span>Entorno seguro · Datos protegidos · Sesión anonimizada</span>
+                </div>
+
             </div>
-            <button onclick="window.validateAndStart()" style="color:white;">
-            Comenzar Simulación
-            <span class="translation" style="display:block; font-size:0.8em; font-style:normal; color:white;">
-            Begin Simulation
-            </span>
-            </button>
         `,
         1: `
             <h2>
