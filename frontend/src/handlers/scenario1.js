@@ -1,4 +1,4 @@
-import { createRegistration, completeRegistration, saveMetrics } from '../services/api.js';
+import { createRegistration, saveMetrics } from '../services/api.js';
 import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
 import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
@@ -83,15 +83,13 @@ export async function registerService(service) {
         // A. Enviar Wi-Fi solo una vez
         if (!localStorage.getItem('wifi_sent')) {
             await saveMetrics(currentSid, {
-                'scenario1.wifi_network_choice': metrics.scenario2.wifi_network_choice,
-                'scenario1.initial_step': 'initial_connection'
+                'scenario1.wifi_public': metrics.scenario1.wifi_public
             });
             localStorage.setItem('wifi_sent', 'true');
         }
 
         // B. Enviar datos del servicio actual (Mail, Drive o Events)
         await saveMetrics(currentSid, {
-            [`scenario1.${service}_user`]: username,
             [`scenario1.${service}_password_strength`]: strength
         });
 
@@ -186,10 +184,15 @@ export function closeRegistrationComplete() {
             if (sid) {
                 const formattedMetrics = {};
                 for (const key in metrics.scenario1) {
-                    const newKey = key.startsWith('scenario1.') ? key : `scenario1.${key}`;
-                    formattedMetrics[newKey] = metrics.scenario1[key];
+                    const val = metrics.scenario1[key];
+                    if (val !== null && val !== undefined && val !== '') {
+                        const newKey = key.startsWith('scenario1.') ? key : `scenario1.${key}`;
+                        formattedMetrics[newKey] = val;
+                    }
                 }
-                await saveMetrics(sid, formattedMetrics);
+                if (Object.keys(formattedMetrics).length > 0) {
+                    await saveMetrics(sid, formattedMetrics);
+                }
             }
         } catch (err) {
             console.warn('Failed saving final scenario1 metrics:', err);
@@ -225,7 +228,8 @@ export function connectWifi(type) {
     document.body.style.cursor = 'wait';
 
     setTimeout(() => {
-        metrics.scenario2.wifi_network_choice = (type === 'public') ? 'Insecure (Public)' : 'Secure (Corporate)';
+        metrics.scenario1.wifi_public = (type === 'public') ? 1 : 0;
+
 
         if (icon) icon.textContent = '📶';
         if (menu) menu.style.display = 'none';
@@ -241,18 +245,54 @@ export function connectWifi(type) {
     }, 1500);
 }
 
-export async function handleTeamsPermissions(allowed) {
+// Estado interno de los permisos de Teams
+const teamsPerms = { camera: null, mic: null };
+
+/** Llamado al pulsar Permitir/Bloquear en cada fila individual */
+export function setTeamsPermission(device, allowed) {
+    teamsPerms[device] = allowed;
+
+    // Feedback visual: resaltar el botón seleccionado
+    if (device === 'camera') {
+        const allowBtn = document.getElementById('cam-allow-btn');
+        const blockBtn = document.getElementById('cam-block-btn');
+        if (allowBtn && blockBtn) {
+            allowBtn.style.background = allowed ? '#464775' : 'white';
+            allowBtn.style.color     = allowed ? 'white'   : '#464775';
+            blockBtn.style.background = !allowed ? '#d32f2f' : 'white';
+            blockBtn.style.color      = !allowed ? 'white'   : '#d32f2f';
+        }
+    } else {
+        const allowBtn = document.getElementById('mic-allow-btn');
+        const blockBtn = document.getElementById('mic-block-btn');
+        if (allowBtn && blockBtn) {
+            allowBtn.style.background = allowed ? '#464775' : 'white';
+            allowBtn.style.color     = allowed ? 'white'   : '#464775';
+            blockBtn.style.background = !allowed ? '#d32f2f' : 'white';
+            blockBtn.style.color      = !allowed ? 'white'   : '#d32f2f';
+        }
+    }
+
+    // Habilitar el botón Confirmar solo cuando ambos están decididos
+    const confirmBtn = document.getElementById('teams-confirm-btn');
+    if (confirmBtn && teamsPerms.camera !== null && teamsPerms.mic !== null) {
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+        confirmBtn.style.cursor = 'pointer';
+    }
+}
+
+export async function handleTeamsPermissions() {
     const sid = getSessionId();
 
-    // Guardar métrica de permisos de Teams
+    // Guardar métricas individuales de permisos de Teams
     try {
         await saveMetrics(sid, {
-            'scenario1.teams_camera_permission': allowed ? 'Allowed' : 'Blocked',
-            'scenario1.teams_microphone_permission': allowed ? 'Allowed' : 'Blocked',
-            'scenario1.teams_permissions_granted': allowed ? 'Yes' : 'No'
+            'scenario1.teams_camera_permission':     teamsPerms.camera ? 1 : 0,
+            'scenario1.teams_microphone_permission': teamsPerms.mic    ? 1 : 0
         });
 
-        console.log(`📹🎤 Permisos de Teams: ${allowed ? 'Permitidos' : 'Bloqueados'}`);
+        console.log(`📹 Cámara: ${teamsPerms.camera ? 'Permitida' : 'Bloqueada'} | 🎤 Micrófono: ${teamsPerms.mic ? 'Permitido' : 'Bloqueado'}`);
     } catch (err) {
         console.warn('Error al guardar métricas de permisos de Teams:', err);
     }
@@ -263,7 +303,11 @@ export async function handleTeamsPermissions(allowed) {
         permissionsPopup.classList.remove('active');
     }
 
-    // Continuar con el flujo normal (mostrar registro completado)
+    // Resetear estado para próximas aperturas
+    teamsPerms.camera = null;
+    teamsPerms.mic    = null;
+
+    // Continuar con el flujo normal
     showRegistrationComplete();
 }
 

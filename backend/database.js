@@ -59,8 +59,96 @@ const initDB = () => {
             answers_json TEXT,
             submitted_at TEXT DEFAULT (datetime('now'))
         );
-        
-        -- Tabla para almacenar métricas por sesión
+
+        CREATE INDEX IF NOT EXISTS idx_questionnaire_participant ON questionnaire_responses(participant_id);
+
+        -- ============================================================
+        --  TABLA PRINCIPAL DE MÉTRICAS (una fila por participante)
+        --
+        --  Convención de tipos:
+        --    INTEGER  → booleano: 1 = sí, 0 = no, NULL = no aplica
+        --    TEXT     → categórico / valor libre
+        --    REAL     → numérico continuo
+        --
+        --  Prefijos de columna:
+        --    s1_ → Escenario 1: Account Creation & WiFi
+        --    s2_ → Escenario 2: Lock Screen
+        --    s3_ → Escenario 3: Email & Phishing
+        --    s4_ → Escenario 4: Web Browsing
+        --    s5_ → Escenario 5: AI / Chat RRHH
+        --    s6_ → Escenario 6: Profile & Apps
+        --    s7_ → Escenario 7: File Cleanup
+        --    s8_ → Escenario 8: Breach Check
+        --    s9_ → Escenario 9: Questionnaire behaviour
+        --    ue_ → Unexpected Events (cross-scenario)
+        -- ============================================================
+        CREATE TABLE IF NOT EXISTS participant_metrics (
+            participant_id TEXT PRIMARY KEY,
+
+            -- ── Escenario 1: Creación de cuentas y WiFi ──────────────
+            s1_wifi_public                 INTEGER,    -- 1=pública, 0=corporativa
+            s1_mail_password_strength       TEXT,       -- 'Weak' | 'Medium' | 'Strong'
+            s1_drive_password_strength      TEXT,
+            s1_events_password_strength     TEXT,
+            s1_password_reused              INTEGER,    -- 1=sí, 0=no, NULL=no llegó
+            s1_mfa_started                  INTEGER,    -- 1=sí, 0=no
+            s1_mfa_completed                INTEGER,    -- 1=sí, 0=no
+            s1_mfa_step_reached             INTEGER,    -- 0-N pasos completados
+            s1_mfa_method_primary           TEXT,       -- 'SMS' | 'App' | 'Email' | 'None'
+            s1_mfa_method_backup            TEXT,
+            s1_mfa_abandon_reason           TEXT,       -- NULL si completó
+            s1_mfa_time_spent_sec           INTEGER,    -- segundos en MFA
+            s1_teams_camera_allowed         INTEGER,    -- 1=sí, 0=no, NULL=no vió
+            s1_teams_microphone_allowed     INTEGER,
+            s1_teams_all_permissions_granted INTEGER,
+
+            -- ── Escenario 2: Bloqueo de pantalla ─────────────────────
+            s2_manual_lock_screen           INTEGER,    -- 1=bloqueó, 0=no
+
+            -- ── Escenario 3: Email y Phishing ─────────────────────────
+            s3_phishing_clicked             INTEGER,    -- 1=hizo clic, 0=no
+            s3_phishing_reported            INTEGER,    -- 1=reportó, 0=no
+            s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
+            s3_sensitive_data_sent_to_llm   INTEGER,    -- 1=sí, 0=no
+            s3_llm_policy_complied          INTEGER,    -- 1=cumplió, 0=no
+            s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
+            s3_ai_prompt_text               TEXT,       -- texto libre del prompt enviado
+
+            -- ── Escenario 4: Navegación web ───────────────────────────
+            s4_browser_warning_response     TEXT,       -- 'Ignored' | 'Heeded' | 'Not Encountered'
+            s4_cookie_consent               TEXT,       -- 'Accepted All' | 'Rejected' | 'Customized' | NULL
+            s4_clicked_dangerous_link       INTEGER,    -- 1=sí, 0=no
+
+            -- ── Escenario 5: Chat RRHH / AI ───────────────────────────
+            s5_personal_data_fields_shared  INTEGER,    -- nº de campos de datos personales revelados
+            s5_third_party_app_authorized   INTEGER,    -- 1=autorizó, 0=rechazó, NULL=no llegó
+
+            -- ── Escenario 6: Perfil profesional ───────────────────────
+            s6_shared_birth_date            INTEGER,    -- 1=sí, 0=no
+            s6_shared_phone                 INTEGER,
+            s6_shared_social_media          INTEGER,
+            s6_shared_city                  INTEGER,
+
+            -- ── Escenario 7: Limpieza de archivos ─────────────────────
+            s7_used_encryption              INTEGER,    -- 1=sí, 0=no
+            s7_secure_disposal_used         INTEGER,    -- 1=sí, 0=no
+            s7_deleted_final_report         INTEGER,    -- 1=sí, 0=no
+
+            -- ── Escenario 8: Breach check ─────────────────────────────
+            s8_consented_email_check        INTEGER,    -- 1=otorgó consentimiento, 0=declinó
+            s8_breach_count                 INTEGER,    -- NULL si no consintió
+
+            -- ── Unexpected Events (cross-scenario) ───────────────────
+            ue_accepted_fake_update         INTEGER,    -- 1=aceptó update falso, 0=rechazó
+            ue_teams_password_reused        INTEGER,    -- 1=sí, 0=no
+
+            -- ── Timestamps ───────────────────────────────────────────
+            session_started_at              TEXT,
+            session_completed_at            TEXT,
+            recorded_at                     TEXT DEFAULT (datetime('now'))
+        );
+
+        -- Mantener session_metrics como log de eventos en crudo (auditoría)
         CREATE TABLE IF NOT EXISTS session_metrics (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             session_id INTEGER NOT NULL,
@@ -72,8 +160,6 @@ const initDB = () => {
         );
 
         CREATE INDEX IF NOT EXISTS idx_metrics_session ON session_metrics(session_id);
-
-        CREATE INDEX IF NOT EXISTS idx_questionnaire_participant ON questionnaire_responses(participant_id);
     `);
 };
 

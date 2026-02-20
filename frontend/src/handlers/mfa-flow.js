@@ -1,6 +1,6 @@
 import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
-import { completeRegistration } from '../services/api.js';
+
 
 // =============================================
 // MFA FLOW — Simulación completa
@@ -259,24 +259,8 @@ function getMFAStep2HTML() {
 
         content = `
             <h3>Configurar SMS</h3>
-            <p>Introduce tu número de teléfono móvil:</p>
-            
-            <div class="mfa-form-group">
-                <label>Código de País</label>
-                <select id="mfa-country-code" class="mfa-input">
-                    <option value="+34">🇪🇸 España (+34)</option>
-                    <option value="+1">🇺🇸 Estados Unidos (+1)</option>
-                    <option value="+44">🇬🇧 Reino Unido (+44)</option>
-                    <option value="+33">🇫🇷 Francia (+33)</option>
-                    <option value="+49">🇩🇪 Alemania (+49)</option>
-                </select>
-            </div>
-            
-            <div class="mfa-form-group">
-                <label>Número de Teléfono</label>
-                <input type="tel" id="mfa-phone" class="mfa-input" placeholder="600123456" maxlength="12">
-            </div>
-            
+            <p>Recibirás un SMS con el código de verificación en tu teléfono registrado en TechNova.</p>
+
             <div class="mfa-form-group">
                 <label>Código de Verificación (revisa la notificación ↗)</label>
                 <input type="text" id="mfa-sms-code" class="mfa-input" placeholder="______" maxlength="6"
@@ -478,24 +462,8 @@ function getMFAStep6BackupConfigHTML() {
 
         content = `
             <h3>Configurar SMS (Respaldo)</h3>
-            <p>Introduce tu número de teléfono móvil para el método de respaldo:</p>
-            
-            <div class="mfa-form-group">
-                <label>Código de País</label>
-                <select id="mfa-country-code" class="mfa-input">
-                    <option value="+34">🇪🇸 España (+34)</option>
-                    <option value="+1">🇺🇸 Estados Unidos (+1)</option>
-                    <option value="+44">🇬🇧 Reino Unido (+44)</option>
-                    <option value="+33">🇫🇷 Francia (+33)</option>
-                    <option value="+49">🇩🇪 Alemania (+49)</option>
-                </select>
-            </div>
-            
-            <div class="mfa-form-group">
-                <label>Número de Teléfono</label>
-                <input type="tel" id="mfa-phone" class="mfa-input" placeholder="600123456" maxlength="12">
-            </div>
-            
+            <p>Recibirás un SMS con el código de verificación en tu teléfono registrado en TechNova.</p>
+
             <div class="mfa-form-group">
                 <label>Código de Verificación (revisa la notificación ↗)</label>
                 <input type="text" id="mfa-sms-code" class="mfa-input" placeholder="______" maxlength="6"
@@ -697,12 +665,7 @@ export function skipBackupMethod() {
 /** Valida el código introducido en un paso de configuración */
 function validateMethodCode(method) {
     if (method === 'SMS') {
-        const phone = document.getElementById('mfa-phone')?.value;
         const code = document.getElementById('mfa-sms-code')?.value;
-        if (!phone) {
-            alert('Por favor, introduce tu número de teléfono.');
-            return false;
-        }
         if (code !== mfaState.generatedCode) {
             alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
             return false;
@@ -780,9 +743,8 @@ export async function completeMFA() {
             'scenario1.mfa_usage': 'Yes'
         });
 
-        if (mfaState.sessionIdForCompletion) {
-            await completeRegistration(mfaState.sessionIdForCompletion, { mfaEnabled: true });
-        }
+        // Nota: NO llamamos a completeRegistration aquí.
+        // La sesión solo debe finalizarse desde el botón de "Finalizar Sesión" en el último escenario.
 
         // --- Persistir en localStorage ---
         localStorage.setItem('mfa_config', JSON.stringify({

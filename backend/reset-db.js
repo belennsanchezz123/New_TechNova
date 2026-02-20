@@ -16,7 +16,7 @@ console.log('🧹 Iniciando limpieza de tablas...');
 
 try {
     // 1. Borrar el contenido de las tablas (sin borrar las tablas en sí)
-    const tables = ['registrations', 'breach_checks', 'questionnaire_responses'];
+    const tables = ['session_metrics', 'participant_metrics', 'questionnaire_responses', 'breach_checks', 'registrations'];
     
     tables.forEach(table => {
         const info = db.prepare(`DELETE FROM ${table}`).run();

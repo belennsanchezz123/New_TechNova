@@ -1,67 +1,69 @@
+// Convención de valores:
+//   null        → no aplica / el participante no llegó a ese punto
+//   0 / 1       → booleano: 0 = no, 1 = sí
+//   TEXT        → categórico (p.ej. 'Corporate', 'Weak', 'Strong')
+//   INTEGER>1   → conteo / paso numérico
+
 export const metrics = {
     scenario1: {
-        wifi_network_choice: 'Not Set',
-        mail_password_strength: 'Not Set',
-        drive_password_strength: 'Not Set',
-        events_password_strength: 'Not Set',
-        password_reused: 'N/A',
-        mfa_usage: 'Not Set',
-        mfa_started: 'No',
-        mfa_completed: 'No',
-        mfa_step_reached: 0,
-        mfa_method_primary: 'None',
-        mfa_method_backup: 'None',
-        mfa_abandon_reason: 'N/A',
-        mfa_time_spent: 0,
-        teams_camera_permission: 'Not Set',
-        teams_microphone_permission: 'Not Set',
-        teams_permissions_granted: 'Not Set'
+        wifi_public:                  null,   // INT: 1=usó red pública, 0=usó red corporativa
+        mail_password_strength:       null,   // TEXT: 'Weak' | 'Medium' | 'Strong'
+        drive_password_strength:      null,
+        events_password_strength:     null,
+        password_reused:              null,   // INT: 1=sí, 0=no
+        mfa_usage:                    null,   // TEXT: resumen de uso MFA (legacy, sustituido por campos abajo)
+        mfa_started:                  0,      // INT: 1=inició flujo MFA
+        mfa_completed:                0,      // INT: 1=completó MFA
+        mfa_step_reached:             0,      // INT: último paso alcanzado (0-N)
+        mfa_method_primary:           null,   // TEXT: 'SMS' | 'App' | 'Email' | 'None'
+        mfa_method_backup:            null,
+        mfa_abandon_reason:           null,   // TEXT: motivo de abandono, null si completó
+        mfa_time_spent:               0,      // INT: segundos en el flujo MFA
+        teams_camera_permission:      null,   // INT: 1=concedió, 0=denegó
+        teams_microphone_permission:  null,   // INT: 1=concedió, 0=denegó
     },
     scenario2: {
-        manual_lock_screen: 'Not Set'
-        //usb_antivirus_scan: 'Not Set'
+        manual_lock_screen:           null    // INT: 1=bloqueó, 0=no
     },
     scenario3: {
-        phishing_click_rate: 'Did not click',
-        phishing_report_rate: 'Did not report',
-        credential_compromise: 'No',
-        sensitive_data_exposure_to_llm: 'No',
-        policy_compliance_llm: 'Complied',
-        secure_data_transmission: 'Not Set',
-        ai_prompt_text: 'N/A'
+        phishing_click_rate:          0,      // INT: 1=hizo clic en phishing, 0=no
+        phishing_report_rate:         0,      // INT: 1=reportó phishing, 0=no
+        credential_compromise:        0,      // INT: 1=credenciales comprometidas, 0=no
+        sensitive_data_exposure_to_llm: 0,   // INT: 1=expuso datos sensibles a IA, 0=no
+        policy_compliance_llm:        1,      // INT: 1=cumplió política IA, 0=no
+        secure_data_transmission:     null,   // TEXT: 'Secure' | 'Insecure'
+        ai_prompt_text:               null    // TEXT: texto libre del prompt enviado a IA
     },
     scenario4: {
-        response_to_browser_warnings: 'Not Encountered',
-        cookie_consent: 'Not Set',
-        clicked_dangerous_link: 'No'
+        response_to_browser_warnings: null,   // TEXT: 'Ignored' | 'Heeded' | 'Not Encountered'
+        cookie_consent:               null,   // TEXT: 'Accepted All' | 'Rejected' | 'Customized'
+        clicked_dangerous_link:       0       // INT: 1=sí, 0=no
     },
     scenario5: {
-        personal_data_disclosure_rate: 0,
-        third_party_app_authorization: 'Not Set'
+        personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados
+        third_party_app_authorization: null  // INT: 1=autorizó app, 0=rechazó
     },
     scenario6: {
-        data_encryption_usage: 'Not Used',
-        secure_data_disposal: 'Not Used',
-        deleted_final_report: false
+        data_encryption_usage:        0,     // INT: 1=usó cifrado, 0=no
+        secure_data_disposal:         0,     // INT: 1=borrado seguro, 0=no
+        deleted_final_report:         0      // INT: 1=borró el informe final, 0=no
     },
     scenario9: {
-        proactive_ai_usage: 'Not Set',
-        shadow_ai_leak: 'Not Set',
-        blind_trust: 'Not Set',
-        hallucination_detected: 'Not Set',
-        reaction_time: 0
+        proactive_ai_usage:           null,  // TEXT: descripción de uso IA
+        shadow_ai_leak:               null,  // INT: 1=filtración via shadow AI, 0=no
+        blind_trust:                  null,  // INT: 1=confió ciegamente en IA, 0=no
+        hallucination_detected:       null,  // INT: 1=detectó alucinación, 0=no
+        reaction_time:                0      // INT: segundos de reacción
     },
     unexpected: {
-        update_compliance_rate: 'Not prompted',
-        teams_password_reused: 'Not Set'
+        update_compliance_rate:       null,  // INT: 1=aceptó actualización falsa, 0=rechazó
+        teams_password_reused:        null   // INT: 1=reutilizó contraseña en Teams, 0=no
     }
 };
 
 export function displayResults() {
     const tbody = document.getElementById('results-body');
     if (!tbody) {
-        // Results table is not in the DOM yet (we're likely on an earlier scenario).
-        // Avoid throwing — caller should render results when the results view is active.
         console.warn('displayResults: #results-body not found in DOM, skipping render');
         return;
     }
@@ -78,6 +80,14 @@ export function displayResults() {
         unexpected: 'Unexpected Events',
     };
 
+    // Helper para mostrar valores legibles en el panel de resultados
+    const displayVal = (v) => {
+        if (v === null || v === undefined) return '—';
+        if (v === 1) return '✅ Yes';
+        if (v === 0) return '❌ No';
+        return String(v);
+    };
+
     for (const scenario in metrics) {
         if (scenario === 'consent') continue;
         for (const metric in metrics[scenario]) {
@@ -88,9 +98,9 @@ export function displayResults() {
 
             cell1.textContent = friendlyNames[scenario] || scenario;
             cell2.innerHTML = `<span class="metric-name">${metric.replace(/_/g, ' ')}</span>`;
-            cell3.textContent = metrics[scenario][metric];
+            cell3.textContent = displayVal(metrics[scenario][metric]);
         }
     }
 }
 
-window.misMetricas = metrics; 
+window.misMetricas = metrics;

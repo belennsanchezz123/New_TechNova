@@ -37,7 +37,7 @@ export function getPopupsHTML() {
     </div>
 </div>
 
-<!-- Popup de Permisos de Teams (Cámara y Micrófono) -->
+<!-- Popup de Permisos de Teams (Cámara y Micrófono individualmente) -->
 <div id="popup-teams-permissions" class="popup-overlay">
     <div class="popup-content teams-permissions-popup">
         <div class="teams-permission-header">
@@ -46,27 +46,57 @@ export function getPopupsHTML() {
         </div>
         
         <div class="teams-permission-body">
-            <p style="font-size: 1.05em; margin-bottom: 20px;">
+            <p style="font-size: 1.05em; margin-bottom: 8px;">
                 <strong>TechNova Teams necesita tu permiso</strong>
             </p>
             
-            <p style="color: #616161; margin-bottom: 25px;">
-                Para poder realizar videollamadas y reuniones, Teams necesita acceso a:
+            <p style="color: #616161; margin-bottom: 20px; font-size: 0.95em;">
+                Para poder realizar videollamadas y reuniones, Teams solicita acceso a los siguientes dispositivos. Puedes decidir individualmente:
             </p>
             
-            <div class="permission-item">
-                <div class="permission-icon">📷</div>
-                <div class="permission-details">
-                    <div class="permission-title">Cámara</div>
-                    <div class="permission-description">Para compartir tu vídeo durante las reuniones</div>
+            <!-- Cámara -->
+            <div class="permission-item" style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; border-radius: 8px; padding: 14px 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="permission-icon" style="font-size: 1.5em;">📷</div>
+                    <div>
+                        <div class="permission-title" style="font-weight: 600;">Cámara</div>
+                        <div class="permission-description" style="font-size: 0.85em; color: #616161;">Para compartir tu vídeo durante las reuniones</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px;" id="camera-btns">
+                    <button id="cam-allow-btn" onclick="window.setTeamsPermission('camera', true)"
+                        style="padding: 6px 14px; border: 2px solid #464775; border-radius: 6px; cursor: pointer;
+                               background: white; color: #464775; font-size: 0.85em; font-weight: 600; transition: all 0.2s;">
+                        Permitir
+                    </button>
+                    <button id="cam-block-btn" onclick="window.setTeamsPermission('camera', false)"
+                        style="padding: 6px 14px; border: 2px solid #d32f2f; border-radius: 6px; cursor: pointer;
+                               background: white; color: #d32f2f; font-size: 0.85em; font-weight: 600; transition: all 0.2s;">
+                        Bloquear
+                    </button>
                 </div>
             </div>
-            
-            <div class="permission-item">
-                <div class="permission-icon">🎤</div>
-                <div class="permission-details">
-                    <div class="permission-title">Micrófono</div>
-                    <div class="permission-description">Para que puedas hablar en las llamadas</div>
+
+            <!-- Micrófono -->
+            <div class="permission-item" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; border-radius: 8px; padding: 14px 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="permission-icon" style="font-size: 1.5em;">🎤</div>
+                    <div>
+                        <div class="permission-title" style="font-weight: 600;">Micrófono</div>
+                        <div class="permission-description" style="font-size: 0.85em; color: #616161;">Para que puedas hablar en las llamadas</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 6px;" id="mic-btns">
+                    <button id="mic-allow-btn" onclick="window.setTeamsPermission('mic', true)"
+                        style="padding: 6px 14px; border: 2px solid #464775; border-radius: 6px; cursor: pointer;
+                               background: white; color: #464775; font-size: 0.85em; font-weight: 600; transition: all 0.2s;">
+                        Permitir
+                    </button>
+                    <button id="mic-block-btn" onclick="window.setTeamsPermission('mic', false)"
+                        style="padding: 6px 14px; border: 2px solid #d32f2f; border-radius: 6px; cursor: pointer;
+                               background: white; color: #d32f2f; font-size: 0.85em; font-weight: 600; transition: all 0.2s;">
+                        Bloquear
+                    </button>
                 </div>
             </div>
             
@@ -78,13 +108,11 @@ export function getPopupsHTML() {
         </div>
         
         <div class="teams-permission-actions">
-            <button onclick="window.handleTeamsPermissions(true)" class="teams-allow-btn">
-                Permitir
-                <span class="translation" style="color:white;">Allow</span>
-            </button>
-            <button onclick="window.handleTeamsPermissions(false)" class="teams-block-btn">
-                Bloquear
-                <span class="translation">Block</span>
+            <button id="teams-confirm-btn" onclick="window.handleTeamsPermissions()"
+                class="teams-allow-btn"
+                disabled
+                style="opacity: 0.4; cursor: not-allowed;">
+                Confirmar
             </button>
         </div>
     </div>
@@ -221,6 +249,11 @@ export function getPopupsHTML() {
                                     <div class="account-username" id="events-username">-</div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="dropdown-footer" style="padding: 10px; border-top: 1px solid #eee; text-align: center;">
+                            <button onclick="window.finalizeSession()" style="width: 100%; padding: 8px; background: #f3f2f1; color: #333; border: 1px solid #ccc; font-size: 13px; border-radius: 4px;">
+                                🚪 Finalizar Sesión
+                            </button>
                         </div>
                     </div>
                 </div>

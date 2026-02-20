@@ -101,7 +101,7 @@
 .welcome-title {
     position: relative;
     z-index: 2;
-    font-size: 2.8em;
+    font-size: 3.6em;
     font-weight: 800;
     color: #ffffff;
     margin: 0 0 8px 0;
@@ -125,7 +125,7 @@
 }
 
 .welcome-title .translation {
-    font-size: 0.5em;
+    font-size: 0.38em;
     font-weight: 400;
     display: block;
     margin-top: 4px;
@@ -140,8 +140,8 @@
     position: relative;
     z-index: 2;
     color: rgba(180, 210, 255, 0.7);
-    font-size: 1em;
-    font-weight: 500;
+    font-size: 1.3em;
+    font-weight: 600;
     letter-spacing: 4px;
     text-transform: uppercase;
     margin-bottom: 30px;
@@ -199,13 +199,13 @@
 
 .welcome-info-text {
     color: rgba(220, 235, 255, 0.85);
-    font-size: 0.95em;
-    line-height: 1.55;
+    font-size: 1.1em;
+    line-height: 1.6;
 }
 
 .welcome-info-text .translation {
     color: rgba(160, 190, 230, 0.55);
-    font-size: 0.85em;
+    font-size: 0.78em;
 }
 
 /* --- Divider --- */
@@ -224,8 +224,8 @@
 .welcome-input-label {
     display: block;
     color: rgba(200, 220, 255, 0.85);
-    font-size: 0.9em;
-    font-weight: 600;
+    font-size: 1.05em;
+    font-weight: 700;
     margin-bottom: 10px;
     letter-spacing: 0.3px;
 }
@@ -366,14 +366,14 @@
 }
 
 .welcome-cta-text-main {
-    font-size: 1em;
+    font-size: 1.2em;
 }
 
 .welcome-cta-text-sub {
     display: block;
-    font-size: 0.7em;
+    font-size: 0.65em;
     font-weight: 400;
-    opacity: 0.85;
+    opacity: 0.75;
     margin-top: 2px;
 }
 
@@ -414,7 +414,7 @@
     }
 
     .welcome-title {
-        font-size: 2em;
+        font-size: 2.4em;
     }
 
     .welcome-card {

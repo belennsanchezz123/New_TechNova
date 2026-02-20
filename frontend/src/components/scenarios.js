@@ -433,64 +433,7 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
             </div>
         `,
-        5: `
-            <h2>
-    Escenario 5: Redes Sociales y Privacidad
-    <span class="translation">Scenario 5: Social Media and Privacy</span>
-</h2>
 
-<div id="profile-task">
-
-    <h3>
-        Completa tu Perfil en TechNova Events
-        <span class="translation">Complete Your Profile on TechNova Events</span>
-    </h3>
-
-    <p>
-        <strong>Instrucción:</strong> Para conectar mejor con tus compañeros en la fiesta de bienvenida, completa tu perfil público.
-        <br>
-        <em>(Recuerda: Solo los campos con * son obligatorios por el sistema).</em>
-        <span class="translation">
-            <strong>Instruction:</strong> To connect better with your colleagues at the welcome party, complete your public profile.
-            <br>
-            <em>(Remember: Only fields marked with * are required by the system.)</em>
-        </span>
-    </p>
-
-    <div class="form-group">
-        <label for="prof-name">
-            Nombre Completo *
-            <span class="translation">Full Name *</span>
-        </label>
-        <input type="text" id="prof-name" value="Alex" readonly style="background-color: #e9ecef;">
-    </div>
-
-    <div class="form-group">
-        <label for="prof-dob">
-            Fecha de Nacimiento (Opcional - Para felicitaciones de equipo)
-            <span class="translation">Date of Birth (Optional – For team birthday greetings)</span>
-        </label>
-        <input type="date" id="prof-dob">
-    </div>
-
-    <div class="form-group">
-        <label for="prof-phone">
-            Teléfono Móvil Personal (Opcional - Para alertas SMS)
-            <span class="translation">Personal Mobile Phone (Optional – For SMS alerts)</span>
-        </label>
-        <input type="tel" id="prof-phone" placeholder="+34 600...">
-    </div>
-
-    <div class="form-group">
-        <label for="prof-social">
-            Instagram / LinkedIn / Twitter (Opcional)
-            <span class="translation">Instagram / LinkedIn / Twitter (Optional)</span>
-        </label>
-        <input type="text" id="prof-social" placeholder="@usuario">
-    </div>
-
-
-        `,
         5: `
         <div class="ai-lab-wrapper">
             <h2 style="color: #6264a7;">Escenario 5: Incidencias Críticas de Nóminas (Chat de Grupo)</h2>

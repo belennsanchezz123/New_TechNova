@@ -198,7 +198,7 @@ export function getTaskbarHTML() {
                     <div class="user-avatar-sm">👤</div>
                     <span class="user-name-sm">Usuario</span>
                 </div>
-                <button class="power-btn" title="Inicio/Apagado">⏻</button>
+                <button class="power-btn" title="Inicio/Apagado" onclick="window.finalizeSession()">⏻</button>
             </div>
         </div>
     `;

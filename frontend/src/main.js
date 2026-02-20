@@ -13,7 +13,8 @@ import {
     connectWifi,
     getMinPasswordDistance,
     isEventsRegistrationComplete,
-    handleTeamsPermissions
+    handleTeamsPermissions,
+    setTeamsPermission
 } from './handlers/scenario1.js';
 
 import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
@@ -77,7 +78,6 @@ import {
 import { getTaskbarHTML } from './components/taskbar.js';
 import {
     initTaskbarClock,
-    showUpdateNotification,
     dismissUpdateNotification,
     postponeUpdate,
     restartSystem,
@@ -101,7 +101,7 @@ window.toggleStartMenu = toggleStartMenu;
 
 
 let currentScenario = 0;
-let teamsIncidentResolved = false;
+const teamsIncidentResolved = false;
 const TOTAL_SCENARIOS = 11;
 
 // --- FUNCIONES GLOBALES ---
@@ -237,8 +237,8 @@ function previousScenario() {
 function nextScenario() {
     // WiFi Gate: no se puede avanzar del escenario 1 sin conectar WiFi
     if (currentScenario === 1) {
-        const wifiStatus = window.misMetricas?.scenario2?.wifi_network_choice;
-        if (!wifiStatus || wifiStatus === 'Not Set') {
+        const wifiStatus = window.misMetricas?.scenario1?.wifi_public;
+        if (wifiStatus === undefined || wifiStatus === null) {
             alert('⚠️ Debes conectarte a una red WiFi antes de continuar. Busca el icono de red (📡) en la barra de tareas.');
             showWifiHighlight();
             return;
@@ -298,7 +298,7 @@ function validateAndStart() {
     }
 
     try {
-        localStorage.removeItem('lynx_session_id');
+        localStorage.removeItem('session_id');
         setParticipantId(participantId);
         error.style.display = 'none';
         input.style.borderColor = '';
@@ -493,6 +493,7 @@ window.acceptPolicyAndStart = acceptPolicyAndStart;
 window.registerService = registerService;
 window.handleMFA = handleMFA;
 window.handleTeamsPermissions = handleTeamsPermissions;
+window.setTeamsPermission = setTeamsPermission;
 window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
@@ -534,17 +535,44 @@ window.allowDrop = allowDrop;
 
 window.finalizeSession = async function() {
     const sid = getSessionId();
-    if (sid) {
-        await completeSession(sid);
+    console.log('🏁 Intentando finalizar sesión. ID local:', sid);
+    
+    if (!sid) {
+        console.error('❌ finalizeSession: no hay session_id en localStorage.');
+        alert('⚠️ No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.');
+        return;
     }
-    location.reload();
+    
+    try {
+        const result = await completeSession(sid);
+        console.log('✅ Respuesta backend (finalizar):', result);
+        if (result && result.success) {
+            console.log('✨ Sesión marcada como completada en el servidor.');
+        } else {
+            console.warn('⚠️ El servidor no confirmó el completado, pero procederemos con la limpieza local.');
+        }
+    } catch(err) {
+        console.error('❌ Error fatal al finalizar sesión:', err);
+    }
+    
+    // LIMPIEZA TOTAL
+    console.log('🧹 Limpiando localStorage y recargando...');
+    localStorage.removeItem('session_id');
+    localStorage.removeItem('participant_id');
+    localStorage.removeItem('sc1_completed');
+    localStorage.removeItem('wifi_sent');
+
+    // Pequeño delay para asegurar que el usuario vea el log si la consola está abierta
+    setTimeout(() => {
+        location.reload();
+    }, 500);
 };
 
 // --- Password Strategy (accesible desde consola para investigadores) ---
 window.setPasswordStrategy = setPasswordStrategy;
 window.getAvailableStrategies = getAvailableStrategies;
 window.getActiveStrategy = getActiveStrategy;
-window.handleTeamsAlert = handleTeamsAlert;
+// window.handleTeamsAlert is already defined above as an async function expression on window
 window.valorTeams = () => isEventsRegistrationComplete;
 
 // --- FUNCIONES MFA MULTI-PASO ---
@@ -566,3 +594,244 @@ window.postponeUpdate = postponeUpdate;
 window.restartSystem = restartSystem;
 
 initApp();
+
+// ═══════════════════════════════════════════════════════════════════
+//  🛠️  PANEL DE DEBUG  (solo visible con ?debug=true en la URL)
+//  Uso: http://localhost:5173/?debug=true
+// ═══════════════════════════════════════════════════════════════════
+(function initDebugPanel() {
+    if (!new URLSearchParams(window.location.search).has('debug')) return;
+
+    const SCENARIOS = [
+        { n: 0,  label: '0 · Bienvenida' },
+        { n: 1,  label: '1 · WiFi + Cuentas' },
+        { n: 2,  label: '2 · Pantalla Bloqueo' },
+        { n: 3,  label: '3 · Email / Phishing' },
+        { n: 4,  label: '4 · Navegador' },
+        { n: 5,  label: '5 · Chat RRHH / AI' },
+        { n: 6,  label: '6 · Perfil Público' },
+        { n: 7,  label: '7 · Limpieza Archivos' },
+        { n: 8,  label: '8 · Breach Check' },
+        { n: 9,  label: '9 · Cuestionario' },
+        { n: 10, label: '10 · Finalizar' },
+    ];
+
+    // ── Inyectar estilos ──────────────────────────────────────────
+    const style = document.createElement('style');
+    style.textContent = `
+        #debug-panel {
+            position: fixed;
+            bottom: 56px;          /* por encima de la taskbar */
+            left: 0;
+            z-index: 99999;
+            font-family: 'Segoe UI', monospace;
+            font-size: 12px;
+            transition: transform 0.25s ease;
+        }
+        #debug-panel.collapsed { transform: translateX(calc(-100% + 28px)); }
+
+        #debug-toggle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 28px;
+            height: 100%;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border: none;
+            cursor: pointer;
+            writing-mode: vertical-rl;
+            font-size: 10px;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 6px 6px 0;
+        }
+
+        #debug-body {
+            background: rgba(30, 30, 46, 0.97);
+            border: 1px solid #45475a;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            padding: 10px 8px;
+            width: 190px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #debug-body h4 {
+            color: #f38ba8;
+            margin: 0 0 6px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #45475a;
+            padding-bottom: 4px;
+        }
+
+        .dbg-label {
+            color: #a6adc8;
+            font-size: 10px;
+            margin: 4px 0 2px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dbg-btn {
+            background: #313244;
+            color: #cdd6f4;
+            border: 1px solid #45475a;
+            border-radius: 4px;
+            padding: 5px 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 11px;
+            transition: background 0.15s;
+            width: 100%;
+        }
+        .dbg-btn:hover      { background: #45475a; color: #fff; }
+        .dbg-btn.active-sc  { background: #89b4fa; color: #1e1e2e; font-weight: bold; border-color: #89b4fa; }
+        .dbg-btn.danger     { background: #f38ba8; color: #1e1e2e; border-color: #f38ba8; font-weight: bold; }
+        .dbg-btn.danger:hover { background: #e06c75; }
+        .dbg-btn.warning    { background: #fab387; color: #1e1e2e; border-color: #fab387; }
+        #debug-status {
+            color: #a6e3a1;
+            font-size: 10px;
+            margin-top: 4px;
+            min-height: 14px;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ── Crear panel ───────────────────────────────────────────────
+    const panel = document.createElement('div');
+    panel.id = 'debug-panel';
+    panel.classList.add('collapsed');
+    panel.innerHTML = `
+        <div id="debug-body">
+            <h4>🛠 Debug Panel</h4>
+
+            <div class="dbg-label">Saltar a escenario</div>
+            ${SCENARIOS.map(s => `
+                <button class="dbg-btn" id="dbg-sc-${s.n}"
+                    onclick="window.__debugGoto(${s.n})">${s.label}</button>
+            `).join('')}
+
+            <div class="dbg-label" style="margin-top:8px">Sesión</div>
+            <button class="dbg-btn warning" onclick="window.__debugSkipToEnd()">
+                ⏭ Ir al Final (sc.10)
+            </button>
+            <button class="dbg-btn danger" onclick="window.__debugFinalize()">
+                ⏹ Finalizar Sesión
+            </button>
+
+            <div id="debug-status">Escenario actual: <b id="dbg-cur">?</b></div>
+        </div>
+        <button id="debug-toggle" onclick="document.getElementById('debug-panel').classList.toggle('collapsed')"
+            title="Abrir/cerrar panel debug">🛠</button>
+    `;
+    document.body.appendChild(panel);
+
+    // ── Helpers internos ──────────────────────────────────────────
+
+    /** Actualiza qué botón está marcado como activo */
+    function refreshDebugUI() {
+        SCENARIOS.forEach(s => {
+            const btn = document.getElementById(`dbg-sc-${s.n}`);
+            if (btn) btn.classList.toggle('active-sc', s.n === currentScenario);
+        });
+        const cur = document.getElementById('dbg-cur');
+        if (cur) cur.textContent = currentScenario;
+    }
+
+    /** Saltar a escenario sin validaciones */
+    window.__debugGoto = async function(n) {
+        // En modo debug, establecer participantId directamente en localStorage
+        // sin pasar por la validación estricta (que solo acepta P001-P050)
+        if (!localStorage.getItem('participant_id')) {
+            localStorage.setItem('participant_id', 'P001-DEBUG');
+        }
+
+        // Si no hay session_id en localStorage, crear sesión en el servidor
+        if (!getSessionId()) {
+            try {
+                const pid = localStorage.getItem('participant_id');
+                const data = await startSession(pid);
+                if (data.success && data.session) {
+                    const sid = data.session.id || data.session.sessionId;
+                    setSessionId(sid);
+                    console.log('%c🛠 Debug: sesión creada en servidor — ID: ' + sid, 'color:#a6e3a1;font-weight:bold');
+                } else {
+                    console.warn('🛠 Debug: respuesta inesperada del servidor:', data);
+                }
+            } catch (e) {
+                console.error('🛠 Debug: error al crear sesión en servidor:', e);
+            }
+        }
+
+        // Asegurar que la taskbar sea visible para escenarios > 0
+        const taskbar = document.getElementById('windows-taskbar');
+        if (taskbar) taskbar.style.display = n > 0 ? 'flex' : 'none';
+
+        // Desactivar el escenario actual y activar el destino
+        const prev = document.getElementById(`scenario-${currentScenario}`);
+        const next = document.getElementById(`scenario-${n}`);
+        if (prev) prev.classList.remove('active');
+        if (next) next.classList.add('active');
+        currentScenario = n;
+
+        // Ejecutar lógica de init del escenario (renderEmails, initBrowser, etc.)
+        startScenario(n);
+        refreshDebugUI();
+
+        const status = document.getElementById('debug-status');
+        if (status) {
+            status.innerHTML = `Saltado a <b>Escenario ${n}</b> ✅`;
+            setTimeout(() => { status.innerHTML = `Escenario actual: <b id="dbg-cur">${n}</b>`; }, 2000);
+        }
+    };
+
+
+    window.__debugSkipToEnd = function() { window.__debugGoto(10); };
+
+    window.__debugFinalize = async function() {
+        if (!confirm('⚠️ ¿Finalizar sesión de debug? La página se recargará.')) return;
+        const sid = getSessionId();
+        console.log('🛠 Debug: Finalizando sesión', sid);
+        
+        if (sid) {
+            try {
+                const result = await completeSession(sid);
+                console.log('%c🛠 Debug: sesión finalizada ✅', 'color:#a6e3a1', result);
+            } catch(e) {
+                console.error('🛠 Debug: error al finalizar sesión', e);
+            }
+        }
+
+        // LIMPIEZA CRÍTICA: Borrar rastro en modo debug también
+        console.log('🛠 Debug: Limpieza rastro debug');
+        localStorage.removeItem('session_id');
+        localStorage.removeItem('participant_id');
+        localStorage.removeItem('sc1_completed');
+        localStorage.removeItem('wifi_sent');
+
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    };
+
+    // Enganchar refreshDebugUI al startScenario original
+    const _origStartScenario = window.startScenario;
+    window.startScenario = function(n) {
+        _origStartScenario(n);
+        refreshDebugUI();
+    };
+
+    // Init inicial
+    setTimeout(refreshDebugUI, 300);
+    console.log('%c🛠 DEBUG PANEL activo — usa window.__debugGoto(N) para saltar escenarios', 'color:#89b4fa;font-weight:bold');
+})();

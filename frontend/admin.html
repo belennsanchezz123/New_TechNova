@@ -164,13 +164,13 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         font-size: 0.95em;
       }
 
       .btn-action:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         filter: brightness(1.1);
       }
 
@@ -178,9 +178,18 @@
         transform: translateY(0);
       }
 
-      .btn-success { background: var(--success); }
-      .btn-danger { background: var(--danger); }
-      .btn-primary { background: var(--primary); }
+      .btn-success {
+        background: var(--success);
+      }
+      .btn-danger {
+        background: var(--danger);
+      }
+      .btn-primary {
+        background: var(--primary);
+      }
+      .btn-export {
+        background: #6f42c1;
+      }
 
       .modal {
         display: none;
@@ -261,16 +270,35 @@
   <body>
     <div class="container">
       <header>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
           <div>
             <h1>🦁 LYNX Admin Dashboard</h1>
             <p>Visualización de sesiones y métricas de usuarios</p>
           </div>
           <div class="admin-actions">
-            <button class="btn-action btn-success" onclick="window.viewAllQuestionnaires()">
+            <button
+              class="btn-action btn-export"
+              id="btn-export-csv"
+              onclick="window.exportMetricsCSV()"
+            >
+              ⬇️ Exportar CSV
+            </button>
+            <button
+              class="btn-action btn-success"
+              onclick="window.viewAllQuestionnaires()"
+            >
               📊 Ver Taxonomía
             </button>
-            <button class="btn-action btn-danger" onclick="window.clearAllData()">
+            <button
+              class="btn-action btn-danger"
+              onclick="window.clearAllData()"
+            >
               🗑️ Reset Datos
             </button>
           </div>
@@ -588,6 +616,47 @@
 
       loadSessions();
       setInterval(loadSessions, 5000);
+
+      window.exportMetricsCSV = async function () {
+        const btn = document.getElementById('btn-export-csv');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Exportando...';
+        btn.disabled = true;
+
+        try {
+          const response = await fetch(`${API_URL}/sessions/metrics/export`);
+
+          if (response.status === 404) {
+            alert('ℹ️ No hay datos de participantes todavía para exportar.');
+            return;
+          }
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            alert(
+              '❌ Error al exportar: ' + (err.error || response.statusText)
+            );
+            return;
+          }
+
+          // Forzar descarga del CSV en el navegador
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `technova_metrics_${new Date().toISOString().slice(0, 10)}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Error exportando CSV:', error);
+          alert('Error de conexión al intentar exportar.');
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      };
+
       window.viewAllQuestionnaires = async function () {
         try {
           const response = await fetch(`${API_URL}/questionnaire/all`);

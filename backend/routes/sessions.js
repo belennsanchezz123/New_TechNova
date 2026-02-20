@@ -32,7 +32,7 @@ export function setupSessionRoutes() {
                 // para que el Admin la muestre como sesión nueva/activa.
                 db.prepare(`
                 UPDATE registrations 
-                SET created_at = datetime('now') 
+                SET created_at = datetime('now'), completed_at = NULL 
                 WHERE id = ?
                 `).run(existing.id);
 
@@ -110,10 +110,12 @@ export function setupSessionRoutes() {
             if (updates.length === 0) return res.status(400).json({ success: false, error: 'No data provided' });
 
             values.push(sessionId);
-            db.prepare(`UPDATE registrations SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+            const info = db.prepare(`UPDATE registrations SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+            
+            console.log(`✅ Sesión ${sessionId} completada. Registros actualizados: ${info.changes}`);
 
             const updated = db.prepare('SELECT * FROM registrations WHERE id = ?').get(sessionId);
-            res.json({ success: true, session: updated });
+            res.json({ success: true, session: updated, changes: info.changes });
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
@@ -138,33 +140,164 @@ export function setupSessionRoutes() {
         }
     });
 
-    // RUTA PARA GUARDAR MÉTRICAS (Limpia, sin redundancia)
+    // RUTA PARA GUARDAR MÉTRICAS
+    // Hace dos cosas en paralelo:
+    //   1. Inserta en session_metrics (log crudo de auditoría, formato llave-valor)
+    //   2. Upsert en participant_metrics (tabla ancha, una fila por participante)
     router.post('/metrics', async (req, res) => {
         try {
             const { sessionId, metrics } = req.body;
             if (!sessionId || !metrics) return res.status(400).json({ success: false, error: 'Faltan datos' });
 
-            const insert = db.prepare(`INSERT INTO session_metrics (session_id, scenario, metric_name, metric_value) VALUES (?, ?, ?, ?)`);
-            
-            const rows = [];
+            // ── 1. Log crudo en session_metrics ──────────────────────────────
+            const insertLog = db.prepare(
+                `INSERT INTO session_metrics (session_id, scenario, metric_name, metric_value) VALUES (?, ?, ?, ?)`
+            );
+            const logRows = [];
             for (const [key, val] of Object.entries(metrics)) {
+                // Skip null, undefined, or empty string values for logging
+                if (val === null || val === undefined || val === '') {
+                    continue;
+                }
                 const parts = key.split('.');
                 const scenario = parts.length > 1 ? parts.shift() : null;
                 const metric_name = parts.join('.');
-                rows.push({ 
-                    session_id: sessionId, 
-                    scenario, 
-                    metric_name, 
-                    metric_value: typeof val === 'string' ? val : JSON.stringify(val) 
+                logRows.push({
+                    session_id: sessionId,
+                    scenario,
+                    metric_name,
+                    metric_value: typeof val === 'string' ? val : JSON.stringify(val)
                 });
             }
 
-            const transaction = db.transaction((data) => {
-                for (const r of data) insert.run(r.session_id, r.scenario, r.metric_name, r.metric_value);
-            });
-            transaction(rows);
+            // ── 2. Upsert en participant_metrics (tabla ancha) ────────────────
+            // Recuperar participant_id a partir del sessionId
+            const reg = db.prepare('SELECT participant_id, created_at, completed_at FROM registrations WHERE id = ?').get(sessionId);
+            if (!reg) return res.status(404).json({ success: false, error: 'Sesión no encontrada' });
 
-            res.json({ success: true, inserted: rows.length });
+            // Mapeo: clave del objeto metrics del frontend → columna en participant_metrics
+            // Los booleanos se normalizan: true/1/'Yes'/'Sí' → 1 | false/0/'No' → 0 | null/undefined/'Not Set' → NULL
+            const toInt = (v) => {
+                if (v === null || v === undefined || v === 'Not Set' || v === 'N/A') return null;
+                if (v === true  || v === 1 || v === 'Yes' || v === 'Sí' || v === 'Completed' || v === 'Yes - Completed') return 1;
+                if (v === false || v === 0 || v === 'No'  || v === 'Did not click' || v === 'Did not report') return 0;
+                return null;
+            };
+            const toText = (v) => (v === null || v === undefined || v === 'Not Set' || v === 'N/A') ? null : String(v);
+            const toInt2 = (v) => (v === null || v === undefined) ? null : parseInt(v, 10) || 0;
+
+            const m = metrics; // alias corto
+
+            const wideRow = {
+                participant_id:               reg.participant_id,
+                // S1
+                s1_wifi_public:                toInt(m['scenario1.wifi_public']),
+                s1_mail_password_strength:     toText(m['scenario1.mail_password_strength']),
+                s1_drive_password_strength:    toText(m['scenario1.drive_password_strength']),
+                s1_events_password_strength:   toText(m['scenario1.events_password_strength']),
+                s1_password_reused:            toInt(m['scenario1.password_reused']),
+                s1_mfa_started:                toInt(m['scenario1.mfa_started']),
+                s1_mfa_completed:              toInt(m['scenario1.mfa_completed']),
+                s1_mfa_step_reached:           toInt2(m['scenario1.mfa_step_reached']),
+                s1_mfa_method_primary:         toText(m['scenario1.mfa_method_primary']),
+                s1_mfa_method_backup:          toText(m['scenario1.mfa_method_backup']),
+                s1_mfa_abandon_reason:         toText(m['scenario1.mfa_abandon_reason']),
+                s1_mfa_time_spent_sec:         toInt2(m['scenario1.mfa_time_spent']),
+                s1_teams_camera_allowed:       toInt(m['scenario1.teams_camera_permission']),
+                s1_teams_microphone_allowed:   toInt(m['scenario1.teams_microphone_permission']),
+                s1_teams_all_permissions_granted: toInt(m['scenario1.teams_all_permissions_granted']),
+                // S2
+                s2_manual_lock_screen:         toInt(m['scenario2.manual_lock_screen']),
+                // S3
+                s3_phishing_clicked:           toInt(m['scenario3.phishing_click_rate']),
+                s3_phishing_reported:          toInt(m['scenario3.phishing_report_rate']),
+                s3_credential_compromised:     toInt(m['scenario3.credential_compromise']),
+                s3_sensitive_data_sent_to_llm: toInt(m['scenario3.sensitive_data_exposure_to_llm']),
+                s3_llm_policy_complied:        toInt(m['scenario3.policy_compliance_llm']),
+                s3_secure_data_transmission:   toText(m['scenario3.secure_data_transmission']),
+                s3_ai_prompt_text:             toText(m['scenario3.ai_prompt_text']),
+                // S4
+                s4_browser_warning_response:   toText(m['scenario4.response_to_browser_warnings']),
+                s4_cookie_consent:             toText(m['scenario4.cookie_consent']),
+                s4_clicked_dangerous_link:     toInt(m['scenario4.clicked_dangerous_link']),
+                // S5
+                s5_personal_data_fields_shared: toInt2(m['scenario5.personal_data_disclosure_rate']),
+                s5_third_party_app_authorized:  toInt(m['scenario5.third_party_app_authorization']),
+                // S6
+                s6_shared_birth_date:          null, // se actualiza desde el handler de perfil
+                s6_shared_phone:               null,
+                s6_shared_social_media:        null,
+                s6_shared_city:                null,
+                // S7
+                s7_used_encryption:            toInt(m['scenario6.data_encryption_usage']),
+                s7_secure_disposal_used:       toInt(m['scenario6.secure_data_disposal']),
+                s7_deleted_final_report:       toInt(m['scenario6.deleted_final_report']),
+                // S8 - se guarda desde breach check
+                s8_consented_email_check:      null,
+                s8_breach_count:               null,
+                // Unexpected
+                ue_accepted_fake_update:       toInt(m['unexpected.update_compliance_rate']),
+                ue_teams_password_reused:      toInt(m['unexpected.teams_password_reused']),
+                // Timestamps
+                session_started_at:            reg.created_at,
+                session_completed_at:          reg.completed_at,
+            };
+
+            // Construir el UPSERT dinámicamente con las columnas presentes
+            const cols = Object.keys(wideRow);
+            const placeholders = cols.map(() => '?').join(', ');
+
+            const upsertStmt = db.prepare(`
+                INSERT INTO participant_metrics (${cols.join(', ')})
+                VALUES (${placeholders})
+                ON CONFLICT(participant_id) DO UPDATE SET 
+                ${cols.filter(c => c !== 'participant_id').map(c => `${c} = COALESCE(excluded.${c}, participant_metrics.${c})`).join(', ')}
+            `);
+
+            db.transaction(() => {
+                // Log crudo
+                for (const r of logRows) insertLog.run(r.session_id, r.scenario, r.metric_name, r.metric_value);
+                // Tabla ancha
+                upsertStmt.run(...cols.map(c => wideRow[c]));
+            })();
+
+            res.json({ success: true, inserted: logRows.length });
+        } catch (error) {
+            console.error('Error en /metrics:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA EXPORTAR MÉTRICAS COMO CSV (una fila por participante)
+    router.get('/metrics/export', async (req, res) => {
+        try {
+            const rows = db.prepare(`
+                SELECT pm.*, qr.answers_json, bc.breach_count AS s8_breach_count_confirmed
+                FROM participant_metrics pm
+                LEFT JOIN questionnaire_responses qr ON qr.participant_id = pm.participant_id
+                LEFT JOIN breach_checks bc ON bc.participant_id = pm.participant_id
+                ORDER BY pm.recorded_at DESC
+            `).all();
+
+            if (rows.length === 0) {
+                return res.status(404).json({ success: false, error: 'No hay datos' });
+            }
+
+            // Generar CSV
+            const headers = Object.keys(rows[0]);
+            const escape = (v) => {
+                if (v === null || v === undefined) return '';
+                const s = String(v).replace(/"/g, '""');
+                return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+            };
+            const csv = [
+                headers.join(','),
+                ...rows.map(r => headers.map(h => escape(r[h])).join(','))
+            ].join('\n');
+
+            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+            res.setHeader('Content-Disposition', `attachment; filename="technova_metrics_${Date.now()}.csv"`);
+            res.send('\uFEFF' + csv); // BOM para que Excel lo abra correctamente
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
@@ -175,7 +308,15 @@ export function setupSessionRoutes() {
         try {
             const { sessionId } = req.params;
             const session = db.prepare('SELECT id, participant_id, username AS user_identifier, created_at AS started_at, completed_at FROM registrations WHERE id = ?').get(sessionId);
-            const metrics = db.prepare('SELECT * FROM session_metrics WHERE session_id = ? ORDER BY recorded_at DESC').all(sessionId);
+            const metrics = db.prepare(`
+                SELECT * FROM session_metrics 
+                WHERE id IN (
+                    SELECT MAX(id) FROM session_metrics 
+                    WHERE session_id = ? 
+                    GROUP BY scenario, metric_name
+                )
+                ORDER BY scenario ASC, metric_name ASC
+            `).all(sessionId);
             res.json({ success: true, session, metrics });
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
@@ -187,6 +328,7 @@ export function setupSessionRoutes() {
         try {
             db.transaction(() => {
                 db.prepare('DELETE FROM session_metrics').run();
+                db.prepare('DELETE FROM participant_metrics').run();
                 db.prepare('DELETE FROM questionnaire_responses').run();
                 db.prepare('DELETE FROM registrations').run();
             })();
