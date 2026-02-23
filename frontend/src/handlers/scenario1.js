@@ -133,10 +133,10 @@ export async function handleMFA(activated) {
         // Si dice "No", guardamos métricas de rechazo inmediato
         const sid = getSessionId();
         await saveMetrics(sid, {
-            'scenario1.mfa_started': 'No',
-            'scenario1.mfa_completed': 'No',
-            'scenario1.mfa_usage': 'No',
-            'scenario1.mfa_abandon_reason': 'Declined'
+            'scenario1.mfa_usage': 0,
+            'scenario1.mfa_method_primary': 'None',
+            'scenario1.mfa_method_backup': 'None',
+            'scenario1.mfa_email_alternative': 0
         });
 
         document.getElementById('popup-mfa').classList.remove('active');

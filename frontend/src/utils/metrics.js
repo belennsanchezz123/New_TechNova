@@ -11,14 +11,10 @@ export const metrics = {
         drive_password_strength:      null,
         events_password_strength:     null,
         password_reused:              null,   // INT: 1=sí, 0=no
-        mfa_usage:                    null,   // TEXT: resumen de uso MFA (legacy, sustituido por campos abajo)
-        mfa_started:                  0,      // INT: 1=inició flujo MFA
-        mfa_completed:                0,      // INT: 1=completó MFA
-        mfa_step_reached:             0,      // INT: último paso alcanzado (0-N)
+        mfa_usage:                    null,   // INT: 1=usó MFA, 0=no
         mfa_method_primary:           null,   // TEXT: 'SMS' | 'App' | 'Email' | 'None'
-        mfa_method_backup:            null,
-        mfa_abandon_reason:           null,   // TEXT: motivo de abandono, null si completó
-        mfa_time_spent:               0,      // INT: segundos en el flujo MFA
+        mfa_method_backup:            null,   // TEXT: 'SMS' | 'App' | 'Email' | 'None'
+        mfa_email_alternative:        null,   // INT: 1=puso email alternativo, 0=no
         teams_camera_permission:      null,   // INT: 1=concedió, 0=denegó
         teams_microphone_permission:  null,   // INT: 1=concedió, 0=denegó
     },

@@ -140,10 +140,27 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
                         <input type="password" id="mail-pass">
-                        <button onclick="window.registerService('mail')">
-                        Crear Cuenta de TechNova Mail
-                        <span class="translation" style="color:white;">Create TechNova Mail Account</span>
-                        </button>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button onclick="window.registerService('mail')" style="
+                                background: linear-gradient(135deg, #0078d4, #005a9e);
+                                color: white;
+                                border: none;
+                                padding: 12px 32px;
+                                border-radius: 10px;
+                                font-size: 15px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                box-shadow: 0 4px 14px rgba(0, 120, 212, 0.35);
+                                transition: all 0.25s ease;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 8px;
+                            " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
+                               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
+                            ✉️ Crear Cuenta de TechNova Mail
+                            <span class="translation" style="color:white;">Create TechNova Mail Account</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="form-group" id="technova-drive-form" style="display:none;">
@@ -158,27 +175,63 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
                         <input type="password" id="drive-pass">
-                        <button onclick="window.registerService('drive')">Crear Cuenta de TechNova Drive
-                        <span class="translation" style="color:white;">Create TechNova Drive Account</span>
-                        </button>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button onclick="window.registerService('drive')" style="
+                                background: linear-gradient(135deg, #0078d4, #005a9e);
+                                color: white;
+                                border: none;
+                                padding: 12px 32px;
+                                border-radius: 10px;
+                                font-size: 15px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                box-shadow: 0 4px 14px rgba(0, 120, 212, 0.35);
+                                transition: all 0.25s ease;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 8px;
+                            " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
+                               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
+                            ☁️ Crear Cuenta de TechNova Drive
+                            <span class="translation" style="color:white;">Create TechNova Drive Account</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group" id="technova-events-form" style="display:none;">
-                        <h3>👥 3. Registrarse en TechNova Events
-                        <span class="translation">Register in TechNova Events</span>
+                        <h3>👥 3. Registrarse en TechNova Teams
+                        <span class="translation">Register in TechNova Teams</span>
                         </h3>
-                        <p>Finalmente, crea tu perfil en TechNova Events, la red social interna.
+                        <p>Finalmente, crea tu perfil en TechNova Teams, la plataforma de comunicación interna.
                         <span class="translation">
-                        Finally, create your profile in TechNova Events, the internal social network.
+                        Finally, create your profile in TechNova Teams, the internal communication platform.
                         </span>
                         </p>
                         <label for="events-user">Usuario:</label>
                         <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
                         <input type="password" id="events-pass">
-                        <button onclick="window.registerService('events')">Crear Cuenta de TechNova Events
-                        <span class="translation" style="color:white;">Create TechNova Events Account</span>
-                        </button>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button onclick="window.registerService('events')" style="
+                                background: linear-gradient(135deg, #0078d4, #005a9e);
+                                color: white;
+                                border: none;
+                                padding: 12px 32px;
+                                border-radius: 10px;
+                                font-size: 15px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                box-shadow: 0 4px 14px rgba(0, 120, 212, 0.35);
+                                transition: all 0.25s ease;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 8px;
+                            " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
+                               onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
+                            👥 Crear Cuenta de TechNova Teams
+                            <span class="translation" style="color:white;">Create TechNova Teams Account</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

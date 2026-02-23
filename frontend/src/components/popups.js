@@ -250,11 +250,7 @@ export function getPopupsHTML() {
                                 </div>
                             </div>
                         </div>
-                        <div class="dropdown-footer" style="padding: 10px; border-top: 1px solid #eee; text-align: center;">
-                            <button onclick="window.finalizeSession()" style="width: 100%; padding: 8px; background: #f3f2f1; color: #333; border: 1px solid #ccc; font-size: 13px; border-radius: 4px;">
-                                🚪 Finalizar Sesión
-                            </button>
-                        </div>
+
                     </div>
                 </div>
 

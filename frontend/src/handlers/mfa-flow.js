@@ -8,7 +8,6 @@ import { getSessionId } from '../utils/session.js';
 // Simula verificación MFA mediante:
 // - SMS / Email: genera y muestra código de 6 dígitos via toast
 // - App:        QR code real (api.qrserver.com) con código en texto plano
-// - Hardware:   animación de espera + botón "Simular toque de llave"
 // =============================================
 
 // --- ESTADO DEL FLUJO ---
@@ -20,7 +19,8 @@ const mfaState = {
     backupMethod: null,
     generatedCode: null,    // código generado para SMS/Email/App
     codesAccepted: false,
-    sessionIdForCompletion: null
+    sessionIdForCompletion: null,
+    emailAlternative: 0     // 1 si el usuario puso un email alternativo, 0 si no
 };
 
 // --- UTILIDADES ---
@@ -123,16 +123,13 @@ function resetMFAState() {
     mfaState.backupMethod = null;
     mfaState.generatedCode = null;
     mfaState.codesAccepted = false;
+    mfaState.emailAlternative = 0;
 }
 
 // --- INICIAR ---
 export function startMFAFlow(sessionId) {
     resetMFAState();
     mfaState.sessionIdForCompletion = sessionId;
-
-    saveMetrics(getSessionId(), {
-        'scenario1.mfa_started': 'Yes'
-    }).catch(err => console.warn('Error saving mfa_started metric:', err));
 
     const popup = document.getElementById('popup-mfa');
     if (popup) {
@@ -172,26 +169,6 @@ export function renderMFAStep(step) {
             }
         }, 100);
     }
-
-    // Post-render: botón hardware del paso 2 (método principal)
-    if (step === 2 && mfaState.primaryMethod === 'Hardware') {
-        setTimeout(() => {
-            const btn = document.getElementById('mfa-hw-simulate-btn');
-            if (btn) {
-                btn.addEventListener('click', () => handleHardwareSimulation('primary'));
-            }
-        }, 100);
-    }
-
-    // Post-render: botón hardware del paso 6 (método de respaldo)
-    if (step === 6 && mfaState.backupMethod === 'Hardware') {
-        setTimeout(() => {
-            const btn = document.getElementById('mfa-hw-simulate-btn');
-            if (btn) {
-                btn.addEventListener('click', () => handleHardwareSimulation('backup'));
-            }
-        }, 100);
-    }
 }
 
 // =============================================
@@ -221,12 +198,6 @@ function getMFAStep1HTML() {
                 <div class="mfa-method-title">App Autenticadora</div>
                 <div class="mfa-method-desc">Google/Microsoft Authenticator</div>
             </button>
-            
-            <button class="mfa-method-card" onclick="window.selectPrimaryMethod('Hardware')">
-                <div class="mfa-icon">🔑</div>
-                <div class="mfa-method-title">Llave de Seguridad</div>
-                <div class="mfa-method-desc">Token USB físico</div>
-            </button>
         </div>
         
         <div class="mfa-actions">
@@ -242,9 +213,11 @@ function getMFAStep2HTML() {
     const method = mfaState.primaryMethod;
 
     // Generar código para SMS, Email y App
-    if (method === 'SMS' || method === 'Email' || method === 'App') {
-        mfaState.generatedCode = generateCode();
-    }
+    mfaState.generatedCode = generateCode();
+
+    // Obtener el username del mail del usuario para el email dinámico
+    const mailUserInput = document.getElementById('mail-user');
+    const userMailName = mailUserInput ? mailUserInput.value.trim() : 'usuario';
 
     let content = '';
 
@@ -279,15 +252,15 @@ function getMFAStep2HTML() {
 
         content = `
             <h3>Configurar Email</h3>
-            <p>Confirma o añade un email alternativo:</p>
+            <p>Elige a qué dirección de correo deseas recibir los códigos de verificación:</p>
             
             <div class="mfa-form-group">
                 <label>Email Principal (tu cuenta actual)</label>
-                <input type="email" class="mfa-input" value="usuario@technova.com" disabled>
+                <input type="email" class="mfa-input" value="${userMailName}@technova.com" disabled>
             </div>
             
             <div class="mfa-form-group">
-                <label>Email Alternativo (recomendado)</label>
+                <label>Email Alternativo (opcional)</label>
                 <input type="email" id="mfa-alt-email" class="mfa-input" placeholder="tu.email.personal@ejemplo.com">
             </div>
             
@@ -321,33 +294,9 @@ function getMFAStep2HTML() {
                        style="text-align:center; font-size:20px; letter-spacing:5px;">
             </div>
         `;
-
-    } else if (method === 'Hardware') {
-        content = `
-            <h3>Configurar Llave de Seguridad</h3>
-            <p>Inserta tu llave de seguridad USB y toca el botón cuando esté lista:</p>
-            
-            <div class="mfa-hardware-animation" style="text-align: center; padding: 30px 0;">
-                <div style="font-size: 48px;">🔌</div>
-                <p id="mfa-hw-status" style="margin-top: 15px; animation: mfaWaitPulse 2s ease-in-out infinite; color: #666;">
-                    Esperando dispositivo...
-                </p>
-                <div class="spinner" style="margin: 15px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0078d4; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;" id="mfa-hw-spinner"></div>
-                
-                <button class="mfa-simulate-btn" id="mfa-hw-simulate-btn" style="margin-top: 20px;">
-                    🔑 Simular toque de llave
-                </button>
-            </div>
-        `;
     }
 
-    // Hardware no muestra botón "Continuar" (auto-avanza al simular toque)
-    const actions = method === 'Hardware' ? `
-        <div class="mfa-actions">
-            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
-        </div>
-    ` : `
+    const actions = `
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.proceedToStep3()">Continuar →</button>
@@ -362,32 +311,7 @@ function getMFAStep2HTML() {
     `;
 }
 
-/** Simula la detección de la llave hardware */
-function handleHardwareSimulation(context = 'primary') {
-    const btn = document.getElementById('mfa-hw-simulate-btn');
-    const status = document.getElementById('mfa-hw-status');
-    const spinner = document.getElementById('mfa-hw-spinner');
 
-    if (btn) btn.disabled = true;
-    if (status) {
-        status.textContent = '✅ Dispositivo verificado correctamente';
-        status.style.animation = 'none';
-        status.style.color = '#2e7d32';
-        status.style.fontWeight = '600';
-    }
-    if (spinner) spinner.style.display = 'none';
-
-    showSimulatedNotification('Hardware', '🔑 <strong>Llave de seguridad verificada</strong><br>Tu dispositivo ha sido registrado correctamente.');
-
-    // Auto-avanzar tras 1 segundo al paso correcto
-    setTimeout(() => {
-        if (context === 'backup') {
-            renderMFAStep(4); // De respaldo → códigos de recuperación
-        } else {
-            renderMFAStep(3); // De principal → selección de respaldo
-        }
-    }, 1000);
-}
 
 // =============================================
 // PASO 3: Método de Respaldo
@@ -422,13 +346,6 @@ function getMFAStep3HTML() {
                     <div class="mfa-method-title">App Autenticadora</div>
                 </button>
             ` : ''}
-            
-            ${primaryMethod !== 'Hardware' ? `
-                <button class="mfa-method-card" onclick="window.selectBackupMethod('Hardware')">
-                    <div class="mfa-icon">🔑</div>
-                    <div class="mfa-method-title">Llave de Seguridad</div>
-                </button>
-            ` : ''}
         </div>
         
         <div class="mfa-actions">
@@ -446,9 +363,11 @@ function getMFAStep6BackupConfigHTML() {
     const method = mfaState.backupMethod;
 
     // Generar código para SMS, Email y App
-    if (method === 'SMS' || method === 'Email' || method === 'App') {
-        mfaState.generatedCode = generateCode();
-    }
+    mfaState.generatedCode = generateCode();
+
+    // Obtener el username del mail del usuario para el email dinámico
+    const mailUserInput = document.getElementById('mail-user');
+    const userMailName = mailUserInput ? mailUserInput.value.trim() : 'usuario';
 
     let content = '';
 
@@ -482,15 +401,15 @@ function getMFAStep6BackupConfigHTML() {
 
         content = `
             <h3>Configurar Email (Respaldo)</h3>
-            <p>Confirma o añade un email alternativo para el método de respaldo:</p>
+            <p>Elige a qué dirección de correo deseas recibir los códigos de verificación de respaldo:</p>
             
             <div class="mfa-form-group">
                 <label>Email Principal (tu cuenta actual)</label>
-                <input type="email" class="mfa-input" value="usuario@technova.com" disabled>
+                <input type="email" class="mfa-input" value="${userMailName}@technova.com" disabled>
             </div>
             
             <div class="mfa-form-group">
-                <label>Email Alternativo (recomendado)</label>
+                <label>Email Alternativo (opcional)</label>
                 <input type="email" id="mfa-alt-email" class="mfa-input" placeholder="tu.email.personal@ejemplo.com">
             </div>
             
@@ -524,33 +443,9 @@ function getMFAStep6BackupConfigHTML() {
                        style="text-align:center; font-size:20px; letter-spacing:5px;">
             </div>
         `;
-
-    } else if (method === 'Hardware') {
-        content = `
-            <h3>Configurar Llave de Seguridad (Respaldo)</h3>
-            <p>Inserta tu llave de seguridad USB de respaldo y toca el botón cuando esté lista:</p>
-            
-            <div class="mfa-hardware-animation" style="text-align: center; padding: 30px 0;">
-                <div style="font-size: 48px;">🔌</div>
-                <p id="mfa-hw-status" style="margin-top: 15px; animation: mfaWaitPulse 2s ease-in-out infinite; color: #666;">
-                    Esperando dispositivo...
-                </p>
-                <div class="spinner" style="margin: 15px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0078d4; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;" id="mfa-hw-spinner"></div>
-                
-                <button class="mfa-simulate-btn" id="mfa-hw-simulate-btn" style="margin-top: 20px;">
-                    🔑 Simular toque de llave
-                </button>
-            </div>
-        `;
     }
 
-    // Hardware no muestra botón "Continuar" (auto-avanza al simular toque)
-    const actions = method === 'Hardware' ? `
-        <div class="mfa-actions">
-            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
-        </div>
-    ` : `
+    const actions = `
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.proceedFromBackupConfig()">Continuar →</button>
@@ -688,12 +583,22 @@ function validateMethodCode(method) {
 
 export function proceedToStep3() {
     if (!validateMethodCode(mfaState.primaryMethod)) return;
+    // Track email alternative if primary method is Email
+    if (mfaState.primaryMethod === 'Email') {
+        const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
+        mfaState.emailAlternative = altEmail ? 1 : 0;
+    }
     renderMFAStep(3);
 }
 
 /** Avanza desde la configuración del método de respaldo a los códigos de recuperación */
 export function proceedFromBackupConfig() {
     if (!validateMethodCode(mfaState.backupMethod)) return;
+    // Track email alternative if backup method is Email
+    if (mfaState.backupMethod === 'Email') {
+        const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
+        mfaState.emailAlternative = altEmail ? 1 : 0;
+    }
     renderMFAStep(4);
 }
 
@@ -729,22 +634,15 @@ export function goBackMFA() {
 // =============================================
 
 export async function completeMFA() {
-    const timeSpent = Math.floor((Date.now() - mfaState.startTime) / 1000);
     const sid = getSessionId();
 
     try {
         await saveMetrics(sid, {
-            'scenario1.mfa_completed': 'Yes',
-            'scenario1.mfa_step_reached': 5,
+            'scenario1.mfa_usage': 1,
             'scenario1.mfa_method_primary': mfaState.primaryMethod,
             'scenario1.mfa_method_backup': mfaState.backupMethod || 'None',
-            'scenario1.mfa_abandon_reason': 'Completed',
-            'scenario1.mfa_time_spent': timeSpent,
-            'scenario1.mfa_usage': 'Yes'
+            'scenario1.mfa_email_alternative': mfaState.emailAlternative
         });
-
-        // Nota: NO llamamos a completeRegistration aquí.
-        // La sesión solo debe finalizarse desde el botón de "Finalizar Sesión" en el último escenario.
 
         // --- Persistir en localStorage ---
         localStorage.setItem('mfa_config', JSON.stringify({
@@ -765,18 +663,14 @@ export async function completeMFA() {
 }
 
 export async function skipMFA() {
-    const timeSpent = mfaState.startTime ? Math.floor((Date.now() - mfaState.startTime) / 1000) : 0;
     const sid = getSessionId();
 
     try {
         await saveMetrics(sid, {
-            'scenario1.mfa_completed': 'No',
-            'scenario1.mfa_step_reached': mfaState.currentStep,
+            'scenario1.mfa_usage': 0,
             'scenario1.mfa_method_primary': mfaState.primaryMethod || 'None',
             'scenario1.mfa_method_backup': 'None',
-            'scenario1.mfa_abandon_reason': 'Skipped',
-            'scenario1.mfa_time_spent': timeSpent,
-            'scenario1.mfa_usage': 'No'
+            'scenario1.mfa_email_alternative': 0
         });
         console.log(`⚠️ MFA omitido en paso ${mfaState.currentStep}`);
     } catch (err) {
