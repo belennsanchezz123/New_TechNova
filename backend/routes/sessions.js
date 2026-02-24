@@ -210,13 +210,13 @@ export function setupSessionRoutes() {
                 // S2
                 s2_manual_lock_screen:         toInt(m['scenario2.manual_lock_screen']),
                 // S3
-                s3_phishing_clicked:           toInt(m['scenario3.phishing_click_rate']),
-                s3_phishing_reported:          toInt(m['scenario3.phishing_report_rate']),
+                s3_phishing_clicked:           toInt(m['scenario3.phishing_clicked']),
+                s3_phishing_reported:          toInt(m['scenario3.phishing_reported']),
                 s3_credential_compromised:     toInt(m['scenario3.credential_compromise']),
-                s3_sensitive_data_sent_to_llm: toInt(m['scenario3.sensitive_data_exposure_to_llm']),
-                s3_llm_policy_complied:        toInt(m['scenario3.policy_compliance_llm']),
-                s3_secure_data_transmission:   toText(m['scenario3.secure_data_transmission']),
-                s3_ai_prompt_text:             toText(m['scenario3.ai_prompt_text']),
+                s3_sensitive_data_sent_to_llm: toInt(m['scenario3.sensitive_data_exposure_to_llm']),  // legacy — no longer sent
+                s3_llm_policy_complied:        toInt(m['scenario3.policy_compliance_llm']),           // legacy — no longer sent
+                s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
+                s3_ai_prompt_text:             toText(m['scenario3.ai_prompt_text']),                 // legacy — no longer sent
                 // S4
                 s4_browser_warning_response:   toText(m['scenario4.response_to_browser_warnings']),
                 s4_cookie_consent:             toText(m['scenario4.cookie_consent']),

@@ -413,66 +413,58 @@ export function getScenarioHTML(scenarioNumber) {
                 Escenario 3: Gestión de Comunicaciones
                 <span class="translation">Scenario 3: Communications Management</span>
             </h2>
-            <p>
-            <strong>Instrucción:</strong> Es hora de revisar tu bandeja de entrada de <strong>TechNova Mail</strong>.
-            <span class="translation">
-            <strong>Instruction:</strong> It’s time to check your <strong>TechNova Mail</strong> inbox.
-            </span>
-            </p>
-            <p>
-            Tu gerente te ha enviado mensajes importantes sobre tu incorporación.
-            <span class="translation">
-            Your manager has sent you important messages regarding your onboarding.
-            </span>
-            </p>
-            <p>
-            Lee y manéjalos como lo harías en un entorno profesional, prestando especial atención al remitente y al contenido. 
-            <strong>Para interactuar con un correo (responder, reportar, etc.), haz clic derecho sobre él en la bandeja de entrada.</strong>
-            <span class="translation">
-            Read and handle them as you would in a professional environment, paying special attention to the sender and the content. 
-            <strong>To interact with an email (reply, report, etc.), right-click on it in the inbox.</strong>
-            </span>
-            </p>
-            <div style="margin-bottom: 10px;">
-                <button onclick="window.openComposeEmail()">Nuevo Correo</button>
+
+            <!-- Phase 1: Inbox Review -->
+            <div style="background: #f0f7ff; border-left: 4px solid #0078d4; padding: 14px 18px; border-radius: 6px; margin-bottom: 16px;">
+                <p style="margin: 0 0 8px 0; font-size: 1.05em; line-height: 1.6;">
+                    <strong>📧 Instrucción:</strong> Revisa <strong>todos</strong> los correos de tu bandeja de <strong>TechNova Mail</strong>.
+                    Tu gerente y varios departamentos te han enviado mensajes sobre tu incorporación. Algunos podrían no ser legítimos.
+                    <span class="translation">
+                    <strong>📧 Instruction:</strong> Review <strong>all</strong> the emails in your <strong>TechNova Mail</strong> inbox.
+                    Your manager and various departments have sent you onboarding messages. Some may not be legitimate.
+                    </span>
+                </p>
+                <p style="margin: 0; font-size: 0.95em; color: #444; line-height: 1.5;">
+                    Presta atención al <strong>remitente</strong>, el <strong>contenido</strong> y los <strong>enlaces</strong>.
+                    Si un correo te parece sospechoso, <strong>haz clic derecho sobre él y repórtalo</strong>.
+                    <strong>Debes leer todos los correos para poder continuar.</strong>
+                    <span class="translation">
+                    Pay attention to the <strong>sender</strong>, <strong>content</strong>, and <strong>links</strong>.
+                    If an email seems suspicious, <strong>right-click on it and report it</strong>.
+                    <strong>You must read all emails before you can proceed.</strong>
+                    </span>
+                </p>
             </div>
+
             <div class="email-client">
                 <div class="email-list" id="email-list"></div>
                 <div class="email-view" id="email-view">
                     <p>Selecciona un correo para leerlo.</p>
                 </div>
             </div>
-            <hr>
-            <div id="ai-task" style="margin-top:20px;">
-                 <h3>Task: Usar el Asistente IA</h3>
-                 <p>
-                    <strong>Instrucción:</strong> Ahora debes revisar dos documentos internos para apoyar a tu jefa en una reunión estratégica.
-                    <span class="translation">
-                    <strong>Instruction:</strong> You must now review two internal documents to support your manager in a strategic meeting.
-                    </span>
-                </p>
-                 <textarea id="ai-input" rows="6" style="width: 98%;" placeholder="Pega el contenido aquí para el Asistente de IA..."></textarea>
-                 <button onclick="window.useAI()">Enviar</button>
-            </div>
-             <div id="send-doc-task" style="margin-top:20px;">
-             <h3>
-                Tarea: Mandar documento sensible
-                <span class="translation">Task: Send Sensitive Document</span>
-            </h3>
-            <p>
-                <strong>Instrucción:</strong> Ahora manda el documento resumido a tu jefe vía email a 
-                <strong>'elena_sanchezr@technova.com'</strong>.
-                 <span class="translation">
-                <strong>Instruction:</strong> Now send the summarized document to your manager via email at 
-                <strong>'elena_sanchezr@technova.com'</strong>.
-                </span>
-            </p>
-            <p>
-                Utiliza el correo electrónico anterior para redactar un nuevo mensaje y adjuntar el documento.
-                <span class="translation">
-                Use the email client above to compose a new message and attach the document.
-                </span>
-            </p>
+
+            <!-- Phase 2: Document Sharing Task (hidden until enough email interactions) -->
+            <div id="email-phase-2" style="display: none; margin-top: 24px;">
+                <div style="background: #fff8e1; border-left: 4px solid #ff9800; padding: 16px 20px; border-radius: 6px;">
+                    <h3 style="margin: 0 0 10px 0; color: #e65100;">
+                        📋 Tarea adicional
+                        <span class="translation">Additional Task</span>
+                    </h3>
+                    <p style="margin: 0 0 8px 0; line-height: 1.6;">
+                        <strong>Instrucción:</strong> Laura Pérez (tu gerente) te ha pedido que le reenvíes un documento.
+                        Usa el botón <strong>"Nuevo Correo"</strong> para componer un mensaje a
+                        <strong>laura.perez@technova.com</strong> y adjunta el archivo solicitado.
+                        <span class="translation">
+                        <strong>Instruction:</strong> Laura Pérez (your manager) asked you to send her back a document.
+                        Use the <strong>"New Email"</strong> button to compose a message to
+                        <strong>laura.perez@technova.com</strong> and attach the requested file.
+                        </span>
+                    </p>
+                    <p style="margin: 0; font-size: 0.9em; color: #666; line-height: 1.4;">
+                        💡 Puedes adjuntar desde tu ordenador local (📎) o desde TechNova Drive (☁️).
+                        <span class="translation">You can attach from your local computer (📎) or from TechNova Drive (☁️).</span>
+                    </p>
+                </div>
             </div>
         `,
         4: `

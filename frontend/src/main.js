@@ -24,8 +24,6 @@ import {
     openComposeEmail,
     handlePhishingClick,
     reportEmail,
-    //useAI, 
-    sendDocument,
     openLocalFileExplorer,
     openDriveFileExplorer,
     selectAttachment,
@@ -33,7 +31,8 @@ import {
     closeFileExplorer,
     sendComposedEmail,
     cancelCompose,
-    // openConfidentialDoc // <--- COMENTADO (No se usa todavía)
+    initScenario3,
+    areAllEmailsRead
 } from './handlers/scenario3.js';
 
 import { navigate, handleWarning, handleCookies, initBrowser } from './handlers/scenario4.js';
@@ -157,6 +156,7 @@ function startScenario(scenarioNumber) {
     // --- LÓGICA ESCENARIO 3 (Correos / Teams Incident) ---
     if (scenarioNumber === 3) {
         renderEmails();
+        initScenario3();
 
         // Verificamos si el Escenario 1 está terminado para mostrar el aviso de contraseña
         const sc1Completed = isEventsRegistrationComplete;
@@ -241,6 +241,13 @@ function nextScenario() {
         if (wifiStatus === undefined || wifiStatus === null) {
             alert('⚠️ Debes conectarte a una red WiFi antes de continuar. Busca el icono de red (📡) en la barra de tareas.');
             showWifiHighlight();
+            return;
+        }
+    }
+    // Email Gate: no se puede avanzar del escenario 3 sin leer todos los correos
+    if (currentScenario === 3) {
+        if (!areAllEmailsRead()) {
+            alert('📧 Debes leer todos los correos de tu bandeja de entrada antes de continuar.');
             return;
         }
     }
@@ -505,7 +512,7 @@ window.reportEmail = reportEmail;
 window.useAI = useAI;
 window.sendAIReport = sendAIReport;
 window.handleAIInput = handleAIInput;
-window.sendDocument = sendDocument;
+// window.sendDocument removed — no longer used in Scenario 3
 window.openLocalFileExplorer = openLocalFileExplorer;
 window.openDriveFileExplorer = openDriveFileExplorer;
 window.selectAttachment = selectAttachment;

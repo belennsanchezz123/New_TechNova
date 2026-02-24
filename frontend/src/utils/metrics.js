@@ -22,13 +22,10 @@ export const metrics = {
         manual_lock_screen:           null    // INT: 1=bloqueó, 0=no
     },
     scenario3: {
-        phishing_click_rate:          0,      // INT: 1=hizo clic en phishing, 0=no
-        phishing_report_rate:         0,      // INT: 1=reportó phishing, 0=no
-        credential_compromise:        0,      // INT: 1=credenciales comprometidas, 0=no
-        sensitive_data_exposure_to_llm: 0,   // INT: 1=expuso datos sensibles a IA, 0=no
-        policy_compliance_llm:        1,      // INT: 1=cumplió política IA, 0=no
-        secure_data_transmission:     null,   // TEXT: 'Secure' | 'Insecure'
-        ai_prompt_text:               null    // TEXT: texto libre del prompt enviado a IA
+        phishing_clicked:             0,      // INT: 1=clicked phishing link, 0=no
+        phishing_reported:            0,      // INT: 1=correctly reported phishing, 0=no
+        credential_compromise:        0,      // INT: 1=entered creds on fake page, 0=no
+        secure_data_transmission:     null    // INT: 1=used Lynx Drive (secure), 0=direct attachment
     },
     scenario4: {
         response_to_browser_warnings: null,   // TEXT: 'Ignored' | 'Heeded' | 'Not Encountered'

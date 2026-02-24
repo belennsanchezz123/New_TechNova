@@ -1,145 +1,207 @@
 export const emails = [
     {
       id: 1,
-      from: 'Laura Pérez (Gerente) <laura.perez@technova.com>',  //Legítimo
-      subject: 'Bienvenido al Equipo de Ventas', 
-      body: 'Hola, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.', // MODIFICADO
+      from: 'Laura Pérez (Gerente)',
+      fromEmail: 'laura.perez@technova.com',
+      subject: 'Bienvenido al Equipo de Ventas',
+      body: 'Hola, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.',
       read: false,
-      type: 'legit'
+      type: 'legit',
+      time: '9:15 AM'
     },
     {
       id: 2,
-      from: 'Soporte Técnico TechNova <soporte@tech-nova.org>',  //PHISHING
-      subject: '[URGENTE] Acción Requerida: Verificación de Credenciales de TechNova', 
-      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><a href="#" onclick="window.handlePhishingClick(true)">VERIFICAR AHORA</a>', // MODIFICADO: Enlace malicioso
+      from: 'Soporte Técnico TechNova',
+      fromEmail: 'soporte@tech-nova.org',
+      subject: '[URGENTE] Verificación de Credenciales',
+      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔗 VERIFICAR MI CUENTA AHORA</a>',
       read: false,
-      type: 'phishing-creds'
+      type: 'phishing-creds',
+      time: '9:02 AM'
     },
     {
       id: 3,
-      from: 'Equipo de IT TechNova <it-compliance@technova.com>', // Legítimo de IT
-      subject: 'Actualización de Protocolo de MFA – TechNova IT', 
-      body: 'Estimado usuario, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre `portal.technova.com`) para realizar la actualización. Gracias por tu cooperación.', // MODIFICADO
+      from: 'Equipo de IT TechNova',
+      fromEmail: 'it-compliance@technova.com',
+      subject: 'Actualización de Protocolo de MFA',
+      body: 'Estimado usuario, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre <code>portal.technova.com</code>) para realizar la actualización. Gracias por tu cooperación.',
       read: false,
-      type: 'legit'
+      type: 'legit',
+      time: '8:45 AM'
     },
     {
       id: 4,
-      from: 'Departamento de Cuentas por Pagar <contabilidad-no-reply@cuentas-corporativas.com>', //Phishing (Factura/Malware)
-      subject: 'Factura Pendiente: Compra de Software', 
-      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, revise el documento adjunto (FACTURA_873321.zip) y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b>', // MODIFICADO
+      from: 'Departamento de Cuentas',
+      fromEmail: 'contabilidad-no-reply@cuentas-corporativas.com',
+      subject: 'Factura Pendiente: Licencia Software',
+      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, descargue el documento adjunto para revisarlo y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b><br><br><a href="#" onclick="window.handlePhishingClick(false)" style="color: #0078d4; font-weight: bold;">📥 DESCARGAR FACTURA_873321.zip</a>',
       read: false,
-      type: 'phishing-malware'
+      type: 'phishing-malware',
+      time: '8:30 AM'
     },
     {
       id: 5,
-      from: 'Comité Social TechNova <social@technova.com>', //Legítimo (Social)
-      subject: 'Invitación a Evento de \'Team Building\'',
-      body: '¡Hola Alex! Sabemos que estás empezando. Te invitamos a la \'Reunión de Novedades de TechNova\' este viernes. Es una excelente oportunidad para conocer a otros empleados nuevos y a tu equipo. Confirma tu asistencia en **TechNova Events** (nuestra red social interna) antes del miércoles. ¡Te esperamos!', // MODIFICADO
+      from: 'Comité Social TechNova',
+      fromEmail: 'social@technova.com',
+      subject: "Invitación: Evento 'Team Building'",
+      body: '¡Hola Alex! Sabemos que estás empezando. Te invitamos a la \'Reunión de Novedades de TechNova\' este viernes. Es una excelente oportunidad para conocer a otros empleados nuevos y a tu equipo. Confirma tu asistencia en <b>TechNova Events</b> (nuestra red social interna) antes del miércoles. ¡Te esperamos!',
       read: false,
-      type: 'legit'
+      type: 'legit',
+      time: '8:15 AM'
     },
     {
       id: 6,
-      from: 'RRHH TechNova <rrhh-alert@technova-support.net>', // Phishing (Emocional/HR)
-      subject: 'HR Alerta: Tu Bono de Incorporación fue Denegado', 
-      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><a href="#" onclick="window.handlePhishingClick(true)">ENLACE DE CORRECCIÓN</a>', // MODIFICADO: Enlace malicioso
+      from: 'RRHH TechNova',
+      fromEmail: 'rrhh-alert@technova-support.net',
+      subject: 'HR Alerta: Tu Bono fue Denegado',
+      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔗 ENLACE DE CORRECCIÓN</a>',
       read: false,
-      type: 'phishing-creds'
+      type: 'phishing-creds',
+      time: '8:01 AM'
     },
     {
       id: 7,
-      from: 'Laura Pérez (Gerente de Equipo) <laura.perez@technova.com>', // MODIFICADO: Legítimo (Tarea)
-      subject: 'Resumen de Tareas Pendientes de su Gerente', // MODIFICADO
-      body: 'Alex, ¿podrías reenviarme la versión final del \'Plan de Introducción\' que te envié ayer? Necesito revisarla antes de nuestra reunión de las 3 PM. Gracias.', // MODIFICADO
+      from: 'Seguridad Microsoft 365',
+      fromEmail: 'noreply@microsoft365-security.info',
+      subject: 'Su sesión de Outlook ha expirado',
+      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔐 RENOVAR SESIÓN DE OUTLOOK</a>',
       read: false,
-      type: 'legit'
+      type: 'phishing-creds',
+      time: '7:55 AM'
     },
-    ];
+    {
+      id: 8,
+      from: 'Admin SharePoint',
+      fromEmail: 'sharepoint-admin@technova-cloud.net',
+      subject: 'Documento compartido: "Nóminas Q1 2026"',
+      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">📄 VER DOCUMENTO EN SHAREPOINT</a><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
+      read: false,
+      type: 'phishing-creds',
+      time: '7:40 AM'
+    },
+    {
+      id: 9,
+      from: 'Laura Pérez (Gerente)',
+      fromEmail: 'laura.perez@technova.com',
+      subject: 'Re: Tareas pendientes — necesito un documento',
+      body: 'Alex, ¿podrías reenviarme la versión final del \'Plan de Introducción\' que te envié ayer? Necesito revisarla antes de nuestra reunión de las 3 PM. Puedes adjuntarlo a este correo o subirlo al Drive y compartirme el enlace. Gracias.',
+      read: false,
+      type: 'legit',
+      time: '7:30 AM'
+    },
+];
+
+// ── Render email list ─────────────────────────────────────────────
 
 export function renderEmails() {
     const listEl = document.getElementById('email-list');
-    listEl.innerHTML = '';
+    if (!listEl) return;
+    
+    // Build compose button + email items
+    let html = `
+        <div class="email-compose-btn" onclick="window.openComposeEmail()">
+            <span class="compose-icon">✏️</span>
+            <span>Nuevo correo</span>
+        </div>
+    `;
+
     emails.forEach(email => {
-        const item = document.createElement('div');
-        item.className = `email-item ${email.read ? '' : 'unread'}`;
-        item.innerHTML = `<strong>${email.from}</strong><br>${email.subject}`;
-        item.onclick = () => window.openEmail(email.id);
-        item.oncontextmenu = (e) => {
-            e.preventDefault();
-            showEmailContextMenu(e.clientX, e.clientY, email.id);
-            return false;
-        };
-        listEl.appendChild(item);
+        const readClass = email.read ? 'read' : 'unread';
+        const senderInitial = email.from.charAt(0).toUpperCase();
+        
+        // Color based on sender (consistent per email)
+        const colors = ['#0078d4', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#1abc9c', '#e91e63', '#ff5722', '#3f51b5'];
+        const colorIdx = email.id % colors.length;
+        const avatarColor = colors[colorIdx];
+
+        html += `
+            <div class="email-item ${readClass}" 
+                 onclick="window.openEmail(${email.id})"
+                 oncontextmenu="event.preventDefault(); window._showReportMenu(event, ${email.id}); return false;">
+                <div class="email-avatar" style="background: ${avatarColor};">${senderInitial}</div>
+                <div class="email-item-content">
+                    <div class="email-item-header">
+                        <span class="email-sender">${email.from}</span>
+                        <span class="email-time">${email.time}</span>
+                    </div>
+                    <div class="email-subject">${email.subject}</div>
+                </div>
+            </div>
+        `;
     });
+
+    listEl.innerHTML = html;
 }
+
+// ── Open email view ───────────────────────────────────────────────
 
 export function openEmail(id) {
     const email = emails.find(e => e.id === id);
     email.read = true;
     const viewEl = document.getElementById('email-view');
-    // Creamos un elemento temporal para "escapar" el contenido de 'email.from'
-    // Esto convierte '<' y '>' en '&lt;' y '&gt;' para que se muestren como texto.
+
     const tempEl = document.createElement('p');
-    tempEl.textContent = email.from;
+    tempEl.textContent = `${email.from} <${email.fromEmail}>`;
     const safeFromHTML = tempEl.innerHTML;
+
     viewEl.innerHTML = `
-        <div class="email-content" data-email-id="${id}">
-            <h3>${email.subject}</h3>
-            <p><strong>From:</strong> ${safeFromHTML}</p> <hr>
-            <hr>
-            <div>${email.body}</div>
+        <div class="email-content-view" data-email-id="${id}">
+            <div class="email-view-header">
+                <h3 class="email-view-subject">${email.subject}</h3>
+                <div class="email-view-meta">
+                    <span class="email-view-from"><strong>De:</strong> ${safeFromHTML}</span>
+                    <span class="email-view-date">${email.time}</span>
+                </div>
+            </div>
+            <div class="email-view-separator"></div>
+            <div class="email-view-body">${email.body}</div>
         </div>
     `;
     renderEmails();
 }
 
-function showEmailContextMenu(x, y, emailId) {
-    const existingMenu = document.getElementById('email-context-menu');
-    if (existingMenu) {
-        existingMenu.remove();
-    }
+// ── Report context menu (only action) ─────────────────────────────
+
+window._showReportMenu = function(e, emailId) {
+    // Remove any existing menu
+    const existing = document.getElementById('email-context-menu');
+    if (existing) existing.remove();
 
     const menu = document.createElement('div');
     menu.id = 'email-context-menu';
-    menu.className = 'context-menu-windows';
-    menu.style.position = 'fixed';
-    menu.style.left = `${x}px`;
-    menu.style.top = `${y}px`;
-    menu.style.zIndex = '10000';
-    menu.style.display = 'block';
-    menu.innerHTML = `
-        <div class="context-menu-item" data-action="reply">Reply</div>
-        <div class="context-menu-item" data-action="forward">Forward</div>
-        <div class="context-menu-separator"></div>
-        <div class="context-menu-item" data-action="report">Report Suspicious Email</div>
-        <div class="context-menu-separator"></div>
-        <div class="context-menu-item" data-action="delete">Delete</div>
+    menu.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        z-index: 10000;
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        padding: 4px 0;
+        min-width: 220px;
+        animation: menuFadeIn 0.15s ease;
     `;
-
+    menu.innerHTML = `
+        <div style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #c0392b; transition: background 0.15s;"
+             onmouseover="this.style.background='#fef2f2'"
+             onmouseout="this.style.background='transparent'"
+             onclick="window.reportEmail(${emailId}, 'phishing'); this.parentElement.remove();">
+            <span style="font-size: 18px;">🚨</span>
+            <div>
+                <div style="font-weight: 600;">Reportar correo sospechoso</div>
+                <div style="font-size: 12px; color: #999; margin-top: 2px;">Report Suspicious Email</div>
+            </div>
+        </div>
+    `;
     document.body.appendChild(menu);
 
-    const hideMenu = () => {
-        if (menu && menu.parentNode) {
-            menu.remove();
-        }
-    };
-
-    menu.onclick = (e) => {
-        const item = e.target.closest('.context-menu-item');
-        if (!item) return;
-
-        const action = item.getAttribute('data-action');
-        if (action === 'report') {
-            window.reportEmail(emailId, 'phishing');
-        }
-        hideMenu();
-    };
-
     setTimeout(() => {
-        document.addEventListener('click', hideMenu, { once: true });
+        document.addEventListener('click', () => menu.remove(), { once: true });
     }, 10);
-}
+};
+
+// ── Compose email ─────────────────────────────────────────────────
 
 export function openComposeEmail(replyTo = null) {
     const viewEl = document.getElementById('email-view');
@@ -148,37 +210,39 @@ export function openComposeEmail(replyTo = null) {
 
     viewEl.innerHTML = `
         <div class="email-compose">
-            <h3>New Email</h3>
+            <div class="compose-header">
+                <h3>✉️ Nuevo Correo</h3>
+            </div>
             <div class="compose-form">
                 <div class="compose-field">
-                    <label><strong>To:</strong></label>
+                    <label><strong>Para:</strong></label>
                     <input type="text" id="compose-to" value="${toField}" placeholder="destinatario@technova.com">
                 </div>
                 <div class="compose-field">
-                    <label><strong>Subject:</strong></label>
-                    <input type="text" id="compose-subject" value="${subjectField}" placeholder="Email subject">
+                    <label><strong>Asunto:</strong></label>
+                    <input type="text" id="compose-subject" value="${subjectField}" placeholder="Asunto del correo">
                 </div>
                 <div class="compose-field">
-                    <label><strong>Body:</strong></label>
-                    <textarea id="compose-body" rows="10" placeholder="Write your message here..."></textarea>
+                    <label><strong>Mensaje:</strong></label>
+                    <textarea id="compose-body" rows="8" placeholder="Escribe tu mensaje aquí..."></textarea>
                 </div>
                 <div class="compose-field">
-                    <label><strong>Attachments:</strong></label>
-                    <div id="compose-attachments" style="margin-top: 10px; min-height: 30px; padding: 10px; background: #f9f9f9; border: 1px dashed #ccc; border-radius: 4px;">
-                        <p style="color: #666; font-size: 14px; margin: 0;">No attachments</p>
+                    <label><strong>Adjuntos:</strong></label>
+                    <div id="compose-attachments" class="compose-attachments-area">
+                        <p style="color: #999; font-size: 13px; margin: 0;">Sin adjuntos</p>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="window.openLocalFileExplorer()" title="Adjuntar archivo local" style="display: flex; align-items: center; gap: 5px;">
-                            <span style="font-size: 18px;">📎</span> Adjuntar archivo
+                    <div class="compose-attach-buttons">
+                        <button onclick="window.openLocalFileExplorer()" class="attach-btn attach-local">
+                            <span>📎</span> Archivo local
                         </button>
-                        <button onclick="window.openDriveFileExplorer()" title="Insertar desde TechNova Drive" style="display: flex; align-items: center; gap: 5px; background: #4CAF50;">
-                            <span style="font-size: 18px;">☁️</span> TechNova Drive
+                        <button onclick="window.openDriveFileExplorer()" class="attach-btn attach-drive">
+                            <span>☁️</span> TechNova Drive
                         </button>
                     </div>
                 </div>
-                <div class="compose-actions" style="margin-top: 20px;">
-                    <button onclick="window.sendComposedEmail()" style="background: #2ecc71;">Send Email</button>
-                    <button class="secondary" onclick="window.cancelCompose()">Cancel</button>
+                <div class="compose-actions">
+                    <button onclick="window.sendComposedEmail()" class="compose-send-btn">📤 Enviar</button>
+                    <button onclick="window.cancelCompose()" class="compose-cancel-btn">Cancelar</button>
                 </div>
             </div>
         </div>
