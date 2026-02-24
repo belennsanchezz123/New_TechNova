@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { getExporter, getAvailableFormats } from '../utils/exporters/ExporterFactory.js';
 
 const router = express.Router();
 
@@ -268,9 +269,18 @@ export function setupSessionRoutes() {
         }
     });
 
-    // RUTA PARA EXPORTAR MÉTRICAS COMO CSV (una fila por participante)
+    // RUTA PARA LISTAR FORMATOS DISPONIBLES DE EXPORTACIÓN
+    router.get('/metrics/export/formats', (req, res) => {
+        res.json({ success: true, formats: getAvailableFormats() });
+    });
+
+    // RUTA PARA EXPORTAR MÉTRICAS (Patrón Adapter)
+    // Acepta ?format=csv | ?format=json (por defecto: csv)
     router.get('/metrics/export', async (req, res) => {
         try {
+            const format = req.query.format || 'csv';
+            const exporter = getExporter(format);
+
             const rows = db.prepare(`
                 SELECT pm.*, qr.answers_json, bc.breach_count AS s8_breach_count_confirmed
                 FROM participant_metrics pm
@@ -283,22 +293,14 @@ export function setupSessionRoutes() {
                 return res.status(404).json({ success: false, error: 'No hay datos' });
             }
 
-            // Generar CSV
-            const headers = Object.keys(rows[0]);
-            const escape = (v) => {
-                if (v === null || v === undefined) return '';
-                const s = String(v).replace(/"/g, '""');
-                return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
-            };
-            const csv = [
-                headers.join(','),
-                ...rows.map(r => headers.map(h => escape(r[h])).join(','))
-            ].join('\n');
+            const output = exporter.format(rows);
+            const filename = `technova_metrics_${new Date().toISOString().slice(0, 10)}.${exporter.getExtension()}`;
 
-            res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="technova_metrics_${Date.now()}.csv"`);
-            res.send('\uFEFF' + csv); // BOM para que Excel lo abra correctamente
+            res.setHeader('Content-Type', exporter.getMimeType());
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            res.send(output);
         } catch (error) {
+            console.error('Error exportando datos:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });

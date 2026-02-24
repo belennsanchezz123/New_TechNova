@@ -191,6 +191,68 @@
         background: #6f42c1;
       }
 
+      /* Dropdown de exportación */
+      .export-dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .export-dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 6px;
+        background: white;
+        min-width: 200px;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+        z-index: 100;
+        overflow: hidden;
+        animation: dropdownFadeIn 0.2s ease;
+      }
+
+      @keyframes dropdownFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .export-dropdown:hover .export-dropdown-content,
+      .export-dropdown:focus-within .export-dropdown-content {
+        display: block;
+      }
+
+      .export-dropdown-content button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px 18px;
+        border: none;
+        background: white;
+        color: #333;
+        font-size: 0.9em;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        text-align: left;
+      }
+
+      .export-dropdown-content button:hover {
+        background: #f0ecf9;
+        color: #6f42c1;
+      }
+
+      .export-dropdown-content button:not(:last-child) {
+        border-bottom: 1px solid #f0f0f0;
+      }
+
       .modal {
         display: none;
         position: fixed;
@@ -282,13 +344,19 @@
             <p>Visualización de sesiones y métricas de usuarios</p>
           </div>
           <div class="admin-actions">
-            <button
-              class="btn-action btn-export"
-              id="btn-export-csv"
-              onclick="window.exportMetricsCSV()"
-            >
-              ⬇️ Exportar CSV
-            </button>
+            <div class="export-dropdown">
+              <button class="btn-action btn-export" id="btn-export">
+                ⬇️ Exportar Datos ▾
+              </button>
+              <div class="export-dropdown-content">
+                <button onclick="window.exportMetrics('csv')">
+                  📄 Exportar como CSV
+                </button>
+                <button onclick="window.exportMetrics('json')">
+                  📋 Exportar como JSON
+                </button>
+              </div>
+            </div>
             <button
               class="btn-action btn-success"
               onclick="window.viewAllQuestionnaires()"
@@ -617,14 +685,16 @@
       loadSessions();
       setInterval(loadSessions, 5000);
 
-      window.exportMetricsCSV = async function () {
-        const btn = document.getElementById('btn-export-csv');
+      window.exportMetrics = async function (format = 'csv') {
+        const btn = document.getElementById('btn-export');
         const originalText = btn.innerHTML;
         btn.innerHTML = '⏳ Exportando...';
         btn.disabled = true;
 
         try {
-          const response = await fetch(`${API_URL}/sessions/metrics/export`);
+          const response = await fetch(
+            `${API_URL}/sessions/metrics/export?format=${encodeURIComponent(format)}`
+          );
 
           if (response.status === 404) {
             alert('ℹ️ No hay datos de participantes todavía para exportar.');
@@ -638,18 +708,18 @@
             return;
           }
 
-          // Forzar descarga del CSV en el navegador
+          // Forzar descarga del archivo en el navegador
           const blob = await response.blob();
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `technova_metrics_${new Date().toISOString().slice(0, 10)}.csv`;
+          a.download = `technova_metrics_${new Date().toISOString().slice(0, 10)}.${format}`;
           document.body.appendChild(a);
           a.click();
           a.remove();
           URL.revokeObjectURL(url);
         } catch (error) {
-          console.error('Error exportando CSV:', error);
+          console.error(`Error exportando ${format.toUpperCase()}:`, error);
           alert('Error de conexión al intentar exportar.');
         } finally {
           btn.innerHTML = originalText;
