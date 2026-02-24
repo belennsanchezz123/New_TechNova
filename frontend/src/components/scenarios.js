@@ -258,31 +258,74 @@ export function getScenarioHTML(scenarioNumber) {
 
         <div class="lock-screen-prompt">
             Presiona la tecla <strong>'v'</strong> para volver y continuar.
-            <span class="translation">Press the <strong>'v'</strong> key to return and continue.</span>
+        </div>
+        <div class="lock-screen-prompt" style="margin-top: 12px; color: rgba(255,255,255,0.6); font-size: 0.95em;">
+            Press the <strong>'v'</strong> key to return and continue.
         </div>
     </div>
 </div>
 
 <div id="task-interruption">
-    <p>
-        <strong>Instrucción:</strong> Necesitas encontrar y descargar una plantilla de cronograma de proyectos 
-        para tu equipo, que debe presentarse en la reunión del lunes. Para eso, usa el navegador asociado.
+    <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 10px;">
+        <strong>Instrucción:</strong> Estás trabajando en tu escritorio cuando un compañero se acerca y te pide que le acompañes 
+        un momento a la sala de reuniones para resolver una duda rápida. <strong>Debes levantarte de tu puesto</strong>.
         <span class="translation">
-            <strong>Instruction:</strong> You need to find and download a project schedule template for your team, 
-            which must be presented at Monday’s meeting. To do this, use the assigned browser.
+            <strong>Instruction:</strong> You are working at your desk when a colleague approaches and asks you to come with them 
+            to the meeting room for a quick question. <strong>You need to step away from your workstation</strong>.
         </span>
     </p>
 
-    <div style="display: flex; justify-content: space-around; gap: 10px; margin-top: 25px;">
+    <p style="background: #fff3cd; color: #856404; padding: 14px 18px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 18px 0; font-size: 0.97em;">
+        💡 <strong>¿Qué haces con tu ordenador antes de irte?</strong>
+        <span class="translation"><strong>What do you do with your computer before leaving?</strong></span>
+    </p>
 
-        <button onclick="window.handleInterruption(true)" style="flex: 1; background: #6c757d; color: white;">
-            🖥️ Suspender sesión
-             <span class="translation" style="color:white;">Suspend Session</span>
+    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 28px;">
+
+        <button onclick="window.handleInterruption(true)" style="
+            flex: 1;
+            max-width: 280px;
+            background: linear-gradient(135deg, #4a5568, #3a4250);
+            color: #ffffff;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(74, 85, 104, 0.35);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
+           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
+            🖥️ Suspender Sesión
+            <span class="translation" style="color: #ffffff;">Suspend Session</span>
         </button>
 
-        <button onclick="window.handleInterruption(false)" style="flex: 1; color: white;">
+        <button onclick="window.handleInterruption(false)" style="
+            flex: 1;
+            max-width: 280px;
+            background: linear-gradient(135deg, #4a5568, #3a4250);
+            color: #ffffff;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(74, 85, 104, 0.35);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
+           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
             Continuar ➡️
-             <span class="translation" style="color:white;">Continue</span>
+            <span class="translation" style="color: #ffffff;">Continue</span>
         </button>
 
     </div>

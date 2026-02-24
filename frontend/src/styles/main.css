@@ -21,10 +21,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    background-image: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background: linear-gradient(135deg, #0f1b2d 0%, #1a3a5c 40%, #1e5799 100%);
     display: flex;
-    /* Hidden by default if not active, but controlled by JS */
     align-items: center;
     justify-content: center;
     z-index: 9999;
@@ -34,28 +32,61 @@
 
 .lock-screen-content {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 50px 60px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    animation: fadeIn 0.5s ease;
 }
 
 .lock-screen-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
+    font-size: 72px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.lock-screen-content h1 {
+    font-size: 2.4em;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 10px 0 8px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.lock-screen-content p {
+    font-size: 1.15em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
 }
 
 .lock-screen-prompt {
-    margin-top: 30px;
-    font-size: 18px;
+    margin-top: 36px;
+    padding: 18px 30px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.1em;
+    color: #e0e8f0;
+    letter-spacing: 0.3px;
     animation: pulse 2s infinite;
+}
+
+.lock-screen-prompt strong {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 1.1em;
 }
 
 @keyframes pulse {
     0% {
-        opacity: 0.5;
+        opacity: 0.6;
     }
 
     50% {
@@ -63,6 +94,11 @@
     }
 
     100% {
-        opacity: 0.5;
+        opacity: 0.6;
     }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
