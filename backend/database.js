@@ -111,6 +111,10 @@ const initDB = () => {
             s4_browser_warning_response     TEXT,       -- 'Ignored' | 'Heeded' | 'Not Encountered'
             s4_cookie_consent               TEXT,       -- 'Accepted All' | 'Rejected' | 'Customized' | NULL
             s4_clicked_dangerous_link       INTEGER,    -- 1=sí, 0=no
+            s4_extensions_disabled_pct      REAL,       -- % extensiones sospechosas desactivadas (0-100)
+            s4_warnings_heeded_pct          REAL,       -- % avisos de seguridad atendidos (0-100)
+            s4_cookie_accepted_pct          REAL,       -- % banners donde aceptó todas las cookies (0-100)
+            s4_dangerous_links_clicked_pct  REAL,       -- % enlaces peligrosos clicados (0-100)
 
             -- ── Escenario 5: Chat RRHH / AI ───────────────────────────
             s5_personal_data_fields_shared  INTEGER,    -- nº de campos de datos personales revelados

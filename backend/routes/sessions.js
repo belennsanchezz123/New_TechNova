@@ -186,6 +186,7 @@ export function setupSessionRoutes() {
             };
             const toText = (v) => (v === null || v === undefined || v === 'Not Set' || v === 'N/A') ? null : String(v);
             const toInt2 = (v) => (v === null || v === undefined) ? null : parseInt(v, 10) || 0;
+            const toReal = (v) => (v === null || v === undefined) ? null : parseFloat(v) || 0;
 
             const m = metrics; // alias corto
 
@@ -214,6 +215,10 @@ export function setupSessionRoutes() {
                 s4_browser_warning_response:   toText(m['scenario4.response_to_browser_warnings']),
                 s4_cookie_consent:             toText(m['scenario4.cookie_consent']),
                 s4_clicked_dangerous_link:     toInt(m['scenario4.clicked_dangerous_link']),
+                s4_extensions_disabled_pct:    toReal(m['scenario4.extensions_disabled_pct']),
+                s4_warnings_heeded_pct:        toReal(m['scenario4.warnings_heeded_pct']),
+                s4_cookie_accepted_pct:        toReal(m['scenario4.cookie_accepted_pct']),
+                s4_dangerous_links_clicked_pct: toReal(m['scenario4.dangerous_links_clicked_pct']),
                 // S5
                 s5_personal_data_fields_shared: toInt2(m['scenario5.personal_data_disclosure_rate']),
                 s5_third_party_app_authorized:  toInt(m['scenario5.third_party_app_authorization']),

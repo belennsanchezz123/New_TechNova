@@ -30,7 +30,11 @@ export const metrics = {
     scenario4: {
         response_to_browser_warnings: null,   // TEXT: 'Ignored' | 'Heeded' | 'Not Encountered'
         cookie_consent:               null,   // TEXT: 'Accepted All' | 'Rejected' | 'Customized'
-        clicked_dangerous_link:       0       // INT: 1=sí, 0=no
+        clicked_dangerous_link:       0,      // INT: 1=sí, 0=no
+        extensions_disabled_pct:      null,   // REAL: % extensiones sospechosas desactivadas (0-100)
+        warnings_heeded_pct:          null,   // REAL: % avisos de seguridad atendidos (0-100)
+        cookie_accepted_pct:          null,   // REAL: % banners donde aceptó todas las cookies (0-100)
+        dangerous_links_clicked_pct:  null,   // REAL: % enlaces peligrosos clicados (0-100)
     },
     scenario5: {
         personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados

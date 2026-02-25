@@ -35,7 +35,7 @@ import {
     areAllEmailsRead
 } from './handlers/scenario3.js';
 
-import { navigate, handleWarning, handleCookies, initBrowser } from './handlers/scenario4.js';
+import { navigate, handleWarning, handleCookies, initBrowser, handleExtensionToggle, toggleExtensionsPanel, closeExtensionsPanel, confirmExtensions } from './handlers/scenario4.js';
 import { saveProfile, connectApp, handleAppPerms } from './handlers/scenario6.js';
 
 import {
@@ -523,6 +523,10 @@ window.cancelCompose = cancelCompose;
 window.navigate = navigate;
 window.handleWarning = handleWarning;
 window.handleCookies = handleCookies;
+window.handleExtensionToggle = handleExtensionToggle;
+window.toggleExtensionsPanel = toggleExtensionsPanel;
+window.closeExtensionsPanel = closeExtensionsPanel;
+window.confirmExtensions = confirmExtensions;
 // window.handleUpdate = handleUpdate;
 window.saveProfile = saveProfile;
 window.connectApp = connectApp;

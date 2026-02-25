@@ -538,3 +538,224 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Panel de Extensiones del Navegador
+   ══════════════════════════════════════════════════════════════════ */
+
+.browser-extensions-panel {
+    display: none;
+    flex-direction: column;
+    background: #f8f9fa;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    overflow: hidden;
+}
+
+.extensions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e8eaed;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #202124;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.extensions-close-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.extensions-close-btn:hover {
+    background: #dadce0;
+}
+
+.extensions-list {
+    padding: 8px;
+}
+
+.extension-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: background 0.15s;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+}
+
+.extension-item:last-child {
+    margin-bottom: 0;
+}
+
+.extension-icon {
+    font-size: 28px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.extension-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.extension-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.extension-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.suspicious-badge {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.trusted-badge {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.extension-desc {
+    font-size: 12px;
+    color: #5f6368;
+    margin: 4px 0;
+}
+
+.extension-perms {
+    font-size: 11px;
+    color: #888;
+}
+
+.extension-perms strong {
+    color: #666;
+}
+
+/* Toggle switch para extensiones */
+.extension-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.extension-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.extension-toggle input:checked + .toggle-slider {
+    background-color: #4caf50;
+}
+
+.extension-toggle input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.extensions-footer {
+    padding: 10px 16px;
+    border-top: 1px solid #d0d0d0;
+    background: #f1f3f4;
+    text-align: center;
+}
+
+.extensions-done-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.extensions-done-btn:hover {
+    background: #1557b0;
+}
+
+/* Botón de extensiones en la toolbar del navegador */
+.browser-extensions-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.browser-extensions-btn:hover {
+    background: #dadce0;
+}
+
+/* Cookie banner containerizado dentro de cada página */
+.cookie-banner-container {
+    margin-top: 15px;
+}
+
+/* Animación del toast de descarga */
+@keyframes slideUpToast {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

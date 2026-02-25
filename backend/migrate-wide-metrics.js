@@ -46,6 +46,10 @@ try {
             s4_browser_warning_response     TEXT,
             s4_cookie_consent               TEXT,
             s4_clicked_dangerous_link       INTEGER,
+            s4_extensions_disabled_pct      REAL,
+            s4_warnings_heeded_pct          REAL,
+            s4_cookie_accepted_pct          REAL,
+            s4_dangerous_links_clicked_pct  REAL,
 
             s5_personal_data_fields_shared  INTEGER,
             s5_third_party_app_authorized   INTEGER,
@@ -72,9 +76,30 @@ try {
     `);
     console.log('✅ Tabla participant_metrics creada (o ya existía).');
 
+    // Añadir columnas nuevas si la tabla ya existía (ALTER TABLE no soporta IF NOT EXISTS)
+    const newColumns = [
+        { name: 's4_extensions_disabled_pct', type: 'REAL' },
+        { name: 's4_warnings_heeded_pct', type: 'REAL' },
+        { name: 's4_cookie_accepted_pct', type: 'REAL' },
+        { name: 's4_dangerous_links_clicked_pct', type: 'REAL' },
+    ];
+
+    for (const col of newColumns) {
+        try {
+            db.exec(`ALTER TABLE participant_metrics ADD COLUMN ${col.name} ${col.type}`);
+            console.log(`   ✅ Columna añadida: ${col.name}`);
+        } catch (e) {
+            if (e.message.includes('duplicate column name')) {
+                console.log(`   ℹ️  Columna ya existe: ${col.name}`);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     // Verificar estructura
     const info = db.prepare("PRAGMA table_info(participant_metrics)").all();
-    console.log(`   Columnas: ${info.length}`);
+    console.log(`\n   Columnas totales: ${info.length}`);
     info.forEach(col => {
         console.log(`   - ${col.name.padEnd(40)} ${col.type}`);
     });

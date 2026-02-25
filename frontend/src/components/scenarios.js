@@ -474,11 +474,26 @@ export function getScenarioHTML(scenarioNumber) {
 </h2>
 
 <p>
-    <strong>Instrucción:</strong> Usa el navegador para buscar en Internet y descargar una <strong>plantilla de cronograma de proyectos</strong>.
+    <strong>Instrucción:</strong> Revisa las extensiones instaladas en tu navegador, luego usa el buscador para encontrar y descargar una <strong>plantilla de cronograma de proyectos</strong>.
     <span class="translation">
-        <strong>Instruction:</strong> Use the browser to search online and download a <strong>project schedule template</strong>.
+        <strong>Instruction:</strong> Review the browser extensions installed, then use the search engine to find and download a <strong>project schedule template</strong>.
     </span>
 </p>
+
+<!-- Panel de extensiones del navegador -->
+<div class="browser-extensions-panel" id="browser-extensions-panel">
+    <div class="extensions-header">
+        <span>🧩 Extensiones instaladas</span>
+        <button class="extensions-close-btn" onclick="window.closeExtensionsPanel()">✕</button>
+    </div>
+    <div class="extensions-list" id="extensions-list">
+        <!-- Se rellena dinámicamente desde scenario4.js -->
+    </div>
+    <div class="extensions-footer">
+        <button class="extensions-done-btn" onclick="window.confirmExtensions()">✔ Listo, continuar navegando</button>
+    </div>
+</div>
+
             <div class="browser-container">
                 <div class="browser-header">
                     <div class="browser-tabs">
@@ -503,6 +518,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <span class="browser-secure-icon" id="browser-secure-icon">🔒</span>
                         <input type="text" id="browser-url" placeholder="Buscar o introducir dirección web" value="" readonly>
                     </div>
+                    <button class="browser-extensions-btn" id="browser-extensions-btn" onclick="window.toggleExtensionsPanel()" title="Gestionar extensiones">🧩</button>
                     <div class="browser-site-info" id="browser-site-info">
                         </div>
                 </div>
