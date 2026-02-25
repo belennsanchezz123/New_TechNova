@@ -91,16 +91,12 @@ const initDB = () => {
             s1_drive_password_strength      TEXT,
             s1_events_password_strength     TEXT,
             s1_password_reused              INTEGER,    -- 1=sí, 0=no, NULL=no llegó
-            s1_mfa_started                  INTEGER,    -- 1=sí, 0=no
-            s1_mfa_completed                INTEGER,    -- 1=sí, 0=no
-            s1_mfa_step_reached             INTEGER,    -- 0-N pasos completados
+            s1_mfa_enabled                  INTEGER,    -- 1=sí, 0=no
             s1_mfa_method_primary           TEXT,       -- 'SMS' | 'App' | 'Email' | 'None'
             s1_mfa_method_backup            TEXT,
-            s1_mfa_abandon_reason           TEXT,       -- NULL si completó
-            s1_mfa_time_spent_sec           INTEGER,    -- segundos en MFA
+            s1_mfa_email_alt                INTEGER,    -- 1=puso email alternativo
             s1_teams_camera_allowed         INTEGER,    -- 1=sí, 0=no, NULL=no vió
             s1_teams_microphone_allowed     INTEGER,
-            s1_teams_all_permissions_granted INTEGER,
 
             -- ── Escenario 2: Bloqueo de pantalla ─────────────────────
             s2_manual_lock_screen           INTEGER,    -- 1=bloqueó, 0=no
@@ -109,10 +105,7 @@ const initDB = () => {
             s3_phishing_clicked             INTEGER,    -- 1=hizo clic, 0=no
             s3_phishing_reported            INTEGER,    -- 1=reportó, 0=no
             s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
-            s3_sensitive_data_sent_to_llm   INTEGER,    -- 1=sí, 0=no
-            s3_llm_policy_complied          INTEGER,    -- 1=cumplió, 0=no
             s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
-            s3_ai_prompt_text               TEXT,       -- texto libre del prompt enviado
 
             -- ── Escenario 4: Navegación web ───────────────────────────
             s4_browser_warning_response     TEXT,       -- 'Ignored' | 'Heeded' | 'Not Encountered'

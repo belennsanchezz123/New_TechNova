@@ -197,26 +197,19 @@ export function setupSessionRoutes() {
                 s1_drive_password_strength:    toText(m['scenario1.drive_password_strength']),
                 s1_events_password_strength:   toText(m['scenario1.events_password_strength']),
                 s1_password_reused:            toInt(m['scenario1.password_reused']),
-                s1_mfa_started:                toInt(m['scenario1.mfa_started']),
-                s1_mfa_completed:              toInt(m['scenario1.mfa_completed']),
-                s1_mfa_step_reached:           toInt2(m['scenario1.mfa_step_reached']),
+                s1_mfa_enabled:                toInt(m['scenario1.mfa_usage']),
                 s1_mfa_method_primary:         toText(m['scenario1.mfa_method_primary']),
                 s1_mfa_method_backup:          toText(m['scenario1.mfa_method_backup']),
-                s1_mfa_abandon_reason:         toText(m['scenario1.mfa_abandon_reason']),
-                s1_mfa_time_spent_sec:         toInt2(m['scenario1.mfa_time_spent']),
+                s1_mfa_email_alt:              toInt(m['scenario1.mfa_email_alternative']),
                 s1_teams_camera_allowed:       toInt(m['scenario1.teams_camera_permission']),
                 s1_teams_microphone_allowed:   toInt(m['scenario1.teams_microphone_permission']),
-                s1_teams_all_permissions_granted: toInt(m['scenario1.teams_all_permissions_granted']),
                 // S2
                 s2_manual_lock_screen:         toInt(m['scenario2.manual_lock_screen']),
                 // S3
                 s3_phishing_clicked:           toInt(m['scenario3.phishing_clicked']),
                 s3_phishing_reported:          toInt(m['scenario3.phishing_reported']),
                 s3_credential_compromised:     toInt(m['scenario3.credential_compromise']),
-                s3_sensitive_data_sent_to_llm: toInt(m['scenario3.sensitive_data_exposure_to_llm']),  // legacy — no longer sent
-                s3_llm_policy_complied:        toInt(m['scenario3.policy_compliance_llm']),           // legacy — no longer sent
                 s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
-                s3_ai_prompt_text:             toText(m['scenario3.ai_prompt_text']),                 // legacy — no longer sent
                 // S4
                 s4_browser_warning_response:   toText(m['scenario4.response_to_browser_warnings']),
                 s4_cookie_consent:             toText(m['scenario4.cookie_consent']),
