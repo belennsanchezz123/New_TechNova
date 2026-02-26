@@ -756,28 +756,27 @@ export function getScenarioHTML(scenarioNumber) {
                     <h3>0. Información Demográfica y Experiencia</h3>
                     
                     <div class="question-custom">
-                        <label>¿Cuál es tu rango de edad?</label>
-                        <div class="radio-group-custom">
-                            <label><input type="radio" name="q_0_1" value="<18"> < 18</label>
-                            <label><input type="radio" name="q_0_1" value="18-24"> 18-24</label>
-                            <label><input type="radio" name="q_0_1" value="25-34"> 25-34</label>
-                            <label><input type="radio" name="q_0_1" value="35-44"> 35-44</label>
-                            <label><input type="radio" name="q_0_1" value="45-54"> 45-54</label>
-                            <label><input type="radio" name="q_0_1" value="55-64"> 55-64</label>
-                            <label><input type="radio" name="q_0_1" value=">65"> > 65</label>
-                        </div>
+                        <label>¿Cuál es tu edad?</label>
+                        <input 
+                            type="number" 
+                            id="age-input" 
+                            name="q_0_1" 
+                            min="0" 
+                            max="120" 
+                            placeholder="Introduce tu edad" 
+                            class="question-input"
+                        >
                     </div>
 
                     <div class="question-custom">
-                        <label>¿Cuál es tu nivel más alto de educación completado?</label>
-                        <div class="radio-group-custom">
-                            <label><input type="radio" name="q_0_2" value="Secundaria"> Secundaria</label>
-                            <label><input type="radio" name="q_0_2" value="Bachillerato"> Bachillerato</label>
-                            <label><input type="radio" name="q_0_2" value="FP"> FP</label>
-                            <label><input type="radio" name="q_0_2" value="Grado"> Grado</label>
-                            <label><input type="radio" name="q_0_2" value="Master"> Máster</label>
-                            <label><input type="radio" name="q_0_2" value="Doctorado"> Doctorado</label>
-                        </div>
+                        <label>¿Cuál es tu facultad?</label>
+                        <input 
+                            type="text" 
+                            id="faculty-input" 
+                            name="q_0_2" 
+                            placeholder="Escribe aquí tu facultad" 
+                            class="question-input"
+                        >
                     </div>
 
                     <div class="question-custom">

@@ -750,3 +750,23 @@ button.danger:hover {
     margin-right: 8px;
     cursor: pointer;
 }
+
+/* Inputs bonitos para preguntas abiertas del cuestionario */
+
+.question-input {
+    width: 100%;
+    max-width: 320px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.question-input:focus {
+    outline: none;
+    border-color: var(--lynx-primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+    background-color: #fff;
+}

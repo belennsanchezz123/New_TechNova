@@ -5,7 +5,6 @@
 // fuerza de una contraseña. Cambiar en runtime con
 // setPasswordStrategy('entropy') | 'nist' | 'zxcvbn'
 // =============================================
-
 import zxcvbn from 'zxcvbn';
 
 // --- Lista de contraseñas comunes (subset para NIST) ---
