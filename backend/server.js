@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { setupSessionRoutes } from './routes/sessions.js';
+import { setupSessionRoutes, setupAdminSessionRoutes } from './routes/sessions.js';
 import { setupBreachRoutes } from './routes/breach.js';
 import { setupQuestionnaireRoutes } from './routes/questionnaire.js';
+import authRouter from './routes/auth.js';
+import { requireAdmin } from './utils/authMiddleware.js';
 
 dotenv.config({ path: '../.env' });
 
@@ -17,9 +19,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'LYNX Backend is running with SQLite' });
 });
 
+// ── Rutas públicas (participantes) ─────────────────────────────────
+app.use('/api/auth', authRouter);
 app.use('/api/sessions', setupSessionRoutes());
 app.use('/api/breach', setupBreachRoutes());
-app.use('/api/questionnaire', setupQuestionnaireRoutes());
+
+// ── Rutas protegidas (admin — requieren JWT) ───────────────────────
+app.use('/api/sessions', requireAdmin, setupAdminSessionRoutes());
+app.use('/api/questionnaire', requireAdmin, setupQuestionnaireRoutes());
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);

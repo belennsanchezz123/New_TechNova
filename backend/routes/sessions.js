@@ -2,9 +2,11 @@ import express from 'express';
 import db from '../database.js';
 import { getExporter, getAvailableFormats } from '../utils/exporters/ExporterFactory.js';
 
-const router = express.Router();
-
+// ══════════════════════════════════════════════════════════════════════
+// RUTAS PÚBLICAS — usadas por los participantes (NO requieren JWT)
+// ══════════════════════════════════════════════════════════════════════
 export function setupSessionRoutes() {
+    const router = express.Router();
     
     // RUTA PARA INICIAR SESIÓN (Al aceptar políticas o registrar servicio)
     router.post('/start', async (req, res) => {
@@ -117,25 +119,6 @@ export function setupSessionRoutes() {
 
             const updated = db.prepare('SELECT * FROM registrations WHERE id = ?').get(sessionId);
             res.json({ success: true, session: updated, changes: info.changes });
-        } catch (error) {
-            res.status(500).json({ success: false, error: error.message });
-        }
-    });
-
-    // RUTA PARA EL ADMIN (Ver todas las sesiones)
-    router.get('/all', async (req, res) => {
-        try {
-            const sessions = db.prepare(`
-                SELECT id, username AS user_identifier, participant_id, service, password_strength, mfa_enabled, password_reuse_count, created_at AS started_at, completed_at
-                FROM registrations ORDER BY created_at DESC
-            `).all();
-            
-            const normalized = sessions.map(s => ({
-                ...s,
-                consent_email: (s.password_strength && String(s.password_strength).startsWith('consent:')) ? 
-                                s.password_strength.replace('consent:', '') : null
-            }));
-            res.json({ success: true, sessions: normalized });
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
@@ -263,6 +246,34 @@ export function setupSessionRoutes() {
             res.json({ success: true, inserted: logRows.length });
         } catch (error) {
             console.error('Error en /metrics:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    return router;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// RUTAS PROTEGIDAS — solo para admin (requieren JWT)
+// ══════════════════════════════════════════════════════════════════════
+export function setupAdminSessionRoutes() {
+    const router = express.Router();
+
+    // RUTA PARA EL ADMIN (Ver todas las sesiones)
+    router.get('/all', async (req, res) => {
+        try {
+            const sessions = db.prepare(`
+                SELECT id, username AS user_identifier, participant_id, service, password_strength, mfa_enabled, password_reuse_count, created_at AS started_at, completed_at
+                FROM registrations ORDER BY created_at DESC
+            `).all();
+            
+            const normalized = sessions.map(s => ({
+                ...s,
+                consent_email: (s.password_strength && String(s.password_strength).startsWith('consent:')) ? 
+                                s.password_strength.replace('consent:', '') : null
+            }));
+            res.json({ success: true, sessions: normalized });
+        } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
     });
