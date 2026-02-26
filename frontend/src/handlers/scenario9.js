@@ -8,7 +8,7 @@ function showResults() {
     const resultsBody = document.getElementById('results-body');
     if (!resultsBody) return;
 
-    resultsBody.innerHTML = ''; // Limpiar tabla
+    resultsBody.innerHTML = ''; // Limpiar tabla prueba
 
     const allMetrics = {
         ...metrics.scenario1,
