@@ -14,7 +14,7 @@ export const emails = [
       from: 'Soporte Técnico TechNova',
       fromEmail: 'soporte@tech-nova.org',
       subject: '[URGENTE] Verificación de Credenciales',
-      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔗 VERIFICAR MI CUENTA AHORA</a>',
+      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 VERIFICAR MI CUENTA AHORA</span>',
       read: false,
       type: 'phishing-creds',
       time: '9:02 AM'
@@ -34,7 +34,7 @@ export const emails = [
       from: 'Departamento de Cuentas',
       fromEmail: 'contabilidad-no-reply@cuentas-corporativas.com',
       subject: 'Factura Pendiente: Licencia Software',
-      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, descargue el documento adjunto para revisarlo y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b><br><br><a href="#" onclick="window.handlePhishingClick(false)" style="color: #0078d4; font-weight: bold;">📥 DESCARGAR FACTURA_873321.zip</a>',
+      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, descargue el documento adjunto para revisarlo y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b><br><br><span onclick="window.handlePhishingClick(false)" data-preview-url="http://cuentas-corporativas.com.mx/download/FACTURA_873321.zip.exe" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📥 DESCARGAR FACTURA_873321.zip</span>',
       read: false,
       type: 'phishing-malware',
       time: '8:30 AM'
@@ -54,7 +54,7 @@ export const emails = [
       from: 'RRHH TechNova',
       fromEmail: 'rrhh-alert@technova-support.net',
       subject: 'HR Alerta: Tu Bono fue Denegado',
-      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔗 ENLACE DE CORRECCIÓN</a>',
+      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
       read: false,
       type: 'phishing-creds',
       time: '8:01 AM'
@@ -64,7 +64,7 @@ export const emails = [
       from: 'Seguridad Microsoft 365',
       fromEmail: 'noreply@microsoft365-security.info',
       subject: 'Su sesión de Outlook ha expirado',
-      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">🔐 RENOVAR SESIÓN DE OUTLOOK</a>',
+      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
       read: false,
       type: 'phishing-creds',
       time: '7:55 AM'
@@ -74,7 +74,7 @@ export const emails = [
       from: 'Admin SharePoint',
       fromEmail: 'sharepoint-admin@technova-cloud.net',
       subject: 'Documento compartido: "Nóminas Q1 2026"',
-      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><a href="#" onclick="window.handlePhishingClick(true)" style="color: #0078d4; font-weight: bold;">📄 VER DOCUMENTO EN SHAREPOINT</a><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
+      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://technova-cloud.net/sharepoint/docs/nominas?auth=required" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
       read: false,
       type: 'phishing-creds',
       time: '7:40 AM'
@@ -145,7 +145,7 @@ export function openEmail(id) {
     const safeFromHTML = tempEl.innerHTML;
 
     viewEl.innerHTML = `
-        <div class="email-content-view" data-email-id="${id}">
+        <div class="email-content-view" data-email-id="${id}" style="position: relative;">
             <div class="email-view-header">
                 <h3 class="email-view-subject">${email.subject}</h3>
                 <div class="email-view-meta">
@@ -155,8 +155,47 @@ export function openEmail(id) {
             </div>
             <div class="email-view-separator"></div>
             <div class="email-view-body">${email.body}</div>
+            <div id="email-url-preview-bar" style="
+                display: none;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                background: #f0f0f0;
+                border: 1px solid #ccc;
+                border-bottom: none;
+                border-left: none;
+                padding: 4px 12px;
+                font-size: 12px;
+                font-family: 'Segoe UI', monospace;
+                color: #444;
+                z-index: 9999;
+                max-width: 80%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                border-radius: 0 4px 0 0;
+                box-shadow: 1px -1px 4px rgba(0,0,0,0.1);
+            "></div>
         </div>
     `;
+
+    // Attach hover listeners on links with data-preview-url
+    const body = viewEl.querySelector('.email-view-body');
+    const previewBar = document.getElementById('email-url-preview-bar');
+
+    if (body && previewBar) {
+        const links = body.querySelectorAll('[data-preview-url]');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                previewBar.textContent = link.getAttribute('data-preview-url');
+                previewBar.style.display = 'block';
+            });
+            link.addEventListener('mouseleave', () => {
+                previewBar.style.display = 'none';
+            });
+        });
+    }
+
     renderEmails();
 }
 
