@@ -66,41 +66,80 @@ export function reportEmail(id, type) {
     _saveS3Metrics();
 }
 
-// ── File explorers (Local / Drive) ────────────────────────────────
+// ── File explorer ─────────────────────────────────────────────────
 
-// Shared file list — same files appear in both local and Drive
-const _sharedFiles = [
-    { filename: 'Plan_de_Introduccion.docx', icon: '📄', desc: 'Documento de Word • 128 KB' },
-    { filename: 'Lista_Participantes_Excursion.docx', icon: '📄', desc: 'Documento de Word • 45 KB' },
-    { filename: 'Presupuesto_Interno_Q3.xlsx', icon: '📊', desc: 'Hoja de cálculo • 67 KB' },
-    { filename: 'Mapa_Ruta_Senderismo.pdf', icon: '📑', desc: 'PDF Document • 1.2 MB' },
+const _baseFiles = [
+    { filename: 'Plan_de_Introduccion.docx', icon: '📄', desc: 'Documento de Word • 128 KB', encrypted: false },
+    { filename: 'Lista_Participantes_Excursion.docx', icon: '📄', desc: 'Documento de Word • 45 KB', encrypted: false },
+    { filename: 'Presupuesto_Interno_Q3.xlsx', icon: '📊', desc: 'Hoja de cálculo • 67 KB', encrypted: false },
+    { filename: 'Mapa_Ruta_Senderismo.pdf', icon: '📑', desc: 'PDF Document • 1.2 MB', encrypted: false },
 ];
 
-function _renderFileList(method) {
-    return _sharedFiles.map(f => {
-        const driveBadge = method === 'drive'
-            ? '<span style="font-size: 14px; color: #4CAF50; margin-left: auto; flex-shrink: 0;">🔗 Enlace seguro</span>'
+// Track which files have been encrypted (so we can add them to the list)
+const _encryptedFiles = new Set();
+
+function _getCurrentFiles() {
+    const files = [..._baseFiles];
+    // Add encrypted copies right after their originals
+    for (let i = files.length - 1; i >= 0; i--) {
+        if (_encryptedFiles.has(files[i].filename)) {
+            files.splice(i + 1, 0, {
+                filename: files[i].filename,
+                icon: '🔒',
+                desc: 'Cifrado • ' + files[i].desc,
+                encrypted: true
+            });
+        }
+    }
+    return files;
+}
+
+function _renderFileList() {
+    return _getCurrentFiles().map(f => {
+        const borderStyle = f.encrypted
+            ? 'border: 1px solid #4CAF50; background: #f1f8e9;'
+            : 'border: 1px solid #e0e0e0; background: white;';
+        const hoverBg = f.encrypted ? '#e8f5e9' : '#f5f7fa';
+        const hoverBorder = f.encrypted ? '#388E3C' : '#b0bec5';
+        const defaultBg = f.encrypted ? '#f1f8e9' : 'white';
+        const defaultBorder = f.encrypted ? '#4CAF50' : '#e0e0e0';
+        const encBadge = f.encrypted
+            ? '<span style="font-size: 11px; color: #2e7d32; margin-left: auto; flex-shrink: 0; background: #c8e6c9; padding: 2px 8px; border-radius: 10px;">Cifrado</span>'
             : '';
-        return '<div style="padding: 12px 14px; border: 1px solid #e0e0e0; margin: 6px 0; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 12px; background: white; transition: all 0.15s;"'
-            + ' onmouseover="this.style.background=\'#f5f7fa\'; this.style.borderColor=\'#b0bec5\'"'
-            + ' onmouseout="this.style.background=\'white\'; this.style.borderColor=\'#e0e0e0\'"'
-            + ' onclick="window.selectAttachment(\'' + f.filename + '\', \'' + method + '\')">'
+        const encFlag = f.encrypted ? 'true' : 'false';
+        const contextMenu = f.encrypted
+            ? ''  // no context menu for already encrypted files
+            : ' oncontextmenu="event.preventDefault(); window._showFileContextMenu(event, \'' + f.filename + '\'); return false;"';
+
+        return '<div style="padding: 12px 14px; ' + borderStyle + ' margin: 6px 0; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: all 0.15s;"'
+            + ' onmouseover="this.style.background=\'' + hoverBg + '\'; this.style.borderColor=\'' + hoverBorder + '\'"'
+            + ' onmouseout="this.style.background=\'' + defaultBg + '\'; this.style.borderColor=\'' + defaultBorder + '\'"'
+            + ' onclick="window.selectAttachment(\'' + f.filename + '\', ' + encFlag + ')"'
+            + contextMenu + '>'
             + '<span style="font-size: 26px;">' + f.icon + '</span>'
             + '<div style="min-width: 0;">'
-            + '<div style="font-weight: 600; font-size: 14px; color: #1a1a2e;">' + f.filename + '</div>'
+            + '<div style="font-weight: 600; font-size: 14px; color: #1a1a2e;">' + f.filename + (f.encrypted ? '.enc' : '') + '</div>'
             + '<div style="font-size: 12px; color: #888;">' + f.desc + '</div>'
             + '</div>'
-            + driveBadge
+            + encBadge
             + '</div>';
     }).join('');
 }
 
-function _openExplorer(mode) {
-    const isLocal = mode === 'local';
-    const title = isLocal ? '📂 Explorador de Archivos' : '☁️ TechNova Drive';
-    const accentColor = isLocal ? '#0078d4' : '#4CAF50';
-    const locationText = isLocal ? 'Este equipo > Documentos' : 'TechNova Drive / Mis Archivos';
-    const locationBg = isLocal ? '#f0f7ff' : '#e8f5e9';
+function _refreshExplorerList() {
+    const modal = document.getElementById('file-explorer-modal');
+    if (!modal) return;
+    const listContainer = modal.querySelector('[data-file-list]');
+    if (listContainer) {
+        listContainer.innerHTML = _renderFileList();
+    }
+}
+
+function _openExplorer() {
+    const title = '📂 Archivos';
+    const accentColor = '#0078d4';
+    const locationText = 'Este equipo > Documentos';
+    const locationBg = '#f0f7ff';
 
     const html = '<div style="padding: 24px; background: white; border: 1px solid #ccc; border-radius: 12px; max-width: 560px; width: 90%; box-shadow: 0 12px 40px rgba(0,0,0,0.2);">'
         + '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid ' + accentColor + ';">'
@@ -110,10 +149,11 @@ function _openExplorer(mode) {
         + '<div style="background: ' + locationBg + '; padding: 8px 12px; margin-bottom: 14px; border-radius: 6px; font-size: 13px; color: #555; border-left: 3px solid ' + accentColor + ';">'
         + '<strong>📍 Ubicación:</strong> ' + locationText
         + '</div>'
-        + '<div style="margin: 8px 0; max-height: 300px; overflow-y: auto;">'
-        + _renderFileList(mode)
+        + '<div data-file-list style="margin: 8px 0; max-height: 300px; overflow-y: auto;">'
+        + _renderFileList()
         + '</div>'
-        + '<button onclick="window.closeFileExplorer()" style="margin-top: 14px; width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 14px; color: #555;">Cancelar</button>'
+        + '<div style="font-size: 11px; color: #999; margin-top: 8px; text-align: center;">💡 Clic derecho sobre un archivo para ver más opciones</div>'
+        + '<button onclick="window.closeFileExplorer()" style="margin-top: 10px; width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 14px; color: #555;">Cancelar</button>'
         + '</div>';
 
     const modal = document.createElement('div');
@@ -123,18 +163,71 @@ function _openExplorer(mode) {
     document.body.appendChild(modal);
 }
 
+export function openFileExplorer() {
+    _openExplorer();
+}
+
+// Keep old names as aliases so existing window bindings don't break
 export function openLocalFileExplorer() {
-    _openExplorer('local');
+    _openExplorer();
 }
-
 export function openDriveFileExplorer() {
-    _openExplorer('drive');
+    _openExplorer();
 }
 
+// ── Right-click context menu to encrypt ──────────────────────────
 
+export function _showFileContextMenu(e, filename) {
+    // Remove any existing menu
+    const existing = document.getElementById('file-context-menu');
+    if (existing) existing.remove();
 
-export function selectAttachment(filename, method) {
-    composedEmailAttachments.push({ filename, method });
+    const menu = document.createElement('div');
+    menu.id = 'file-context-menu';
+    menu.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        z-index: 20000;
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        padding: 4px 0;
+        min-width: 200px;
+        animation: menuFadeIn 0.15s ease;
+    `;
+    menu.innerHTML = `
+        <div style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #1a73e8; transition: background 0.15s;"
+             onmouseover="this.style.background='#e8f0fe'"
+             onmouseout="this.style.background='transparent'"
+             onclick="window._encryptFile('${filename}'); this.parentElement.remove();">
+            <span style="font-size: 18px;">🔒</span>
+            <div>
+                <div style="font-weight: 600;">Cifrar archivo</div>
+                <div style="font-size: 11px; color: #888; margin-top: 2px;">Crear copia cifrada del archivo</div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(menu);
+
+    setTimeout(() => {
+        document.addEventListener('click', () => menu.remove(), { once: true });
+    }, 10);
+}
+
+// ── Encrypt file (adds encrypted copy to the file list) ──────────
+
+export function encryptFile(filename) {
+    if (_encryptedFiles.has(filename)) return; // already encrypted
+    _encryptedFiles.add(filename);
+    _refreshExplorerList();
+}
+
+// ── Select attachment (click on a file in the explorer) ──────────
+
+export function selectAttachment(filename, encrypted) {
+    composedEmailAttachments.push({ filename, encrypted: !!encrypted });
 
     const attachmentsDiv = document.getElementById('compose-attachments');
     if (attachmentsDiv) {
@@ -155,23 +248,21 @@ export function removeAttachment(index) {
 
 function _renderAttachments(container) {
     if (composedEmailAttachments.length === 0) {
-        container.innerHTML = '<p style="color: #666; font-size: 14px; margin: 0;">No attachments</p>';
+        container.classList.add('empty');
+        container.innerHTML = '';
     } else {
+        container.classList.remove('empty');
         container.innerHTML = composedEmailAttachments.map((att, idx) => {
-            const icon = att.method === 'drive' ? '🔗' : '📎';
-            const methodText = att.method === 'drive' ? 'Lynx Drive (Enlace seguro)' : 'Adjunto directo';
-            const bgColor = att.method === 'drive' ? '#e8f5e9' : '#fff3e0';
-            const borderColor = att.method === 'drive' ? '#4CAF50' : '#ff9800';
+            const isEnc = att.encrypted;
+            const icon  = isEnc ? '🔒' : '📎';
+            const bg    = isEnc ? '#e8f5e9' : '#f1f3f4';
+            const border = isEnc ? '#4CAF50' : '#dadce0';
+            const textColor = isEnc ? '#1b5e20' : '#3c4043';
 
-            return `<div style="padding: 10px; margin: 5px 0; background: ${bgColor}; border-left: 3px solid ${borderColor}; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 20px;">${icon}</span>
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px;">${att.filename}</div>
-                        <div style="font-size: 12px; color: #666;">${methodText}</div>
-                    </div>
-                </div>
-                <button onclick="window.removeAttachment(${idx})" style="background: transparent; border: none; cursor: pointer; font-size: 18px; color: #999;">×</button>
+            return `<div style="padding: 4px 8px 4px 12px; background: ${bg}; border: 1px solid ${border}; border-radius: 16px; display: inline-flex; align-items: center; gap: 8px;">
+                <span style="font-size: 14px;">${icon}</span>
+                <span style="font-size: 13px; font-weight: 500; color: ${textColor};" title="${att.filename}">${att.filename}</span>
+                <button onclick="window.removeAttachment(${idx})" style="background: transparent; border: none; cursor: pointer; font-size: 16px; color: #5f6368; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; padding: 0;">×</button>
             </div>`;
         }).join('');
     }
@@ -179,9 +270,10 @@ function _renderAttachments(container) {
 
 export function closeFileExplorer() {
     const modal = document.getElementById('file-explorer-modal');
-    if (modal) {
-        modal.remove();
-    }
+    if (modal) modal.remove();
+    // Also clean up any lingering context menu
+    const ctx = document.getElementById('file-context-menu');
+    if (ctx) ctx.remove();
 }
 
 // ── Email compose & send ──────────────────────────────────────────
@@ -201,13 +293,14 @@ export function sendComposedEmail() {
         sensitiveFiles.includes(att.filename)
     );
 
-    const usedSecureMethod = composedEmailAttachments.some(att =>
-        sensitiveFiles.includes(att.filename) && att.method === 'drive'
+    // Secure = the sensitive file was encrypted
+    const usedEncryption = composedEmailAttachments.some(att =>
+        sensitiveFiles.includes(att.filename) && att.encrypted === true
     );
 
     if (hasSensitiveDoc) {
-        // Core metric: did they use secure channel?
-        metrics.scenario3.secure_data_transmission = usedSecureMethod ? 1 : 0;
+        // Core metric: did they encrypt the file?
+        metrics.scenario3.secure_data_transmission = usedEncryption ? 1 : 0;
 
         alert(`📨 Documento enviado a ${to}.`);
 

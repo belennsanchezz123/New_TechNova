@@ -24,6 +24,7 @@ import {
     openComposeEmail,
     handlePhishingClick,
     reportEmail,
+    openFileExplorer,
     openLocalFileExplorer,
     openDriveFileExplorer,
     selectAttachment,
@@ -32,7 +33,9 @@ import {
     sendComposedEmail,
     cancelCompose,
     initScenario3,
-    areAllEmailsRead
+    areAllEmailsRead,
+    encryptFile,
+    _showFileContextMenu
 } from './handlers/scenario3.js';
 
 import { navigate, handleWarning, handleCookies, initBrowser, handleExtensionToggle, toggleExtensionsPanel, closeExtensionsPanel, confirmExtensions } from './handlers/scenario4.js';
@@ -513,11 +516,14 @@ window.useAI = useAI;
 window.sendAIReport = sendAIReport;
 window.handleAIInput = handleAIInput;
 // window.sendDocument removed — no longer used in Scenario 3
+window.openFileExplorer = openFileExplorer;
 window.openLocalFileExplorer = openLocalFileExplorer;
 window.openDriveFileExplorer = openDriveFileExplorer;
 window.selectAttachment = selectAttachment;
 window.removeAttachment = removeAttachment;
 window.closeFileExplorer = closeFileExplorer;
+window._showFileContextMenu = _showFileContextMenu;
+window._encryptFile = encryptFile;
 window.sendComposedEmail = sendComposedEmail;
 window.cancelCompose = cancelCompose;
 window.navigate = navigate;

@@ -250,39 +250,42 @@ export function openComposeEmail(replyTo = null) {
     viewEl.innerHTML = `
         <div class="email-compose">
             <div class="compose-header">
-                <h3>✉️ Nuevo Correo</h3>
+                <h3>Mensaje nuevo</h3>
             </div>
+            
             <div class="compose-form">
-                <div class="compose-field">
-                    <label><strong>Para:</strong></label>
-                    <input type="text" id="compose-to" value="${toField}" placeholder="destinatario@technova.com">
+                <div class="compose-field-inline">
+                    <span class="field-label">Para</span>
+                    <input type="text" id="compose-to" value="${toField}" placeholder="">
                 </div>
-                <div class="compose-field">
-                    <label><strong>Asunto:</strong></label>
-                    <input type="text" id="compose-subject" value="${subjectField}" placeholder="Asunto del correo">
+                
+                <div class="compose-field-inline">
+                    <span class="field-label">Asunto</span>
+                    <input type="text" id="compose-subject" value="${subjectField}" placeholder="">
                 </div>
-                <div class="compose-field">
-                    <label><strong>Mensaje:</strong></label>
-                    <textarea id="compose-body" rows="8" placeholder="Escribe tu mensaje aquí..."></textarea>
+                
+                <div class="compose-editor">
+                    <textarea id="compose-body" placeholder="Escribe tu mensaje aquí..."></textarea>
                 </div>
-                <div class="compose-field">
-                    <label><strong>Adjuntos:</strong></label>
-                    <div id="compose-attachments" class="compose-attachments-area">
-                        <p style="color: #999; font-size: 13px; margin: 0;">Sin adjuntos</p>
-                    </div>
-                    <div class="compose-attach-buttons">
-                        <button onclick="window.openLocalFileExplorer()" class="attach-btn attach-local">
-                            <span>📎</span> Archivo local
-                        </button>
-                        <button onclick="window.openDriveFileExplorer()" class="attach-btn attach-drive">
-                            <span>☁️</span> TechNova Drive
-                        </button>
-                    </div>
-                </div>
+            </div>
+
+            <div class="compose-footer">
                 <div class="compose-actions">
-                    <button onclick="window.sendComposedEmail()" class="compose-send-btn">📤 Enviar</button>
-                    <button onclick="window.cancelCompose()" class="compose-cancel-btn">Cancelar</button>
+                    <button onclick="window.sendComposedEmail()" class="btn-primary">Enviar</button>
+                    <button onclick="window.openFileExplorer()" class="btn-icon" title="Adjuntar archivo">
+                        📎
+                    </button>
                 </div>
+                
+                <div class="compose-cancel">
+                    <button onclick="window.cancelCompose()" class="btn-icon" title="Descartar borrador">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            
+            <div id="compose-attachments" class="compose-attachments-area empty">
+                <!-- Attachments will be rendered here -->
             </div>
         </div>
     `;
