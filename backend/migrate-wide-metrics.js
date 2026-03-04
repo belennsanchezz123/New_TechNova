@@ -28,7 +28,7 @@ try {
             s1_mail_password_strength       TEXT,
             s1_drive_password_strength      TEXT,
             s1_events_password_strength     TEXT,
-            s1_password_reused              INTEGER,
+            s1_password_reused              REAL,
             s1_mfa_enabled                  INTEGER,
             s1_mfa_method_primary           TEXT,
             s1_mfa_method_backup            TEXT,
@@ -38,8 +38,8 @@ try {
 
             s2_manual_lock_screen           INTEGER,
 
-            s3_phishing_clicked             INTEGER,
-            s3_phishing_reported            INTEGER,
+            s3_phishing_clicked             REAL,
+            s3_phishing_reported            REAL,
             s3_credential_compromised       INTEGER,
             s3_secure_data_transmission     TEXT,
 

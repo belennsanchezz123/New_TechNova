@@ -589,6 +589,14 @@ window.finalizeSession = async function() {
 window.setPasswordStrategy = setPasswordStrategy;
 window.getAvailableStrategies = getAvailableStrategies;
 window.getActiveStrategy = getActiveStrategy;
+
+// --- Similarity Strategy (accesible desde consola para investigadores) ---
+import { setSimilarityStrategy, getAvailableSimilarityStrategies, getActiveSimilarityStrategy, registerSimilarityStrategy } from './utils/similarity.js';
+window.setSimilarityStrategy = setSimilarityStrategy;
+window.getAvailableSimilarityStrategies = getAvailableSimilarityStrategies;
+window.getActiveSimilarityStrategy = getActiveSimilarityStrategy;
+window.registerSimilarityStrategy = registerSimilarityStrategy;
+
 // window.handleTeamsAlert is already defined above as an async function expression on window
 window.valorTeams = () => isEventsRegistrationComplete;
 

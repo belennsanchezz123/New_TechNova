@@ -31,10 +31,30 @@ export function initScenario3() {
 
 let composedEmailAttachments = [];
 
+// ── Phishing tracking (Sets para porcentajes) ─────────────────────
+const _clickedPhishingIds = new Set();
+const _reportedPhishingIds = new Set();
+
+/** Cuenta cuántos correos de phishing existen en la bandeja */
+function _getTotalPhishingCount() {
+    return emails.filter(e => e.type === 'phishing-creds' || e.type === 'phishing-spam').length;
+}
+
+/** Recalcula los porcentajes en el objeto metrics */
+function _updatePhishingPercentages() {
+    const total = _getTotalPhishingCount();
+    if (total === 0) return;
+
+    metrics.scenario3.phishing_clicked  = Math.round((_clickedPhishingIds.size  / total) * 10000) / 10000;
+    metrics.scenario3.phishing_reported = Math.round((_reportedPhishingIds.size / total) * 10000) / 10000;
+}
+
 // ── Phishing handling ─────────────────────────────────────────────
 
-export function handlePhishingClick(isCredPhish) {
-    metrics.scenario3.phishing_clicked = 1;
+export function handlePhishingClick(isCredPhish, emailId) {
+    // Registrar este correo como clicado
+    if (emailId) _clickedPhishingIds.add(emailId);
+    _updatePhishingPercentages();
 
     if (isCredPhish) {
         const enteredCreds = prompt("Lynx Security: Please re-enter your password to verify your identity.");
@@ -42,9 +62,9 @@ export function handlePhishingClick(isCredPhish) {
             metrics.scenario3.credential_compromise = 1;
             alert("ERROR: Invalid password. Your account may be at risk.");
         }
-    } else {
-        alert("Your browser blocked a potentially harmful page.");
     }
+
+    console.log(`🎣 Phishing clicked: ${_clickedPhishingIds.size}/${_getTotalPhishingCount()} (${metrics.scenario3.phishing_clicked})`);
 
     // Persist immediately
     _saveS3Metrics();
@@ -55,10 +75,13 @@ export function handlePhishingClick(isCredPhish) {
 export function reportEmail(id, type) {
     const email = emails.find(e => e.id === id);
 
-    if (type === 'phishing' && (email.type === 'phishing-creds' || email.type === 'phishing-spam' || email.type === 'phishing-malware')) {
-        metrics.scenario3.phishing_reported = 1;
+    if (type === 'phishing' && (email.type === 'phishing-creds' || email.type === 'phishing-spam')) {
+        _reportedPhishingIds.add(id);
+        _updatePhishingPercentages();
     }
     // Note: reporting a legit email as phishing is a false positive but we don't penalize it
+
+    console.log(`🚨 Phishing reported: ${_reportedPhishingIds.size}/${_getTotalPhishingCount()} (${metrics.scenario3.phishing_reported})`);
 
     alert(`This email has been reported to Lynx Security. Thank you for helping keep our platform safe.`);
     document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';

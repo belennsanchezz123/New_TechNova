@@ -180,7 +180,7 @@ export function setupSessionRoutes() {
                 s1_mail_password_strength:     toText(m['scenario1.mail_password_strength']),
                 s1_drive_password_strength:    toText(m['scenario1.drive_password_strength']),
                 s1_events_password_strength:   toText(m['scenario1.events_password_strength']),
-                s1_password_reused:            toInt(m['scenario1.password_reused']),
+                s1_password_reused:            toReal(m['scenario1.password_reused']),
                 s1_mfa_enabled:                toInt(m['scenario1.mfa_usage']),
                 s1_mfa_method_primary:         toText(m['scenario1.mfa_method_primary']),
                 s1_mfa_method_backup:          toText(m['scenario1.mfa_method_backup']),
@@ -190,8 +190,8 @@ export function setupSessionRoutes() {
                 // S2
                 s2_manual_lock_screen:         toInt(m['scenario2.manual_lock_screen']),
                 // S3
-                s3_phishing_clicked:           toInt(m['scenario3.phishing_clicked']),
-                s3_phishing_reported:          toInt(m['scenario3.phishing_reported']),
+                s3_phishing_clicked:           toReal(m['scenario3.phishing_clicked']),
+                s3_phishing_reported:          toReal(m['scenario3.phishing_reported']),
                 s3_credential_compromised:     toInt(m['scenario3.credential_compromise']),
                 s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
                 // S4

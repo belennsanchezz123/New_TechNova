@@ -10,7 +10,7 @@ export const metrics = {
         mail_password_strength:       null,   // TEXT: 'Weak' | 'Medium' | 'Strong'
         drive_password_strength:      null,
         events_password_strength:     null,
-        password_reused:              null,   // INT: 1=sí, 0=no
+        password_reused:              null,   // REAL: 0.0–1.0 similitud promedio entre pares de contraseñas
         mfa_usage:                    null,   // INT: 1=usó MFA, 0=no
         mfa_method_primary:           null,   // TEXT: 'SMS' | 'App' | 'Email' | 'None'
         mfa_method_backup:            null,   // TEXT: 'SMS' | 'App' | 'Email' | 'None'
@@ -22,10 +22,10 @@ export const metrics = {
         manual_lock_screen:           null    // INT: 1=bloqueó, 0=no
     },
     scenario3: {
-        phishing_clicked:             0,      // INT: 1=clicked phishing link, 0=no
-        phishing_reported:            0,      // INT: 1=correctly reported phishing, 0=no
+        phishing_clicked:             0,      // REAL: 0.0–1.0 % enlaces phishing clicados
+        phishing_reported:            0,      // REAL: 0.0–1.0 % phishing reportados correctamente
         credential_compromise:        0,      // INT: 1=entered creds on fake page, 0=no
-        secure_data_transmission:     null    // INT: 1=used Lynx Drive (secure), 0=direct attachment
+        secure_data_transmission:     null    // INT: 1=used encryption (secure), 0=no encryption
     },
     scenario4: {
         response_to_browser_warnings: null,   // TEXT: 'Ignored' | 'Heeded' | 'Not Encountered'

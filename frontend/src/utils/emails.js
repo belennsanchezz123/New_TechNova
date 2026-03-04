@@ -14,7 +14,7 @@ export const emails = [
       from: 'Soporte Técnico TechNova',
       fromEmail: 'soporte@tech-nova.org',
       subject: '[URGENTE] Verificación de Credenciales',
-      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 VERIFICAR MI CUENTA AHORA</span>',
+      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><span onclick="window.handlePhishingClick(true, 2)" data-preview-url="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 VERIFICAR MI CUENTA AHORA</span>',
       read: false,
       type: 'phishing-creds',
       time: '9:02 AM'
@@ -28,16 +28,6 @@ export const emails = [
       read: false,
       type: 'legit',
       time: '8:45 AM'
-    },
-    {
-      id: 4,
-      from: 'Departamento de Cuentas',
-      fromEmail: 'contabilidad-no-reply@cuentas-corporativas.com',
-      subject: 'Factura Pendiente: Licencia Software',
-      body: 'REF: FACTURA PENDIENTE #TECHNOV-873321. Estimado usuario, adjuntamos la factura por la licencia de software ProyectManager que solicitó para su nuevo equipo. Por favor, descargue el documento adjunto para revisarlo y remita su aprobación al departamento de Finanzas.<br><br><b>Vencimiento: Hoy.</b><br><br><span onclick="window.handlePhishingClick(false)" data-preview-url="http://cuentas-corporativas.com.mx/download/FACTURA_873321.zip.exe" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📥 DESCARGAR FACTURA_873321.zip</span>',
-      read: false,
-      type: 'phishing-malware',
-      time: '8:30 AM'
     },
     {
       id: 5,
@@ -54,7 +44,7 @@ export const emails = [
       from: 'RRHH TechNova',
       fromEmail: 'rrhh-alert@technova-support.net',
       subject: 'HR Alerta: Tu Bono fue Denegado',
-      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
+      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true, 6)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
       read: false,
       type: 'phishing-creds',
       time: '8:01 AM'
@@ -64,7 +54,7 @@ export const emails = [
       from: 'Seguridad Microsoft 365',
       fromEmail: 'noreply@microsoft365-security.info',
       subject: 'Su sesión de Outlook ha expirado',
-      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
+      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true, 7)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
       read: false,
       type: 'phishing-creds',
       time: '7:55 AM'
@@ -74,7 +64,7 @@ export const emails = [
       from: 'Admin SharePoint',
       fromEmail: 'sharepoint-admin@technova-cloud.net',
       subject: 'Documento compartido: "Nóminas Q1 2026"',
-      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><span onclick="window.handlePhishingClick(true)" data-preview-url="http://technova-cloud.net/sharepoint/docs/nominas?auth=required" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
+      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><span onclick="window.handlePhishingClick(true, 8)" data-preview-url="http://technova-cloud.net/sharepoint/docs/nominas?auth=required" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
       read: false,
       type: 'phishing-creds',
       time: '7:40 AM'

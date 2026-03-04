@@ -26,18 +26,6 @@ export function initScenario2() {
     // 3. (Opcional) Setup de listeners si fuera necesario, pero handleInterruption se llama onClick en el HTML
 }
 
-// Esta función maneja el desbloqueo al pulsar la tecla 'v'
-function handleKeyUnlock(event) {
-    if (event.key === 'v' || event.key === 'V') {
-        const lockScreen = document.getElementById('simulated-lock-screen');
-        if (lockScreen) {
-            lockScreen.style.display = 'none';
-        }
-        showUsbTask();
-        document.removeEventListener('keydown', handleKeyUnlock);
-    }
-}
-
 // Muestra la siguiente parte de la tarea (el USB)
 // Muestra la siguiente parte de la tarea (el USB)
 /*
@@ -51,15 +39,15 @@ function showUsbTask() {
 
 export async function handleInterruption(didLock) {
     const sid = getSessionId();
-    const valorMétrica = didLock ? 'Yes, locked screen' : 'No, left screen unlocked';
-    metrics.scenario2.manual_lock_screen = valorMétrica;
+    const valorMetrica = didLock ? 1 : 0;
+    metrics.scenario2.manual_lock_screen = valorMetrica;
 
     // 1. Ocultar la pantalla de decisión
     const interruptionScreen = document.getElementById('task-interruption');
     if (interruptionScreen) interruptionScreen.style.display = 'none';
 
     try {
-        await saveMetrics(sid, { 'scenario2.manual_lock_screen': valorMétrica });
+        await saveMetrics(sid, { 'scenario2.manual_lock_screen': valorMetrica });
     } catch (err) {
         console.warn('Error al guardar métrica:', err);
     }

@@ -1,5 +1,6 @@
 import { createRegistration, saveMetrics } from '../services/api.js';
 import { getPasswordStrength, getLevenshteinDistance } from '../utils/validation.js';
+import { averagePairwiseSimilarity } from '../utils/similarity.js';
 import { metrics } from '../utils/metrics.js';
 import { getParticipantId } from '../utils/participant.js';
 import { getSessionId, setSessionId } from '../utils/session.js';
@@ -29,8 +30,6 @@ function goNext(service) {
             startMFAFlow(sessionId);
         });
 
-        metrics.scenario1.password_reused =
-            (passwords[0] === passwords[1] && passwords[0].length > 0) ? 'Yes' : 'No';
     } else if (service === 'events') {
         localStorage.setItem('sc1_completed', 'true');
     }
@@ -106,6 +105,15 @@ export async function registerService(service) {
 
     if (service === 'events') {
         isEventsRegistrationComplete = true;
+
+        // Calcular similitud promedio por pares entre las 3 contraseñas
+        // Resultado ∈ [0, 1]. 1 = todas idénticas, 0 = sin relación.
+        if (passwords.length >= 3) {
+            metrics.scenario1.password_reused = averagePairwiseSimilarity(passwords.slice(0, 3));
+        } else if (passwords.length === 2) {
+            metrics.scenario1.password_reused = averagePairwiseSimilarity(passwords);
+        }
+        console.log(`🔑 Similitud de contraseñas (avg pairwise): ${metrics.scenario1.password_reused}`);
 
         // Mostrar popup de permisos de Teams (cámara y micrófono)
         setTimeout(() => {

@@ -90,7 +90,7 @@ const initDB = () => {
             s1_mail_password_strength       TEXT,       -- 'Weak' | 'Medium' | 'Strong'
             s1_drive_password_strength      TEXT,
             s1_events_password_strength     TEXT,
-            s1_password_reused              INTEGER,    -- 1=sí, 0=no, NULL=no llegó
+            s1_password_reused              REAL,       -- 0.0–1.0 similitud promedio entre pares
             s1_mfa_enabled                  INTEGER,    -- 1=sí, 0=no
             s1_mfa_method_primary           TEXT,       -- 'SMS' | 'App' | 'Email' | 'None'
             s1_mfa_method_backup            TEXT,
@@ -102,8 +102,8 @@ const initDB = () => {
             s2_manual_lock_screen           INTEGER,    -- 1=bloqueó, 0=no
 
             -- ── Escenario 3: Email y Phishing ─────────────────────────
-            s3_phishing_clicked             INTEGER,    -- 1=hizo clic, 0=no
-            s3_phishing_reported            INTEGER,    -- 1=reportó, 0=no
+            s3_phishing_clicked             REAL,       -- 0.0–1.0 % enlaces phishing clicados
+            s3_phishing_reported            REAL,       -- 0.0–1.0 % phishing reportados correctamente
             s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
             s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
 
