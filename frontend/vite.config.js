@@ -15,13 +15,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['fuse.js']
-        }
-      }
-    }
+    chunkSizeWarningLimit: 2000
   }
 });
