@@ -134,9 +134,10 @@ export async function handleMFA(activated) {
     if (activated) {
         const sessionId = registrations['drive']?.id;
 
-        // Importar y ejecutar el flujo MFA
-        const { startMFAFlow } = await import('./mfa-flow.js');
-        startMFAFlow(sessionId);
+        // Usar evento global estático para evitar warning de Vite
+        if (window.startMFAFlow) {
+            window.startMFAFlow(sessionId);
+        }
     } else {
         // Si dice "No", guardamos métricas de rechazo inmediato
         const sid = getSessionId();
