@@ -8,6 +8,7 @@ export const metrics = {
     scenario1: {
         wifi_public:                  null,   // INT: 1=usó red pública, 0=usó red corporativa
         mail_password_strength:       null,   // TEXT: 'Weak' | 'Medium' | 'Strong'
+        default_password_flag:        null,   // INT: 1=deja la contraseña preestablecida, 0=la cambia
         drive_password_strength:      null,
         events_password_strength:     null,
         password_reused:              null,   // REAL: 0.0–1.0 similitud promedio entre pares de contraseñas
@@ -55,6 +56,10 @@ export const metrics = {
     unexpected: {
         update_compliance_rate:       null,  // INT: 1=aceptó actualización falsa, 0=rechazó
         teams_password_reused:        null   // INT: 1=reutilizó contraseña en Teams, 0=no
+    },
+    taskbar: {
+        update_user_action:           null,  // TEXT: 'Restart' | 'Postpone_15m' | 'Postpone_1h' | 'Postpone_24h' | 'Ignored' | 'Dismissed'
+        update_response_time_seconds: null   // INT: segundos hasta la acción del usuario
     }
 };
 
@@ -75,6 +80,7 @@ export function displayResults() {
         scenario6: 'File Cleanup',
         scenario9: 'AI Assistant',
         unexpected: 'Unexpected Events',
+        taskbar: 'Taskbar Updates',
     };
 
     // Helper para mostrar valores legibles en el panel de resultados

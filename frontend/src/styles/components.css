@@ -597,7 +597,7 @@ button.danger:hover {
 
 /* --- ESTILOS PARA LA NOTIFICACIÓN DE ACTUALIZACIÓN DE WINDOWS --- */
 
-.update-notification {
+.browser-update-notification {
   display: none; /* Oculto por defecto */
   position: fixed;
   bottom: 20px;
@@ -611,7 +611,7 @@ button.danger:hover {
   animation: slideInFromRight 0.5s ease-out;
 }
 
-.notification-header {
+.browser-notification-header {
   background: #0078d4; /* Azul de Windows */
   color: white;
   padding: 10px 15px;
@@ -621,11 +621,11 @@ button.danger:hover {
   font-size: 14px;
 }
 
-.notification-header span {
+.browser-notification-header span {
   font-weight: 600;
 }
 
-.notification-close {
+.browser-notification-close {
   background: transparent;
   border: none;
   color: white;
@@ -633,11 +633,11 @@ button.danger:hover {
   cursor: pointer;
   padding: 0 5px;
 }
-.notification-close:hover {
+.browser-notification-close:hover {
   color: #ddd;
 }
 
-.notification-body {
+.browser-notification-body {
   padding: 15px;
   font-size: 14px;
   color: #333;

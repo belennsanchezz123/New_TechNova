@@ -28,7 +28,7 @@ export function getTaskbarHTML() {
                     <button class="system-icon" id="download-indicator" style="display:none;" title="Descargando..." onclick="window.toggleDownloadsWindow()">
                         <span>⬇️</span>
                     </button>
-                    <button class="system-icon" id="update-indicator" style="display:none;" title="Actualización disponible">
+                    <button class="system-icon" id="update-indicator" style="display:none;" title="Actualización disponible" onclick="window.openUpdateNotificationFromTaskbar()">
                         <span>🔄</span>
                     </button>
                     <button class="system-icon" id="wifi-icon-taskbar" onclick="window.toggleWifiMenu()" title="Red">
@@ -106,9 +106,32 @@ export function getTaskbarHTML() {
                 <button class="btn-restart" onclick="window.restartSystem()">
                     Reiniciar ahora
                 </button>
-                <button class="btn-postpone" onclick="window.postponeUpdate()">
+                <button class="btn-postpone" onclick="window.showPostponeOptions()">
                     Posponer
                 </button>
+                <button class="btn-ignore" onclick="window.dismissUpdateNotification('Ignored')">
+                    Ignorar
+                </button>
+            </div>
+        </div>
+
+        <!-- Ventana de opciones para posponer actualización -->
+        <div id="update-postpone-options" class="update-notification hidden update-postpone-options">
+            <div class="notification-header">
+                <span class="notification-icon">⏰</span>
+                <span class="notification-title">Posponer actualización</span>
+                <button class="notification-close" onclick="window.closePostponeOptions()">×</button>
+            </div>
+            <div class="notification-body">
+                <p><strong>¿Cuánto tiempo quieres posponer?</strong></p>
+            </div>
+            <div class="postpone-options-grid">
+                <button class="btn-postpone-choice" onclick="window.postponeUpdate(900000, '15 minutos')">En 15 min</button>
+                <button class="btn-postpone-choice" onclick="window.postponeUpdate(3600000, '1 hora')">En 1 hora</button>
+                <button class="btn-postpone-choice" onclick="window.postponeUpdate(86400000, '24 horas')">En 24 horas</button>
+            </div>
+            <div class="notification-actions">
+                <button class="btn-ignore" onclick="window.closePostponeOptions()">Cancelar</button>
             </div>
         </div>
         

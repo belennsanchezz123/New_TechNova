@@ -8,6 +8,26 @@ import { getSessionId, setSessionId } from '../utils/session.js';
 export let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
+const DEFAULT_MAIL_PASSWORD = 'X9m!Q2v@T7k#L4r$Z8';
+
+export function acceptDefaultMailPassword() {
+    const passInput = document.getElementById('mail-pass');
+    const suggestion = document.getElementById('mail-pass-suggestion');
+    if (!passInput) return;
+
+    passInput.value = suggestion ? suggestion.textContent.trim() : DEFAULT_MAIL_PASSWORD;
+    passInput.focus();
+}
+
+export function rejectDefaultMailPassword() {
+    const passInput = document.getElementById('mail-pass');
+    if (!passInput) return;
+
+    if (passInput.value === DEFAULT_MAIL_PASSWORD) {
+        passInput.value = '';
+    }
+    passInput.focus();
+}
 
 function goNext(service) {
     const currentForm = document.getElementById(`technova-${service}-form`);
@@ -55,6 +75,7 @@ export async function registerService(service) {
     const serviceName = `technova_${service}`;
     const strength = getPasswordStrength(password);
     const reuseCount = passwords.filter(p => p === password).length;
+    const defaultPasswordFlag = (service === 'mail' && password === DEFAULT_MAIL_PASSWORD) ? 1 : 0;
 
     // 1. Crear registro en DB
     const { success, session, error } = await createRegistration(username, serviceName, strength, reuseCount);
@@ -88,9 +109,16 @@ export async function registerService(service) {
         }
 
         // B. Enviar datos del servicio actual (Mail, Drive o Events)
-        await saveMetrics(currentSid, {
+        const serviceMetrics = {
             [`scenario1.${service}_password_strength`]: strength
-        });
+        };
+
+        if (service === 'mail') {
+            metrics.scenario1.default_password_flag = defaultPasswordFlag;
+            serviceMetrics['scenario1.default_password_flag'] = defaultPasswordFlag;
+        }
+
+        await saveMetrics(currentSid, serviceMetrics);
 
         console.log(`✅ Métricas de ${service} enviadas.`);
 

@@ -14,7 +14,9 @@ import {
     getMinPasswordDistance,
     isEventsRegistrationComplete,
     handleTeamsPermissions,
-    setTeamsPermission
+    setTeamsPermission,
+    acceptDefaultMailPassword,
+    rejectDefaultMailPassword
 } from './handlers/scenario1.js';
 
 import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
@@ -83,6 +85,9 @@ import {
     dismissUpdateNotification,
     postponeUpdate,
     restartSystem,
+    openUpdateNotificationFromTaskbar,
+    showPostponeOptions,
+    closePostponeOptions,
     checkUpdateNotificationTrigger,
     simulateDownload,
     toggleDownloadsWindow,
@@ -94,6 +99,9 @@ import {
 window.dismissUpdateNotification = dismissUpdateNotification;
 window.postponeUpdate = postponeUpdate;
 window.restartSystem = restartSystem;
+window.openUpdateNotificationFromTaskbar = openUpdateNotificationFromTaskbar;
+window.showPostponeOptions = showPostponeOptions;
+window.closePostponeOptions = closePostponeOptions;
 window.simulateDownload = simulateDownload;
 window.toggleDownloadsWindow = toggleDownloadsWindow;
 window.openDownloadedFile = openDownloadedFile;
@@ -504,6 +512,8 @@ window.registerService = registerService;
 window.handleMFA = handleMFA;
 window.handleTeamsPermissions = handleTeamsPermissions;
 window.setTeamsPermission = setTeamsPermission;
+window.acceptDefaultMailPassword = acceptDefaultMailPassword;
+window.rejectDefaultMailPassword = rejectDefaultMailPassword;
 window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
@@ -617,6 +627,9 @@ window.enableProceedStep5 = enableProceedStep5;
 window.dismissUpdateNotification = dismissUpdateNotification;
 window.postponeUpdate = postponeUpdate;
 window.restartSystem = restartSystem;
+window.openUpdateNotificationFromTaskbar = openUpdateNotificationFromTaskbar;
+window.showPostponeOptions = showPostponeOptions;
+window.closePostponeOptions = closePostponeOptions;
 
 initApp();
 
@@ -625,7 +638,19 @@ initApp();
 //  Uso: http://localhost:5173/?debug=true
 // ═══════════════════════════════════════════════════════════════════
 (function initDebugPanel() {
-    if (!new URLSearchParams(window.location.search).has('debug')) return;
+    const params = new URLSearchParams(window.location.search);
+    const isDebugQuery = params.has('debug');
+    const isDebugPath = window.location.pathname.replace(/\/+$/, '').toLowerCase().endsWith('/debug');
+    const isMalformedDebugQuery = window.location.search === '?=true';
+
+    // Compatibilidad: si llegan por /debug?=true, normalizamos a /?debug=true
+    if (isDebugPath && isMalformedDebugQuery) {
+        const normalizedUrl = `${window.location.origin}/?debug=true`;
+        window.location.replace(normalizedUrl);
+        return;
+    }
+
+    if (!isDebugQuery && !isDebugPath) return;
 
     const SCENARIOS = [
         { n: 0,  label: '0 · Bienvenida' },

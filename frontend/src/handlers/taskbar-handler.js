@@ -1,5 +1,6 @@
 import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
+import { metrics } from '../utils/metrics.js';
 
 // Estado de la notificación de actualización
 const updateNotificationState = {
@@ -42,6 +43,7 @@ export function initTaskbarClock() {
 // Mostrar la notificación de actualización
 export function showUpdateNotification() {
     const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
     const indicator = document.getElementById('update-indicator');
 
     if (!notification || updateNotificationState.shown) return;
@@ -51,6 +53,7 @@ export function showUpdateNotification() {
 
     // Mostrar notificación
     notification.classList.remove('hidden');
+    if (postponeOptions) postponeOptions.classList.add('hidden');
 
     // Mostrar icono de actualización en la bandeja del sistema
     if (indicator) {
@@ -66,19 +69,63 @@ export function showUpdateNotification() {
         }).catch(err => console.warn('Error saving notification metric:', err));
     }
 
-    // Auto-cierre después de 60 segundos si no hay interacción
-    updateNotificationState.timeoutId = setTimeout(() => {
-        if (!updateNotificationState.dismissed) {
-            dismissUpdateNotification('Ignored');
-        }
-    }, 60000);
-
     console.log('🔔 Notificación de actualización mostrada');
+}
+
+// Reabrir la notificación desde el icono/pestaña de la taskbar
+export function openUpdateNotificationFromTaskbar() {
+    const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
+    const indicator = document.getElementById('update-indicator');
+
+    if (!notification) return;
+
+    updateNotificationState.shown = true;
+    updateNotificationState.dismissed = false;
+    updateNotificationState.showTime = Date.now();
+
+    notification.classList.remove('hidden');
+    if (postponeOptions) postponeOptions.classList.add('hidden');
+
+    if (indicator) {
+        indicator.style.display = 'block';
+    }
+
+    if (updateNotificationState.timeoutId) {
+        clearTimeout(updateNotificationState.timeoutId);
+        updateNotificationState.timeoutId = null;
+    }
+}
+
+export function showPostponeOptions() {
+    const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
+
+    if (!postponeOptions) return;
+
+    if (notification) {
+        notification.classList.add('hidden');
+    }
+
+    postponeOptions.classList.remove('hidden');
+}
+
+export function closePostponeOptions() {
+    const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
+
+    if (!postponeOptions) return;
+
+    postponeOptions.classList.add('hidden');
+    if (notification && !updateNotificationState.dismissed) {
+        notification.classList.remove('hidden');
+    }
 }
 
 // Cerrar/ignorar la notificación
 export function dismissUpdateNotification(reason = 'Dismissed') {
     const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
 
     if (!notification || updateNotificationState.dismissed) return;
 
@@ -87,6 +134,7 @@ export function dismissUpdateNotification(reason = 'Dismissed') {
 
     // Ocultar notificación
     notification.classList.add('hidden');
+    if (postponeOptions) postponeOptions.classList.add('hidden');
 
     // Limpiar timeout si existe
     if (updateNotificationState.timeoutId) {
@@ -98,10 +146,13 @@ export function dismissUpdateNotification(reason = 'Dismissed') {
     if (sid) {
         const responseTimeSeconds = Math.floor(updateNotificationState.responseTime / 1000);
 
+        // Mantener una copia local visible en window.misMetricas/paneles de resultados
+        metrics.taskbar.update_user_action = reason;
+        metrics.taskbar.update_response_time_seconds = responseTimeSeconds;
+
         saveMetrics(sid, {
             'taskbar.update_user_action': reason,
-            'taskbar.update_response_time_seconds': responseTimeSeconds,
-            'taskbar.update_action_timestamp': new Date().toISOString()
+            'taskbar.update_response_time_seconds': responseTimeSeconds
         }).catch(err => console.warn('Error saving dismiss metric:', err));
     }
 
@@ -109,8 +160,14 @@ export function dismissUpdateNotification(reason = 'Dismissed') {
 }
 
 // Posponer la actualización
-export function postponeUpdate() {
+export function postponeUpdate(delayMs = 180000, delayLabel = '3 minutos') {
     const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
+
+    let postponeAction = 'Postpone_Custom';
+    if (delayMs === 900000) postponeAction = 'Postpone_15m';
+    if (delayMs === 3600000) postponeAction = 'Postpone_1h';
+    if (delayMs === 86400000) postponeAction = 'Postpone_24h';
 
     if (!notification) return;
 
@@ -120,6 +177,7 @@ export function postponeUpdate() {
 
     // Ocultar notificación
     notification.classList.add('hidden');
+    if (postponeOptions) postponeOptions.classList.add('hidden');
 
     // Limpiar timeout si existe
     if (updateNotificationState.timeoutId) {
@@ -131,28 +189,36 @@ export function postponeUpdate() {
     if (sid) {
         const responseTimeSeconds = Math.floor(updateNotificationState.responseTime / 1000);
 
+        metrics.taskbar.update_user_action = postponeAction;
+        metrics.taskbar.update_response_time_seconds = responseTimeSeconds;
+
         saveMetrics(sid, {
-            'taskbar.update_user_action': 'Postpone',
+            'taskbar.update_user_action': postponeAction,
             'taskbar.update_response_time_seconds': responseTimeSeconds,
             'taskbar.update_postpone_count': updateNotificationState.postponeCount,
-            'taskbar.update_action_timestamp': new Date().toISOString()
+            'taskbar.update_postpone_delay_minutes': Math.round(delayMs / 60000)
         }).catch(err => console.warn('Error saving postpone metric:', err));
     }
 
-    console.log(`⏸️ Actualización pospuesta (${updateNotificationState.postponeCount}ª vez)`);
+    console.log(`⏸️ Actualización pospuesta (${updateNotificationState.postponeCount}ª vez) - ${delayLabel}`);
 
-    // Volver a mostrar en 3 minutos (180000 ms)
+    if (updateNotificationState.postponeTimeoutId) {
+        clearTimeout(updateNotificationState.postponeTimeoutId);
+    }
+
+    // Volver a mostrar según opción elegida
     updateNotificationState.postponeTimeoutId = setTimeout(() => {
         // Resetear estados para poder mostrar de nuevo
         updateNotificationState.shown = false;
         updateNotificationState.dismissed = false;
         showUpdateNotification();
-    }, 180000); // 3 minutos
+    }, delayMs);
 }
 
 // Reiniciar el sistema (pantalla de reinicio de 1 minuto)
 export function restartSystem() {
     const notification = document.getElementById('update-notification');
+    const postponeOptions = document.getElementById('update-postpone-options');
     const restartScreen = document.getElementById('restart-screen');
     const progressBar = document.getElementById('restart-progress-bar');
     const percentageText = document.getElementById('restart-percentage');
@@ -165,6 +231,7 @@ export function restartSystem() {
     if (notification) {
         notification.classList.add('hidden');
     }
+    if (postponeOptions) postponeOptions.classList.add('hidden');
 
     // Mostrar pantalla de reinicio
     restartScreen.classList.remove('hidden');
@@ -174,10 +241,12 @@ export function restartSystem() {
     if (sid) {
         const responseTimeSeconds = Math.floor(updateNotificationState.responseTime / 1000);
 
+        metrics.taskbar.update_user_action = 'Restart';
+        metrics.taskbar.update_response_time_seconds = responseTimeSeconds;
+
         saveMetrics(sid, {
             'taskbar.update_user_action': 'Restart',
             'taskbar.update_response_time_seconds': responseTimeSeconds,
-            'taskbar.update_action_timestamp': new Date().toISOString(),
             'taskbar.restart_initiated': 'Yes'
         }).catch(err => console.warn('Error saving restart metric:', err));
     }

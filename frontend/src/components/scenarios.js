@@ -139,7 +139,17 @@ export function getScenarioHTML(scenarioNumber) {
                         <label for="mail-user">Usuario:</label>
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
-                        <input type="password" id="mail-pass">
+                        <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña">
+                        <div style="margin-top: 10px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; background: #f8fbff;">
+                            <div style="font-size: 13px; color: #2d3748; margin-bottom: 8px;">
+                                🔐 Contraseña sugerida por generador:
+                            </div>
+                            <code id="mail-pass-suggestion" style="display:block; font-size: 13px; color: #0f3d8a; background: #e9f2ff; padding: 8px; border-radius: 6px; word-break: break-all;">X9m!Q2v@T7k#L4r$Z8</code>
+                            <div style="display:flex; gap:8px; margin-top: 10px;">
+                                <button onclick="window.acceptDefaultMailPassword()" style="flex:1; border:1px solid #9fc5f8; background:#e9f2ff; color:#0f3d8a; border-radius:6px; padding:8px; cursor:pointer; font-weight:600;">Aceptar sugerida</button>
+                                <button onclick="window.rejectDefaultMailPassword()" style="flex:1; border:1px solid #d0d0d0; background:#fff; color:#333; border-radius:6px; padding:8px; cursor:pointer; font-weight:600;">Rechazar y crear otra</button>
+                            </div>
+                        </div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button onclick="window.registerService('mail')" style="
                                 background: linear-gradient(135deg, #0078d4, #005a9e);
@@ -527,13 +537,13 @@ export function getScenarioHTML(scenarioNumber) {
                         </div>
                 </div>
             </div>
-            <div id="update-notification" class="update-notification">
-                <div class="notification-header">
+            <div id="browser-update-notification" class="browser-update-notification">
+                <div class="browser-notification-header">
                     <span>🔔 Notificación de Windows</span>
-                    <button class="notification-close" onclick="this.parentNode.parentNode.style.display='none';">×</button>
+                    <button class="browser-notification-close" onclick="this.parentNode.parentNode.style.display='none';">×</button>
                 </div>
-                <div class="notification-body">
-                    <p id="notification-message"></p>
+                <div class="browser-notification-body">
+                    <p id="browser-notification-message"></p>
                 </div>
             </div>
         `,

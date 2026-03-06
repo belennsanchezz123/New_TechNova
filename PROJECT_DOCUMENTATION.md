@@ -321,6 +321,49 @@ Las métricas se guardan con el formato: `escenario.nombre_metrica`
 }
 ```
 
+### Catalogo de metricas (fuente: `frontend/src/utils/metrics.js`)
+
+| Clave | Tipo | Que mide |
+| --- | --- | --- |
+| `scenario1.wifi_public` | `INT (0/1)` | Si se conecta a red publica (`1`) o corporativa (`0`). |
+| `scenario1.mail_password_strength` | `TEXT` | Fortaleza de contrasena en Mail (`Weak`, `Medium`, `Strong`). |
+| `scenario1.default_password_flag` | `INT (0/1)` | Si mantiene la contrasena preestablecida en el primer registro (`1`) o la cambia (`0`). |
+| `scenario1.drive_password_strength` | `TEXT` | Fortaleza de contrasena en Drive. |
+| `scenario1.events_password_strength` | `TEXT` | Fortaleza de contrasena en Events. |
+| `scenario1.password_reused` | `REAL (0.0-1.0)` | Similitud media entre contrasenas (reutilizacion). |
+| `scenario1.mfa_usage` | `INT (0/1)` | Si usa MFA (`1`) o no (`0`). |
+| `scenario1.mfa_method_primary` | `TEXT` | Metodo MFA principal (`SMS`, `App`, `Email`, `None`). |
+| `scenario1.mfa_method_backup` | `TEXT` | Metodo MFA de respaldo. |
+| `scenario1.mfa_email_alternative` | `INT (0/1)` | Si configura email alternativo para MFA. |
+| `scenario1.teams_camera_permission` | `INT (0/1)` | Si concede permiso de camara en Teams. |
+| `scenario1.teams_microphone_permission` | `INT (0/1)` | Si concede permiso de microfono en Teams. |
+| `scenario2.manual_lock_screen` | `INT (0/1)` | Si bloquea manualmente la pantalla. |
+| `scenario3.phishing_clicked` | `REAL (0.0-1.0)` | Proporcion/porcentaje de enlaces phishing clicados. |
+| `scenario3.phishing_reported` | `REAL (0.0-1.0)` | Proporcion/porcentaje de phishing reportado correctamente. |
+| `scenario3.credential_compromise` | `INT (0/1)` | Si introduce credenciales en pagina falsa. |
+| `scenario3.secure_data_transmission` | `INT (0/1)` | Si transmite datos de forma segura (cifrada). |
+| `scenario4.response_to_browser_warnings` | `TEXT` | Respuesta a avisos del navegador (`Ignored`, `Heeded`, `Not Encountered`). |
+| `scenario4.cookie_consent` | `TEXT` | Decision de cookies (`Accepted All`, `Rejected`, `Customized`). |
+| `scenario4.clicked_dangerous_link` | `INT (0/1)` | Si pulsa un enlace peligroso. |
+| `scenario4.extensions_disabled_pct` | `REAL (0-100)` | Porcentaje de extensiones sospechosas desactivadas. |
+| `scenario4.warnings_heeded_pct` | `REAL (0-100)` | Porcentaje de advertencias de seguridad atendidas. |
+| `scenario4.cookie_accepted_pct` | `REAL (0-100)` | Porcentaje de banners donde acepta todas las cookies. |
+| `scenario4.dangerous_links_clicked_pct` | `REAL (0-100)` | Porcentaje de enlaces peligrosos pulsados. |
+| `scenario5.personal_data_disclosure_rate` | `INT` | Numero de campos personales revelados. |
+| `scenario5.third_party_app_authorization` | `INT (0/1)` | Si autoriza app de terceros (`1`) o rechaza (`0`). |
+| `scenario6.data_encryption_usage` | `INT (0/1)` | Si usa cifrado de datos. |
+| `scenario6.secure_data_disposal` | `INT (0/1)` | Si aplica eliminacion segura de datos. |
+| `scenario6.deleted_final_report` | `INT (0/1)` | Si elimina el informe final. |
+| `scenario9.proactive_ai_usage` | `TEXT` | Descripcion de uso proactivo de IA. |
+| `scenario9.shadow_ai_leak` | `INT (0/1)` | Si hay filtracion por uso de shadow AI. |
+| `scenario9.blind_trust` | `INT (0/1)` | Si confia ciegamente en la IA sin validar. |
+| `scenario9.hallucination_detected` | `INT (0/1)` | Si detecta alucinaciones de IA. |
+| `scenario9.reaction_time` | `INT (segundos)` | Tiempo de reaccion ante tareas/eventos de IA. |
+| `unexpected.update_compliance_rate` | `INT (0/1)` | Si acepta una actualizacion falsa (`1`) o la evita (`0`). |
+| `unexpected.teams_password_reused` | `INT (0/1)` | Si reutiliza contrasena en Teams. |
+| `taskbar.update_user_action` | `TEXT` | Accion ante alerta de actualizacion (`Restart`, `Postpone_15m`, `Postpone_1h`, `Postpone_24h`, `Ignored`, `Dismissed`). |
+| `taskbar.update_response_time_seconds` | `INT (segundos)` | Tiempo entre aparicion de alerta y accion del usuario. |
+
 ---
 
 ## 📁 Archivos HTML Principales
