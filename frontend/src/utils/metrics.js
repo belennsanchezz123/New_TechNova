@@ -46,6 +46,10 @@ export const metrics = {
         secure_data_disposal:         0,     // INT: 1=borrado seguro, 0=no
         deleted_final_report:         0      // INT: 1=borró el informe final, 0=no
     },
+    scenario7: {
+        document_deleted:             0,     // INT: 1=eliminó documento sensible desde Descargas, 0=no
+        recycle_bin_emptied:          0      // INT: 1=vacío la papelera, 0=no
+    },
     scenario9: {
         proactive_ai_usage:           null,  // TEXT: descripción de uso IA
         shadow_ai_leak:               null,  // INT: 1=filtración via shadow AI, 0=no
@@ -78,6 +82,7 @@ export function displayResults() {
         scenario4: 'Web Browsing',
         scenario5: 'Social Media',
         scenario6: 'File Cleanup',
+        scenario7: 'Downloads & Recycle Bin',
         scenario9: 'AI Assistant',
         unexpected: 'Unexpected Events',
         taskbar: 'Taskbar Updates',

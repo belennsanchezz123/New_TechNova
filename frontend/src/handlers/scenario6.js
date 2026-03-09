@@ -3,6 +3,19 @@ import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
 
 export function saveProfile() {
+    const fullNameInput = document.getElementById('prof-fullname');
+
+    const fullName = fullNameInput?.value?.trim() || '';
+
+    if (!fullName) {
+        alert('Debes completar Nombre Completo antes de guardar el perfil.');
+        if (!fullName && fullNameInput) {
+            fullNameInput.focus();
+            return;
+        }
+        return;
+    }
+
     // Array para guardar los nombres de los datos sensibles revelados
     const disclosedData = [];
 
@@ -31,8 +44,14 @@ export function saveProfile() {
         disclosedData.push('Redes Sociales Externas');
     }
 
+    // 5. Compartir ubicación en tiempo real (Riesgo: exposición de ubicación)
+    const liveLocationCheckbox = document.getElementById('prof-live-location');
+    if (liveLocationCheckbox && liveLocationCheckbox.checked) {
+        disclosedData.push('Ubicación en tiempo real');
+    }
+
     // Cálculo de la métrica
-    const totalOptionalFields = 4; // Ahora son 4 campos opcionales
+    const totalOptionalFields = 5; // Ahora son 5 campos opcionales
     const count = disclosedData.length;
 
     // Guardamos una cadena descriptiva en lugar de solo un número

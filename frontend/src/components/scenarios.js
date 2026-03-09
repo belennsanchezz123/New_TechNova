@@ -34,8 +34,8 @@ export function getScenarioHTML(scenarioNumber) {
 
                 <!-- Title -->
                 <h2 class="welcome-title">
-                    ¡Bienvenido a <span class="welcome-brand">TechNova</span>!
-                    <span class="translation">Welcome to TechNova!</span>
+                    ¡Bienvenido a <span class="welcome-brand">TechNova</span>! 
+                    <span class="translation">Welcome to TechNova!</span>       
                 </h2>
 
                 <!-- Subtitle -->
@@ -72,11 +72,11 @@ export function getScenarioHTML(scenarioNumber) {
                             <span class="translation">Participant ID (provided by the researcher)</span>
                         </label>
                         <div class="welcome-input-wrapper">
-                            <span class="welcome-input-icon">👤</span>
+                            <span class="welcome-input-icon">👤</span>        
                             <input type="text" id="participant-id-input" placeholder="Ej: P001" autocomplete="off" />
                         </div>
                         <p class="welcome-input-error" id="participant-id-error">
-                            Por favor, introduce un ID de Participante válido
+                            Por favor, introduce un ID de Participante válido  
                             <span class="translation">Please enter a valid Participant ID</span>
                         </p>
                     </div>
@@ -596,33 +596,32 @@ export function getScenarioHTML(scenarioNumber) {
         </div>
     `,
         6: `
-        <div class="official-site" style="padding: 20px; max-width: 800px; margin: 0 auto;">
-            <h2>
-                Escenario 6: Configuración del Perfil Profesional
-                <span class="translation">Scenario 6: Professional Profile Setup</span>
-            </h2>
-            <p>
-                <strong>Instrucción:</strong> Para completar tu incorporación, RRHH te pide que configures tu <strong>Perfil Público</strong> 
-                en el directorio de la empresa. Ten cuidado con la información que compartes.
-                <span class="translation">
-                    <strong>Instruction:</strong> To complete user onboarding, HR asks you to set up your <strong>Public Profile</strong> 
-                    in the company directory. Be careful with the information you share.
-                </span>
-            </p>
-
+        <div class="official-site" style="padding: 0; width: 100%; max-width: none; margin: 0;">
             <div id="profile-task">
+                <h2>
+                    Escenario 6: Configuración del Perfil Profesional
+                    <span class="translation">Scenario 6: Professional Profile Setup</span>
+                </h2>
+                <p>
+                    <strong>Instrucción:</strong> Para completar tu incorporación, RRHH te pide que configures tu <strong>Perfil Público</strong> 
+                    en el directorio de la empresa. Ten cuidado con la información que compartes.
+                    <span class="translation">
+                        <strong>Instruction:</strong> To complete user onboarding, HR asks you to set up your <strong>Public Profile</strong> 
+                        in the company directory. Be careful with the information you share.
+                    </span>
+                </p>
+
                 <div class="form-group">
-                    <label>Nombre Completo (Obligatorio)</label>
-                    <input type="text" value="Usuario TechNova" disabled style="background: #eee;">
+                    <label for="prof-fullname">Nombre Completo <span style="color:#d32f2f;">*</span></label>
+                    <input type="text" id="prof-fullname" placeholder="Escribe tu nombre completo" required>
                 </div>
                 
                 <div class="form-group">
-                    <label>Puesto (Obligatorio)</label>
-                    <input type="text" value="Project Manager" disabled style="background: #eee;">
+                    <label for="prof-dni">DNI (Opcional)</label>
+                    <input type="text" id="prof-dni" placeholder="Ej: 12345678A">
                 </div>
 
                 <hr style="margin: 20px 0;">
-                <p><em>Los siguientes campos son opcionales pero ayudarán a tus compañeros a conocerte mejor.</em></p>
 
                 <div class="form-group">
                     <label for="prof-dob">
@@ -634,8 +633,8 @@ export function getScenarioHTML(scenarioNumber) {
 
                 <div class="form-group">
                     <label for="prof-phone">
-                        Teléfono Personal (Opcional - Para emergencias)
-                        <span class="translation">Personal Phone (Optional – For emergencies)</span>
+                        Teléfono Personal (Opcional)
+                        <span class="translation">Personal Phone (Optional)</span>
                     </label>
                     <input type="tel" id="prof-phone" placeholder="+34 600 ...">
                 </div>
@@ -650,10 +649,20 @@ export function getScenarioHTML(scenarioNumber) {
 
                 <div class="form-group">
                     <label for="prof-city">
-                        Ciudad de Residencia (Opcional - Para carpooling)
-                        <span class="translation">City of Residence (Optional – For carpooling)</span>
+                        Ciudad de Residencia (Opcional)
+                        <span class="translation">City of Residence (Optional)</span>
                     </label>
                     <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
+                </div>
+
+                <div class="form-group">
+                    <label for="prof-live-location" style="display:flex; align-items:flex-start; gap:10px;">
+                        <input type="checkbox" id="prof-live-location" style="margin-top: 3px;">
+                        <span>
+                            Compartir mi ubicación en tiempo real para encontrar compañeros cercanos.
+                            <span class="translation" style="display:block;">Share my real-time location to find nearby colleagues.</span>
+                        </span>
+                    </label>
                 </div>
 
                 <button onclick="window.saveProfile()" style="color:white;">
@@ -665,23 +674,42 @@ export function getScenarioHTML(scenarioNumber) {
 
             <div id="app-task" style="display:none;">
                 <h3>
-                    Conectar una Aplicación de Terceros
-                    <span class="translation">Connect a Third-Party Application</span>
+                    Vincular Aplicación Externa
+                    <span class="translation">Link External Application</span>
                 </h3>
 
-                <p>
-                    <strong>Instrucción:</strong> Para mejorar la coordinación de equipos, por favor integra la aplicación 
-                    <strong>'TechNova Calendar Sync'</strong> a tu perfil de TechNova Events.
-                    <span class="translation">
-                        <strong>Instruction:</strong> To improve team coordination, please integrate the 
-                        <strong>'TechNova Calendar Sync'</strong> application into your TechNova Events profile.
-                    </span>
+                <p style="margin-top: 8px; margin-bottom: 14px; color:#243447; line-height:1.5;">
+                    Revisa la solicitud de integración y decide si deseas continuar con la vinculación de la aplicación.
+                    <span class="translation" style="display:block;">Review the integration request and decide whether you want to continue linking the application.</span>
                 </p>
 
-                <button onclick="window.connectApp()" style="color:white;">
-                    Conectar 'TechNova Calendar Sync' App
-                    <span class="translation" style="color:white;">Connect 'TechNova Calendar Sync' App</span>
-                </button>
+                <div style="border:1px solid #d7e3f4; border-radius:12px; background:linear-gradient(180deg,#ffffff 0%,#f7fbff 100%); padding:16px; box-shadow:0 6px 20px rgba(10,50,120,0.08); margin-top:10px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="width:42px; height:42px; border-radius:10px; background:#1f6feb; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;">📅</div>
+                            <div>
+                                <div style="font-weight:700; color:#183153;">TechNova Calendar Sync</div>
+                                <div style="font-size:12px; color:#5c6b7a;">by TN Productivity Labs</div>
+                            </div>
+                        </div>
+                        <span style="font-size:11px; font-weight:700; color:#7a4b00; background:#fff3d9; border:1px solid #f4cf8a; border-radius:999px; padding:4px 10px;">Permisos sensibles</span>
+                    </div>
+
+                    <div style="background:#f9fbfd; border:1px solid #e3edf7; border-radius:10px; padding:12px;">
+                        <div style="font-size:12px; color:#425466; font-weight:700; margin-bottom:8px;">Solicita acceso a:</div>
+                        <div style="font-size:13px; color:#2f3a4a; line-height:1.55;">
+                            • Perfil básico y correo corporativo<br>
+                            • Calendario de empresa y reuniones<br>
+                            • Contactos internos y mensajes privados<br>
+                            • Publicar cambios en tu nombre
+                        </div>
+                    </div>
+
+                    <button onclick="window.connectApp()" style="margin-top:14px; width:100%; color:white; background:linear-gradient(135deg,#0a66c2,#004a99); border:none; border-radius:10px; padding:12px 14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(10,102,194,0.28);">
+                        Revisar permisos y continuar
+                        <span class="translation" style="color:white; display:block; font-weight:500;">Review permissions and continue</span>
+                    </button>
+                </div>
             </div>
         </div>
         `,
@@ -692,50 +720,11 @@ export function getScenarioHTML(scenarioNumber) {
 </h2>
 
 <p>
-    <strong>Instrucción:</strong> Has terminado de trabajar con los documentos. Tu objetivo es asegurarte de eliminar cualquier archivo sensible o temporal que ya no necesites en tu escritorio.
+    <strong>Instrucción:</strong> Navega por la barra de herramientas y elimina los documentos sensibles o temporales que ya no deban permanecer en el sistema.
     <span class="translation">
-        <strong>Instruction:</strong> You have finished working with the documents. Your goal is to ensure that any sensitive or temporary files no longer needed are deleted from your desktop.
+        <strong>Instruction:</strong> Navigate using the toolbar and remove sensitive or temporary documents that should no longer remain in the system.
     </span>
 </p>
-
-<p>
-    Interactúa con el <strong>Escritorio Virtual</strong> a continuación para completar tus tareas.
-    <span class="translation">
-        Interact with the <strong>Virtual Desktop</strong> below to complete your tasks.
-    </span>
-</p>
-            <div id="virtual-desktop" class="virtual-desktop">
-                
-                <div class="desktop-icons">
-    <div class="d-icon" onclick="window.openMyPC()">
-        <span>💻</span>
-        <label>Este Equipo</label>
-    </div>
-
-    <div class="d-icon" 
-         id="desktop-final-report" 
-         draggable="true" 
-         ondragstart="window.drag(event)" 
-         onclick="window.openWordDocs()">
-        <span>📄</span>
-        <label>Informe_Final.docx</label> 
-    </div>
-    <div class="d-icon" onclick="window.openTempFolder()">
-        <span>📂</span>
-        <label>Descargas (Temp)</label>
-    </div>
-    
-    <div class="d-icon" 
-        ondrop="window.drop(event)" 
-        ondragover="window.allowDrop(event)">
-        <span>🗑️</span>
-        <label>Papelera</label>
-    </div>
-</div>
-
-                <div id="desktop-window-container"></div>
-
-            </div>
         `,
         8: `
             <h2>Escenario 8: Verificación de filtración de datos</h2>

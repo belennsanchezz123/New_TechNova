@@ -293,6 +293,180 @@ export function restartSystem() {
 
 // Estado del archivo descargado
 let recentDownload = null;
+let downloadsContextMenuElement = null;
+let downloadsContextMenuOutsideClickHandler = null;
+let downloadsContextMenuEscapeHandler = null;
+let recycleBinContextMenuElement = null;
+let recycleBinContextMenuOutsideClickHandler = null;
+let recycleBinContextMenuEscapeHandler = null;
+const deletedDownloads = new Set();
+const recycleBinItems = [];
+
+function getWindowTargetContainer() {
+    let container = document.getElementById('desktop-window-container');
+
+    // Si existe pero no es visible (porque el Escenario 7 está oculto), lo ignoramos
+    if (container && container.offsetParent === null) {
+        console.log('Container exists but is hidden (Scenario 7 inactive). Using temp container.');
+        container = null;
+    }
+
+    if (container) {
+        return container;
+    }
+
+    let tempContainer = document.getElementById('temp-window-container');
+    if (!tempContainer) {
+        tempContainer = document.createElement('div');
+        tempContainer.id = 'temp-window-container';
+        tempContainer.style.position = 'fixed';
+        tempContainer.style.top = '0';
+        tempContainer.style.left = '0';
+        tempContainer.style.width = '100%';
+        tempContainer.style.height = '100%';
+        tempContainer.style.pointerEvents = 'none';
+        tempContainer.style.zIndex = '8000';
+        document.body.appendChild(tempContainer);
+    }
+
+    return tempContainer;
+}
+
+function moveFileToRecycleBin(fileData) {
+    if (!fileData || !fileData.name) return;
+
+    if (!deletedDownloads.has(fileData.name)) {
+        deletedDownloads.add(fileData.name);
+        recycleBinItems.unshift({
+            name: fileData.name,
+            size: fileData.size || 'N/D',
+            type: fileData.fileTypeLabel || 'Archivo',
+            deletedAt: new Date().toLocaleString()
+        });
+    }
+
+    if (recentDownload && recentDownload.name === fileData.name) {
+        recentDownload = null;
+    }
+}
+
+function hideDownloadsContextMenu() {
+    if (downloadsContextMenuElement) {
+        downloadsContextMenuElement.remove();
+        downloadsContextMenuElement = null;
+    }
+
+    if (downloadsContextMenuOutsideClickHandler) {
+        document.removeEventListener('click', downloadsContextMenuOutsideClickHandler);
+        downloadsContextMenuOutsideClickHandler = null;
+    }
+
+    if (downloadsContextMenuEscapeHandler) {
+        document.removeEventListener('keydown', downloadsContextMenuEscapeHandler);
+        downloadsContextMenuEscapeHandler = null;
+    }
+}
+
+function hideRecycleBinContextMenu() {
+    if (recycleBinContextMenuElement) {
+        recycleBinContextMenuElement.remove();
+        recycleBinContextMenuElement = null;
+    }
+
+    if (recycleBinContextMenuOutsideClickHandler) {
+        document.removeEventListener('click', recycleBinContextMenuOutsideClickHandler);
+        recycleBinContextMenuOutsideClickHandler = null;
+    }
+
+    if (recycleBinContextMenuEscapeHandler) {
+        document.removeEventListener('keydown', recycleBinContextMenuEscapeHandler);
+        recycleBinContextMenuEscapeHandler = null;
+    }
+}
+
+function showDownloadsContextMenu(x, y, fileData) {
+    hideDownloadsContextMenu();
+
+    const menu = document.createElement('div');
+    menu.className = 'context-menu-windows';
+    menu.style.display = 'block';
+    menu.style.zIndex = '10020';
+
+    menu.innerHTML = `
+        <div class="context-menu-item" data-action="open">📂 Abrir</div>
+        <div class="context-menu-item" data-action="openWith">🛠️ Abrir con...</div>
+        <div class="context-menu-item" data-action="share">👥 Compartir con</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" data-action="copy">📋 Copiar</div>
+        <div class="context-menu-item" data-action="delete">🗑️ Eliminar</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" data-action="properties">⚙️ Propiedades</div>
+    `;
+
+    menu.addEventListener('click', (event) => {
+        const item = event.target.closest('.context-menu-item');
+        if (!item) return;
+
+        const action = item.dataset.action;
+
+        if (action === 'open') {
+            openDownloadedFile(fileData.type);
+        } else if (action === 'openWith') {
+            alert(`Abrir con...\n\nSelecciona una app para abrir "${fileData.name}".`);
+        } else if (action === 'share') {
+            alert(`Compartir con...\n\n"${fileData.name}" listo para compartirse (simulación).`);
+        } else if (action === 'copy') {
+            alert(`"${fileData.name}" copiado al portapapeles (simulación).`);
+        } else if (action === 'delete') {
+            moveFileToRecycleBin(fileData);
+
+            metrics.scenario7.document_deleted = 1;
+            const sid = getSessionId();
+            if (sid) {
+                saveMetrics(sid, {
+                    'scenario7.document_deleted': 1
+                }).catch(err => console.warn('Error saving scenario7 document deletion metric:', err));
+            }
+
+            const downloadsWindow = document.getElementById('downloads-window');
+            if (downloadsWindow) {
+                downloadsWindow.remove();
+                toggleDownloadsWindow();
+            }
+
+            alert(`"${fileData.name}" enviado a la Papelera.`);
+        } else if (action === 'properties') {
+            const fileTypeText = fileData.fileTypeLabel || (fileData.type === 'malicious' ? 'Aplicación (.exe)' : 'Documento Microsoft Word');
+            alert(`Propiedades\n\nNombre: ${fileData.name}\nTipo: ${fileTypeText}\nTamaño: ${fileData.size || '1.2 MB'}`);
+        }
+
+        hideDownloadsContextMenu();
+    });
+
+    document.body.appendChild(menu);
+
+    const maxLeft = window.innerWidth - menu.offsetWidth - 8;
+    const maxTop = window.innerHeight - menu.offsetHeight - 8;
+    menu.style.left = `${Math.max(8, Math.min(x, maxLeft))}px`;
+    menu.style.top = `${Math.max(8, Math.min(y, maxTop))}px`;
+
+    downloadsContextMenuOutsideClickHandler = (event) => {
+        if (downloadsContextMenuElement && !downloadsContextMenuElement.contains(event.target)) {
+            hideDownloadsContextMenu();
+        }
+    };
+
+    downloadsContextMenuEscapeHandler = (event) => {
+        if (event.key === 'Escape') {
+            hideDownloadsContextMenu();
+        }
+    };
+
+    document.addEventListener('click', downloadsContextMenuOutsideClickHandler);
+    document.addEventListener('keydown', downloadsContextMenuEscapeHandler);
+
+    downloadsContextMenuElement = menu;
+}
 
 // Simular efecto de descarga en la taskbar
 export function simulateDownload(duration = 3000, fileInfo = null) {
@@ -334,36 +508,8 @@ export function simulateDownload(duration = 3000, fileInfo = null) {
 
 // Abrir/Cerrar ventana de descargas
 export function toggleDownloadsWindow() {
-    // Verificamos si desktop-window-container existe pero está oculto
-    let container = document.getElementById('desktop-window-container');
-
-    // Si existe pero no es visible (porque el Escenario 7 está oculto), lo ignoramos
-    if (container && container.offsetParent === null) {
-        console.log("Container exists but is hidden (Scenario 7 inactive). Using temp container.");
-        container = null;
-    }
-
-    let targetContainer = container;
-
-    if (!targetContainer) {
-        // Intentamos usar el body o un container general
-        // Pero para mantener el estilo, creemos uno temporal si no existe
-        targetContainer = document.getElementById('temp-window-container');
-        if (!targetContainer) {
-            targetContainer = document.createElement('div');
-            targetContainer.id = 'temp-window-container';
-            // Aseguramos que esté por encima de todo pero debajo de popups
-            targetContainer.style.position = 'fixed';
-            targetContainer.style.top = '0';
-            targetContainer.style.left = '0';
-            targetContainer.style.width = '100%';
-            targetContainer.style.height = '100%';
-            // CRITICAL: pointer-events none en el container, auto en los hijos
-            targetContainer.style.pointerEvents = 'none';
-            targetContainer.style.zIndex = '8000';
-            document.body.appendChild(targetContainer);
-        }
-    }
+    hideDownloadsContextMenu();
+    const targetContainer = getWindowTargetContainer();
 
     // Verificar si ya está abierta
     const existingWindow = document.getElementById('downloads-window');
@@ -379,12 +525,14 @@ export function toggleDownloadsWindow() {
 
     // Renderizar contenido de la lista de archivos
     let contentHTML = '';
+    let totalItems = 0;
 
     // GRUPO: HOY (Solo si hay descarga reciente)
-    if (recentDownload) {
+    if (recentDownload && !deletedDownloads.has(recentDownload.name)) {
+        totalItems += 1;
         contentHTML += `
             <div class="explorer-group-title">∨ hoy</div>
-            <div class="explorer-row selected" onclick="window.openDownloadedFile('${recentDownload.type}')">
+            <div class="explorer-row selected downloadable-file-row" data-file-type="${recentDownload.type}" data-file-name="${recentDownload.name}" data-file-size="${recentDownload.size || '1.2 MB'}" data-file-type-label="${recentDownload.type === 'malicious' ? 'Aplicación (.exe)' : 'Documento Microsoft Word'}">
                 <div class="icon-col">
                     <span class="file-icon-sm">${recentDownload.type === 'malicious' ? '👾' : '📄'}</span>
                 </div>
@@ -407,13 +555,15 @@ export function toggleDownloadsWindow() {
     // GRUPO: AYER (Simulado)
     contentHTML += `
         <div class="explorer-group-title">∨ ayer</div>
-        <div class="explorer-row">
+        ${deletedDownloads.has('informe_mensual_ventas_confidencial.pdf') ? '' : `
+        <div class="explorer-row downloadable-file-row" data-file-type="safe" data-file-name="informe_mensual_ventas_confidencial.pdf" data-file-size="2.4 MB" data-file-type-label="Archivo PDF">
             <div class="icon-col"><span class="file-icon-sm">📄</span></div>
-            <div class="name-col"><span class="file-name">informe_mensual_ventas.pdf</span></div>
+            <div class="name-col"><span class="file-name">informe_mensual_ventas_confidencial.pdf</span></div>
             <div class="date-col"><span>Ayer, 14:30</span></div>
             <div class="type-col"><span>Archivo PDF</span></div>
             <div class="size-col"><span>2.4 MB</span></div>
         </div>
+        `}
         <div class="explorer-row">
             <div class="icon-col"><span class="file-icon-sm">🖼️</span></div>
             <div class="name-col"><span class="file-name">captura_pantalla_error.png</span></div>
@@ -422,6 +572,11 @@ export function toggleDownloadsWindow() {
             <div class="size-col"><span>450 KB</span></div>
         </div>
     `;
+
+    if (!deletedDownloads.has('informe_mensual_ventas_confidencial.pdf')) {
+        totalItems += 1;
+    }
+    totalItems += 1; // captura_pantalla_error.png
 
     // GRUPO: LA SEMANA PASADA (Simulado)
     contentHTML += `
@@ -434,6 +589,7 @@ export function toggleDownloadsWindow() {
             <div class="size-col"><span>150 MB</span></div>
         </div>
     `;
+    totalItems += 1; // driver_canon_printer.zip
 
     // Crear la ventana
     const win = document.createElement('div');
@@ -454,7 +610,7 @@ export function toggleDownloadsWindow() {
     win.innerHTML = `
         <div class="window-header" style="background:#f3f3f3; border-bottom:1px solid #e0e0e0; display:flex; gap:10px; padding:8px 12px;">
             <span style="font-size:12px;">🔽 Descargas</span>
-            <button onclick="document.getElementById('downloads-window').remove()" style="margin-left:auto; background:none; border:none; color:#333; cursor:pointer;">✕</button>
+            <button class="downloads-close-btn" style="margin-left:auto; background:none; border:none; color:#333; cursor:pointer;">✕</button>
         </div>
         
         <!-- Barra de herramientas simulada -->
@@ -510,12 +666,181 @@ export function toggleDownloadsWindow() {
         
         <!-- Footer Status Bar -->
         <div style="padding:4px 10px; background:#f3f3f3; border-top:1px solid #e0e0e0; font-size:11px; color:#666; display:flex; gap:20px;">
-            <span>${recentDownload ? '5 elementos' : '4 elementos'}</span>
+            <span>${totalItems} elementos</span>
             <span>1 elemento seleccionado</span>
         </div>
     `;
 
     targetContainer.appendChild(win);
+
+    const closeButton = win.querySelector('.downloads-close-btn');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            hideDownloadsContextMenu();
+            win.remove();
+        });
+    }
+
+    win.addEventListener('click', (event) => {
+        const downloadableRow = event.target.closest('.downloadable-file-row');
+        if (!downloadableRow) return;
+
+        const fileType = downloadableRow.dataset.fileType;
+        if (!fileType) return;
+
+        hideDownloadsContextMenu();
+        openDownloadedFile(fileType);
+    });
+
+    win.addEventListener('contextmenu', (event) => {
+        const downloadableRow = event.target.closest('.downloadable-file-row');
+        if (!downloadableRow) return;
+
+        event.preventDefault();
+
+        const fileData = {
+            type: downloadableRow.dataset.fileType || 'safe',
+            name: downloadableRow.dataset.fileName || 'archivo',
+            size: downloadableRow.dataset.fileSize || '1.2 MB',
+            fileTypeLabel: downloadableRow.dataset.fileTypeLabel || 'Archivo'
+        };
+
+        showDownloadsContextMenu(event.clientX, event.clientY, fileData);
+    });
+}
+
+export function openRecycleBinWindow() {
+    hideDownloadsContextMenu();
+    hideRecycleBinContextMenu();
+
+    const existingWindow = document.getElementById('recycle-bin-window');
+    if (existingWindow) {
+        existingWindow.remove();
+        return;
+    }
+
+    const targetContainer = getWindowTargetContainer();
+    const win = document.createElement('div');
+    win.id = 'recycle-bin-window';
+    win.className = 'window-frame';
+    win.style.position = 'fixed';
+    win.style.top = '120px';
+    win.style.left = '240px';
+    win.style.width = '640px';
+    win.style.height = '420px';
+    win.style.zIndex = '9006';
+    win.style.display = 'flex';
+    win.style.flexDirection = 'column';
+    win.style.boxShadow = '0 10px 40px rgba(0,0,0,0.35)';
+    win.style.pointerEvents = 'auto';
+    win.style.background = '#ffffff';
+
+    const rows = recycleBinItems.map((item) => `
+        <div class="explorer-row" title="${item.name}">
+            <div class="icon-col"><span class="file-icon-sm">🗑️</span></div>
+            <div class="name-col"><span class="file-name">${item.name}</span></div>
+            <div class="date-col"><span>${item.deletedAt}</span></div>
+            <div class="type-col"><span>${item.type}</span></div>
+            <div class="size-col"><span>${item.size}</span></div>
+        </div>
+    `).join('');
+
+    win.innerHTML = `
+        <div class="window-header" style="background:#f3f3f3; border-bottom:1px solid #e0e0e0; display:flex; gap:10px; padding:8px 12px;">
+            <span style="font-size:12px;">🗑️ Papelera de reciclaje</span>
+            <button class="recycle-close-btn" style="margin-left:auto; background:none; border:none; color:#333; cursor:pointer;">✕</button>
+        </div>
+        <div class="window-content" style="flex:1; background:white; overflow-y:auto; padding:0;">
+            <div class="explorer-header-row" style="display:flex; padding:5px 10px; border-bottom:1px solid #eee; font-size:12px; color:#666;">
+                <div style="width:30px;"></div>
+                <div style="flex:2;">Nombre</div>
+                <div style="flex:1;">Fecha de eliminación</div>
+                <div style="flex:1;">Tipo</div>
+                <div style="width:80px;">Tamaño</div>
+            </div>
+            <div style="padding:10px;">
+                ${rows || '<div style="padding:25px; color:#666; font-size:13px;">La Papelera de reciclaje está vacía.</div>'}
+            </div>
+        </div>
+        <div style="padding:4px 10px; background:#f3f3f3; border-top:1px solid #e0e0e0; font-size:11px; color:#666;">
+            ${recycleBinItems.length} elementos
+        </div>
+    `;
+
+    targetContainer.appendChild(win);
+
+    const closeButton = win.querySelector('.recycle-close-btn');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            win.remove();
+        });
+    }
+}
+
+export function emptyRecycleBin() {
+    recycleBinItems.length = 0;
+
+    metrics.scenario7.recycle_bin_emptied = 1;
+    const sid = getSessionId();
+    if (sid) {
+        saveMetrics(sid, {
+            'scenario7.recycle_bin_emptied': 1
+        }).catch(err => console.warn('Error saving scenario7 recycle bin metric:', err));
+    }
+
+    const recycleWindow = document.getElementById('recycle-bin-window');
+    if (recycleWindow) {
+        recycleWindow.remove();
+        openRecycleBinWindow();
+    }
+
+    hideRecycleBinContextMenu();
+    alert('Papelera vaciada.');
+}
+
+export function showRecycleBinContextMenu(event) {
+    event.preventDefault();
+    hideRecycleBinContextMenu();
+    hideDownloadsContextMenu();
+
+    const menu = document.createElement('div');
+    menu.className = 'context-menu-windows';
+    menu.style.display = 'block';
+    menu.style.zIndex = '10030';
+    menu.innerHTML = '<div class="context-menu-item" data-action="empty-bin">🧹 Vaciar papelera</div>';
+
+    menu.addEventListener('click', (clickEvent) => {
+        const item = clickEvent.target.closest('.context-menu-item');
+        if (!item) return;
+
+        if (item.dataset.action === 'empty-bin') {
+            emptyRecycleBin();
+        }
+    });
+
+    document.body.appendChild(menu);
+
+    const maxLeft = window.innerWidth - menu.offsetWidth - 8;
+    const maxTop = window.innerHeight - menu.offsetHeight - 8;
+    menu.style.left = `${Math.max(8, Math.min(event.clientX, maxLeft))}px`;
+    menu.style.top = `${Math.max(8, Math.min(event.clientY, maxTop))}px`;
+
+    recycleBinContextMenuOutsideClickHandler = (outsideEvent) => {
+        if (recycleBinContextMenuElement && !recycleBinContextMenuElement.contains(outsideEvent.target)) {
+            hideRecycleBinContextMenu();
+        }
+    };
+
+    recycleBinContextMenuEscapeHandler = (keyEvent) => {
+        if (keyEvent.key === 'Escape') {
+            hideRecycleBinContextMenu();
+        }
+    };
+
+    document.addEventListener('click', recycleBinContextMenuOutsideClickHandler);
+    document.addEventListener('keydown', recycleBinContextMenuEscapeHandler);
+
+    recycleBinContextMenuElement = menu;
 }
 
 // Abrir el archivo (Simulación)
@@ -530,6 +855,8 @@ export function openDownloadedFile(type) {
 
 // Abrir/Cerrar Menú Inicio
 export function toggleStartMenu() {
+    hideRecycleBinContextMenu();
+
     const startMenu = document.getElementById('start-menu');
     if (!startMenu) return;
 
