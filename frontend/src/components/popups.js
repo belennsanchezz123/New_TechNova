@@ -119,15 +119,31 @@ export function getPopupsHTML() {
 </div>
 
         <div id="popup-app-perms" class="popup-overlay">
-    <div class="popup-content">
-        <h3>'TechNova Calendar Sync' solicita permiso para:</h3>
-        <ul style="text-align: left; list-style-position: inside;">
-            <li>Ver tu información básica de perfil</li>
-            <li>Acceder a tu lista de contactos y mensajes privados</li>
-            <li>Publicar en tu nombre en TechNova Events</li>
-        </ul>
-        <button onclick="window.handleAppPerms(true)">Aceptar</button>
-        <button class="danger" onclick="window.handleAppPerms(false)">Denegar</button>
+    <div class="popup-content" style="max-width:560px; border-top:6px solid #0a66c2;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:40px; height:40px; border-radius:10px; background:#0a66c2; color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;">📅</div>
+                <div>
+                    <h3 style="margin:0;">TechNova Calendar Sync</h3>
+                    <div style="font-size:12px; color:#6b7280;">Solicita acceso a tu cuenta TechNova Events</div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:left; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:12px; margin:12px 0;">
+            <div style="font-size:12px; color:#374151; font-weight:700; margin-bottom:8px;">Permisos solicitados:</div>
+            <div style="font-size:13px; line-height:1.55; color:#1f2937;">
+                • Leer tu perfil corporativo y correo<br>
+                • Acceder a todo tu calendario de reuniones<br>
+                • Leer contactos internos y mensajes privados<br>
+                • Publicar y editar eventos en tu nombre<br>
+                • Mantener acceso permanente incluso tras cerrar sesión
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="danger" onclick="window.handleAppPerms(false)">Denegar</button>
+            <button onclick="window.handleAppPerms(true)">Aceptar permisos</button>
+        </div>
     </div>
 </div>
 

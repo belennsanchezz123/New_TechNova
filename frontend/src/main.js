@@ -92,6 +92,9 @@ import {
     simulateDownload,
     toggleDownloadsWindow,
     openDownloadedFile,
+    openRecycleBinWindow,
+    showRecycleBinContextMenu,
+    emptyRecycleBin,
     toggleStartMenu
 } from './handlers/taskbar-handler.js';
 
@@ -105,6 +108,9 @@ window.closePostponeOptions = closePostponeOptions;
 window.simulateDownload = simulateDownload;
 window.toggleDownloadsWindow = toggleDownloadsWindow;
 window.openDownloadedFile = openDownloadedFile;
+window.openRecycleBinWindow = openRecycleBinWindow;
+window.showRecycleBinContextMenu = showRecycleBinContextMenu;
+window.emptyRecycleBin = emptyRecycleBin;
 window.toggleStartMenu = toggleStartMenu;
 
 

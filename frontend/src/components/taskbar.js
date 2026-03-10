@@ -213,6 +213,10 @@ export function getTaskbarHTML() {
                         <span class="pinned-icon">📝</span>
                         <span class="pinned-name">Notas</span>
                     </div>
+                    <div class="pinned-item" onclick="window.openRecycleBinWindow(); window.toggleStartMenu();" oncontextmenu="window.showRecycleBinContextMenu(event)" title="Papelera de reciclaje">
+                        <span class="pinned-icon">🗑️</span>
+                        <span class="pinned-name">Papelera</span>
+                    </div>
                 </div>
             </div>
 
