@@ -1,13 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { setupSessionRoutes, setupAdminSessionRoutes } from './routes/sessions.js';
 import { setupBreachRoutes } from './routes/breach.js';
 import { setupQuestionnaireRoutes } from './routes/questionnaire.js';
+import { setupAIRoutes } from './routes/ai.js';
 import authRouter from './routes/auth.js';
 import { requireAdmin } from './utils/authMiddleware.js';
 
-dotenv.config({ path: '../.env' });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Cargar .env desde backend/.env y tambien desde la raiz del proyecto.
+dotenv.config({ path: join(__dirname, '.env') });
+dotenv.config({ path: join(__dirname, '..', '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +31,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/sessions', setupSessionRoutes());
 app.use('/api/breach', setupBreachRoutes());
+app.use('/api/ai', setupAIRoutes());
 
 // ── Rutas protegidas (admin — requieren JWT) ───────────────────────
 app.use('/api/sessions', requireAdmin, setupAdminSessionRoutes());

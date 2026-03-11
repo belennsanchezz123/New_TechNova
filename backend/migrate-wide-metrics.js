@@ -43,6 +43,8 @@ try {
 
             s3_phishing_clicked             REAL,
             s3_phishing_reported            REAL,
+            s3_phishing_false_positives     INTEGER,
+            s3_phishing_report_reasons      TEXT,
             s3_credential_compromised       INTEGER,
             s3_secure_data_transmission     TEXT,
             s3_time_seconds                 INTEGER,
@@ -53,6 +55,8 @@ try {
             s4_extensions_disabled_pct      REAL,
             s4_warnings_heeded_pct          REAL,
             s4_cookie_accepted_pct          REAL,
+            s4_cookie_consent_by_site       TEXT,
+            s4_cookie_risk_score            REAL,
             s4_dangerous_links_clicked_pct  REAL,
             s4_time_seconds                 INTEGER,
 
@@ -86,6 +90,23 @@ try {
             session_completed_at            TEXT,
             recorded_at                     TEXT DEFAULT (datetime('now'))
         );
+
+        CREATE TABLE IF NOT EXISTS ai_interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            participant_id TEXT,
+            user_prompt TEXT,
+            ai_response TEXT,
+            trap_value TEXT,
+            trap_label TEXT,
+            user_final_text TEXT,
+            trap_repeated INTEGER,
+            created_at TEXT DEFAULT (datetime('now')),
+            finalized_at TEXT
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_session ON ai_interactions(session_id);
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_participant ON ai_interactions(participant_id);
     `);
     console.log('✅ Tabla participant_metrics creada (o ya existía).');
 
@@ -94,7 +115,11 @@ try {
         { name: 's4_extensions_disabled_pct', type: 'REAL' },
         { name: 's4_warnings_heeded_pct', type: 'REAL' },
         { name: 's4_cookie_accepted_pct', type: 'REAL' },
+        { name: 's4_cookie_consent_by_site', type: 'TEXT' },
+        { name: 's4_cookie_risk_score', type: 'REAL' },
         { name: 's4_dangerous_links_clicked_pct', type: 'REAL' },
+        { name: 's3_phishing_false_positives', type: 'INTEGER' },
+        { name: 's3_phishing_report_reasons', type: 'TEXT' },
         { name: 's1_default_password_flag', type: 'INTEGER' },
         { name: 's1_time_seconds', type: 'INTEGER' },
         { name: 's2_time_seconds', type: 'INTEGER' },

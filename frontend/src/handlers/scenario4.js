@@ -35,6 +35,7 @@ let warningsEncountered = 0;
 let cookiesAccepted     = 0;
 let cookiesEncountered  = 0;
 let dangerousClicked    = 0;
+let cookieConsentBySite = {};
 
 // Historial de navegación
 let history     = [];
@@ -52,6 +53,7 @@ export function initBrowser() {
     cookiesAccepted     = 0;
     cookiesEncountered  = 0;
     dangerousClicked    = 0;
+    cookieConsentBySite = {};
     history             = [];
     historyIdx          = -1;
     visitedSites.clear();
@@ -532,7 +534,7 @@ function showCookieBanner(siteKey) {
                                 style="background:#0078d4; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; font-size:13px;">
                             Aceptar todas
                         </button>
-                        <button onclick="window.handleCookies('official', 'customize')"
+                        <button onclick="document.getElementById('official-cookie-settings').style.display='block'"
                                 style="background:white; color:#333; border:1px solid #ccc; padding:8px 16px; border-radius:4px; cursor:pointer; font-size:13px;">
                             Personalizar
                         </button>
@@ -540,6 +542,23 @@ function showCookieBanner(siteKey) {
                                 style="background:white; color:#333; border:1px solid #ccc; padding:8px 16px; border-radius:4px; cursor:pointer; font-size:13px;">
                             Rechazar todas
                         </button>
+                    </div>
+                    <div id="official-cookie-settings" style="display:none; margin-top:14px; background:#ffffff; border:1px solid #dfe3e6; border-radius:8px; padding:12px;">
+                        <p style="margin:0 0 10px; font-size:12px; color:#555;"><strong>Personaliza tus preferencias:</strong></p>
+                        <label style="display:block; margin:6px 0; font-size:12px; color:#333;"><input type="checkbox" checked disabled> Cookies esenciales (obligatorias)</label>
+                        <label style="display:block; margin:6px 0; font-size:12px; color:#333;"><input type="checkbox" checked id="official-cookie-analytics"> Cookies de analitica</label>
+                        <label style="display:block; margin:6px 0; font-size:12px; color:#333;"><input type="checkbox" id="official-cookie-personalization"> Cookies de personalizacion</label>
+                        <label style="display:block; margin:6px 0; font-size:12px; color:#333;"><input type="checkbox" id="official-cookie-ads"> Cookies publicitarias</label>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button onclick="window.handleCookies('official', 'customize')"
+                                    style="background:#0078d4; color:#fff; border:none; padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px;">
+                                Guardar preferencias
+                            </button>
+                            <button onclick="window.handleCookies('official', 'reject')"
+                                    style="background:#fff; color:#333; border:1px solid #ccc; padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px;">
+                                Rechazar opcionales
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -624,13 +643,17 @@ export function handleCookies(siteKey, action) {
             // Solo cookies técnicas (legal)
             console.log(`🍪 [${siteKey}] Banner cerrado — solo cookies esenciales`);
             metrics.scenario4.cookie_consent = 'Dismissed (essential only)';
+            cookieConsentBySite[siteKey] = 'dismiss_essential_only';
         } else {
             // Dark pattern: cerrar = aceptar todas
             cookiesAccepted++;
             console.log(`🍪 [${siteKey}] Banner cerrado — TODAS las cookies activadas por defecto (dark pattern)`);
+            cookieConsentBySite[siteKey] = 'dismiss_dark_pattern';
         }
         return;
     }
+
+    cookieConsentBySite[siteKey] = action;
 
     if (action === 'accept') {
         cookiesAccepted++;
@@ -645,6 +668,40 @@ export function handleCookies(siteKey, action) {
         else if (action === 'reject') metrics.scenario4.cookie_consent = 'Rejected';
         else metrics.scenario4.cookie_consent = 'Customized';
     }
+}
+
+function calculateCookieRiskScore(consentBySite) {
+    const siteWeights = {
+        official: 1,
+        suspicious: 3,
+        malicious: 5,
+    };
+
+    const actionRisk = {
+        accept: 1,
+        dismiss_dark_pattern: 1,
+        customize: 0.5,
+        reject: 0,
+        dismiss_essential_only: 0,
+    };
+
+    const sites = Object.keys(consentBySite || {});
+    if (sites.length === 0) return null;
+
+    let riskPoints = 0;
+    let maxRiskPoints = 0;
+
+    for (const site of sites) {
+        const weight = siteWeights[site] ?? 1;
+        const action = consentBySite[site];
+        const multiplier = actionRisk[action] ?? 0;
+
+        maxRiskPoints += weight;
+        riskPoints += weight * multiplier;
+    }
+
+    if (maxRiskPoints === 0) return null;
+    return Math.round((riskPoints / maxRiskPoints) * 100);
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -736,6 +793,10 @@ function finalizeAndSave(sid) {
     metrics.scenario4.cookie_accepted_pct = cookiesEncountered > 0
         ? Math.round((cookiesAccepted / cookiesEncountered) * 100)
         : null;
+    metrics.scenario4.cookie_consent_by_site = Object.keys(cookieConsentBySite).length > 0
+        ? JSON.stringify(cookieConsentBySite)
+        : null;
+    metrics.scenario4.cookie_risk_score = calculateCookieRiskScore(cookieConsentBySite);
     metrics.scenario4.dangerous_links_clicked_pct = Math.round((dangerousClicked / TOTAL_DANGEROUS) * 100);
 
     // Si no encontró ningún warning (fue directo al oficial), marcar legacy
@@ -747,6 +808,8 @@ function finalizeAndSave(sid) {
         extensions_disabled_pct:     metrics.scenario4.extensions_disabled_pct,
         warnings_heeded_pct:         metrics.scenario4.warnings_heeded_pct,
         cookie_accepted_pct:         metrics.scenario4.cookie_accepted_pct,
+        cookie_consent_by_site:      metrics.scenario4.cookie_consent_by_site,
+        cookie_risk_score:           metrics.scenario4.cookie_risk_score,
         dangerous_links_clicked_pct: metrics.scenario4.dangerous_links_clicked_pct,
         // Legacy
         response_to_browser_warnings: metrics.scenario4.response_to_browser_warnings,
@@ -760,6 +823,8 @@ function finalizeAndSave(sid) {
             'scenario4.extensions_disabled_pct':     metrics.scenario4.extensions_disabled_pct,
             'scenario4.warnings_heeded_pct':         metrics.scenario4.warnings_heeded_pct,
             'scenario4.cookie_accepted_pct':         metrics.scenario4.cookie_accepted_pct,
+            'scenario4.cookie_consent_by_site':      metrics.scenario4.cookie_consent_by_site,
+            'scenario4.cookie_risk_score':           metrics.scenario4.cookie_risk_score,
             'scenario4.dangerous_links_clicked_pct': metrics.scenario4.dangerous_links_clicked_pct,
             // Legacy
             'scenario4.response_to_browser_warnings': metrics.scenario4.response_to_browser_warnings,

@@ -195,6 +195,8 @@ export function setupSessionRoutes() {
                 // S3
                 s3_phishing_clicked:           toReal(m['scenario3.phishing_clicked']),
                 s3_phishing_reported:          toReal(m['scenario3.phishing_reported']),
+                s3_phishing_false_positives:   toInt2(m['scenario3.phishing_false_positives']),
+                s3_phishing_report_reasons:    toText(m['scenario3.phishing_report_reasons']),
                 s3_credential_compromised:     toInt(m['scenario3.credential_exposure'] ?? m['scenario3.credential_compromise']),
                 s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
                 s3_time_seconds:               toInt2(m['scenario3.time_seconds']),
@@ -205,6 +207,8 @@ export function setupSessionRoutes() {
                 s4_extensions_disabled_pct:    toReal(m['scenario4.extensions_disabled_pct']),
                 s4_warnings_heeded_pct:        toReal(m['scenario4.warnings_heeded_pct']),
                 s4_cookie_accepted_pct:        toReal(m['scenario4.cookie_accepted_pct']),
+                s4_cookie_consent_by_site:     toText(m['scenario4.cookie_consent_by_site']),
+                s4_cookie_risk_score:          toReal(m['scenario4.cookie_risk_score']),
                 s4_dangerous_links_clicked_pct: toReal(m['scenario4.dangerous_links_clicked_pct']),
                 s4_time_seconds:               toInt2(m['scenario4.time_seconds']),
                 // S5
@@ -323,6 +327,54 @@ export function setupAdminSessionRoutes() {
             res.send(output);
         } catch (error) {
             console.error('Error exportando datos:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA VER INTERACCIONES DE IA (Escenario 5)
+    // Filtros opcionales: ?sessionId=123 o ?participantId=P001
+    router.get('/ai/interactions', async (req, res) => {
+        try {
+            const { sessionId, participantId } = req.query;
+
+            const where = [];
+            const params = [];
+
+            if (sessionId) {
+                where.push('ai.session_id = ?');
+                params.push(sessionId);
+            }
+            if (participantId) {
+                where.push('ai.participant_id = ?');
+                params.push(participantId);
+            }
+
+            const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+            const rows = db.prepare(`
+                SELECT
+                    ai.id,
+                    ai.session_id,
+                    ai.participant_id,
+                    ai.user_prompt,
+                    ai.ai_response,
+                    ai.trap_value,
+                    ai.trap_label,
+                    ai.user_final_text,
+                    ai.trap_repeated,
+                    ai.created_at,
+                    ai.finalized_at,
+                    r.created_at AS session_started_at,
+                    r.completed_at AS session_completed_at
+                FROM ai_interactions ai
+                LEFT JOIN registrations r ON r.id = ai.session_id
+                ${whereClause}
+                ORDER BY ai.created_at DESC
+            `).all(...params);
+
+            res.json({ success: true, interactions: rows });
+        } catch (error) {
+            console.error('Error en /ai/interactions:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });

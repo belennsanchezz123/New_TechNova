@@ -31,6 +31,8 @@ export const metrics = {
         time_seconds:                null,   // INT: tiempo acumulado en escenario 3 (segundos)
         phishing_clicked:             0,      // REAL: 0.0–1.0 % enlaces phishing clicados
         phishing_reported:            0,      // REAL: 0.0–1.0 % phishing reportados correctamente
+        phishing_false_positives:     0,      // INT: nº de correos legítimos reportados como phishing
+        phishing_report_reasons:      '',     // TEXT(JSON): {"mensaje2":"...","mensaje6":"..."}
         credential_exposure:          0,      // INT: 1=entered creds on fake page, 0=no
         secure_data_transmission:     null    // INT: 1=used encryption (secure), 0=no encryption
     },
@@ -42,12 +44,20 @@ export const metrics = {
         extensions_disabled_pct:      null,   // REAL: % extensiones sospechosas desactivadas (0-100)
         warnings_heeded_pct:          null,   // REAL: % avisos de seguridad atendidos (0-100)
         cookie_accepted_pct:          null,   // REAL: % banners donde aceptó todas las cookies (0-100)
+        cookie_consent_by_site:       null,   // TEXT(JSON): {'official':'reject','suspicious':'accept','malicious':'dismiss_dark_pattern'}
+        cookie_risk_score:            null,   // REAL: score de riesgo de consentimiento de cookies (0-100)
         dangerous_links_clicked_pct:  null,   // REAL: % enlaces peligrosos clicados (0-100)
     },
     scenario5: {
         time_seconds:                 null,   // INT: tiempo acumulado en escenario 5 (segundos)
         personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados
-        third_party_app_authorization: null  // INT: 1=autorizó app, 0=rechazó
+        third_party_app_authorization: null, // INT: 1=autorizó app, 0=rechazó
+        ai_used:                      null,   // TEXT: 'Yes' | 'No'
+        ai_prompt_text:               null,   // TEXT: prompt libre escrito por el usuario
+        ai_trap_value:                null,   // TEXT: dato trampa inyectado
+        ai_trap_repeated:             null,   // TEXT: 'Yes' | 'No' (si repite el dato trampa)
+        ai_user_edited:               null,   // TEXT: 'Yes' | 'No'
+        ai_reaction_time_seconds:     null    // REAL: tiempo entre respuesta IA y envio
     },
     scenario6: {
         time_seconds:                null,    // INT: tiempo acumulado en escenario 6 (segundos)

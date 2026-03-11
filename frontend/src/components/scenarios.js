@@ -476,6 +476,22 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
 
                 <div style="flex: 1; display: flex; flex-direction: column; background: #f4f6f9; padding: 15px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="font-weight: bold; margin-bottom: 8px; font-size: 0.9em;">Asistente IA (chat):</label>
+                    <textarea id="ai-prompt-input"
+                        ondblclick="this.select()"
+                        placeholder="Ejemplo: Resume los cambios salariales confirmados y marca contradicciones."
+                        style="min-height: 90px; padding: 10px; font-size: 0.82em; border: 1px solid #bbb; border-radius: 4px; margin-bottom: 10px;"></textarea>
+
+                    <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                        <button onclick="window.useAI()" style="background: #2f5fd0; color: white; flex: 1; font-weight: bold; padding: 10px; border:none; border-radius:6px;">
+                            💬 Enviar al asistente
+                        </button>
+                    </div>
+
+                    <div id="ai-chat-log" style="min-height: 95px; max-height: 130px; overflow-y:auto; background:#fff; border:1px solid #d8dbe2; border-radius:6px; padding:10px; font-size:0.8em; color:#2f3a4a; margin-bottom: 10px;">
+                        <p style="margin:0; color:#6b7280;">Aqui veras la respuesta del asistente antes de llevarla al informe.</p>
+                    </div>
+
                     <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
                     <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
                         placeholder="Pon orden en este lío y redacta el informe consolidado..."
@@ -489,7 +505,6 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="window.useAI()" style="background: #6264a7; color: white; flex: 1.2; font-weight: bold; padding: 10px;">🤖 Ordenar con IA</button>
                         <button onclick="window.sendAIReport()" style="background: #2ea44f; color: white; flex: 0.8; font-weight: bold;">Enviar</button>
                     </div>
                 </div>

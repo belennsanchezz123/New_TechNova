@@ -107,6 +107,8 @@ const initDB = () => {
             -- ── Escenario 3: Email y Phishing ─────────────────────────
             s3_phishing_clicked             REAL,       -- 0.0–1.0 % enlaces phishing clicados
             s3_phishing_reported            REAL,       -- 0.0–1.0 % phishing reportados correctamente
+            s3_phishing_false_positives     INTEGER,    -- nº de correos legítimos reportados como phishing
+            s3_phishing_report_reasons      TEXT,       -- JSON: {"mensaje2":"...","mensaje6":"..."}
             s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
             s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
             s3_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 3
@@ -118,6 +120,8 @@ const initDB = () => {
             s4_extensions_disabled_pct      REAL,       -- % extensiones sospechosas desactivadas (0-100)
             s4_warnings_heeded_pct          REAL,       -- % avisos de seguridad atendidos (0-100)
             s4_cookie_accepted_pct          REAL,       -- % banners donde aceptó todas las cookies (0-100)
+            s4_cookie_consent_by_site       TEXT,       -- JSON por sitio: {"official":"reject",...}
+            s4_cookie_risk_score            REAL,       -- score de riesgo por decisiones de cookies (0-100)
             s4_dangerous_links_clicked_pct  REAL,       -- % enlaces peligrosos clicados (0-100)
             s4_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 4
 
@@ -173,6 +177,25 @@ const initDB = () => {
         );
 
         CREATE INDEX IF NOT EXISTS idx_metrics_session ON session_metrics(session_id);
+
+        -- Historial de interacciones con IA (escenario 5)
+        CREATE TABLE IF NOT EXISTS ai_interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            participant_id TEXT,
+            user_prompt TEXT,
+            ai_response TEXT,
+            trap_value TEXT,
+            trap_label TEXT,
+            user_final_text TEXT,
+            trap_repeated INTEGER,
+            created_at TEXT DEFAULT (datetime('now')),
+            finalized_at TEXT,
+            FOREIGN KEY(session_id) REFERENCES registrations(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_session ON ai_interactions(session_id);
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_participant ON ai_interactions(participant_id);
     `);
 };
 

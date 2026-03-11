@@ -136,3 +136,31 @@ export async function completeSession(sessionId, consentEmail = null) {
         return { success: false, error: error.message };
     }
 }
+
+export async function summarizeWithAI(payload) {
+    try {
+        const response = await fetch(`${API_URL}/ai/summarize`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        return await parseApiResponse(response);
+    } catch (error) {
+        console.error('Error en summarizeWithAI:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function finalizeAIInteraction(payload) {
+    try {
+        const response = await fetch(`${API_URL}/ai/finalize`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        return await parseApiResponse(response);
+    } catch (error) {
+        console.error('Error en finalizeAIInteraction:', error);
+        return { success: false, error: error.message };
+    }
+}

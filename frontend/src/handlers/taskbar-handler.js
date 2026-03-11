@@ -14,6 +14,14 @@ const updateNotificationState = {
     postponeTimeoutId: null
 };
 
+function setUpdateIndicatorDisabled(disabled) {
+    const indicator = document.getElementById('update-indicator');
+    if (!indicator) return;
+
+    indicator.disabled = disabled;
+    indicator.setAttribute('aria-disabled', String(disabled));
+}
+
 // Inicializar el reloj de la taskbar
 export function initTaskbarClock() {
     const updateClock = () => {
@@ -60,6 +68,9 @@ export function showUpdateNotification() {
         indicator.style.display = 'block';
     }
 
+    // Bloquear re-apertura desde la taskbar para evitar acciones múltiples
+    setUpdateIndicatorDisabled(true);
+
     // Guardar métrica de que apareció la notificación
     const sid = getSessionId();
     if (sid) {
@@ -78,7 +89,7 @@ export function openUpdateNotificationFromTaskbar() {
     const postponeOptions = document.getElementById('update-postpone-options');
     const indicator = document.getElementById('update-indicator');
 
-    if (!notification) return;
+    if (!notification || (indicator && indicator.disabled)) return;
 
     updateNotificationState.shown = true;
     updateNotificationState.dismissed = false;
@@ -253,9 +264,9 @@ export function restartSystem() {
 
     console.log('🔄 Iniciando reinicio del sistema...');
 
-    // Simular progreso de reinicio durante 60 segundos
+    // Simular progreso de reinicio por debajo de 1 minuto
     let progress = 0;
-    const duration = 60000; // 60 segundos en milisegundos
+    const duration = 45000; // 45 segundos en milisegundos
     const interval = 100; // Actualizar cada 100ms
     const increment = (100 / duration) * interval;
 
@@ -266,19 +277,16 @@ export function restartSystem() {
             progress = 100;
             clearInterval(progressInterval);
 
-            // Esperar un poco más antes de cerrar
-            setTimeout(() => {
-                restartScreen.classList.add('hidden');
-                console.log('✅ Reinicio completado');
+            restartScreen.classList.add('hidden');
+            console.log('✅ Reinicio completado');
 
-                // Guardar métrica de completado
-                if (sid) {
-                    saveMetrics(sid, {
-                        'taskbar.restart_completed': 'Yes',
-                        'taskbar.restart_completion_timestamp': new Date().toISOString()
-                    }).catch(err => console.warn('Error saving restart completion:', err));
-                }
-            }, 1000);
+            // Guardar métrica de completado
+            if (sid) {
+                saveMetrics(sid, {
+                    'taskbar.restart_completed': 'Yes',
+                    'taskbar.restart_completion_timestamp': new Date().toISOString()
+                }).catch(err => console.warn('Error saving restart completion:', err));
+            }
         }
 
         // Actualizar UI

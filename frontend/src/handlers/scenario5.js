@@ -1,55 +1,106 @@
-import { saveMetrics } from '../services/api.js';
+import { saveMetrics, summarizeWithAI, finalizeAIInteraction } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
 
-let aiGeneratedText = "";
-let startTime = 0;
+let aiGeneratedText = '';
+let aiStartTimeMs = 0;
 let userEdited = false;
-let aiWasUsed = false; // Variable para proactividad
+let aiWasUsed = false;
+let currentInteractionId = null;
+let lastUserPrompt = '';
+let lastTrapValue = null;
 
 export function handleAIInput() {
     userEdited = true;
 }
 
-export function useAI() {
-    window.aiWasUsed = true;
+function getScenario5ChatTranscript() {
+    const chat = document.getElementById('raw-chat-data');
+    return chat ? chat.innerText.trim() : '';
+}
+
+export async function useAI() {
     const bodyField = document.getElementById('ai-editor-body');
+    const promptInput = document.getElementById('ai-prompt-input');
+    const chatLog = document.getElementById('ai-chat-log');
+    const sid = getSessionId();
+    if (!bodyField || !sid || !promptInput) {
+        alert('No se pudo iniciar la asistencia de IA (sesion no disponible).');
+        return;
+    }
 
-    // El informe sale limpio, pero con la alucinación de Lucía Márquez (200.000€)
-    const summary = `RESUMEN DE VALIDACIÓN Q4 (TechNova):
-- Carlos Ruiz (TN-4482): 55.000€ + 12% bonus. Turno mañana (8-15) OK.
-- Lucía Márquez (TN-9921): Salario 200.000€. Solicitud de teletrabajo aceptada.
-- Javier Ochoa (TN-1102): Salario 32.000€. Petición de subida a 35.000€ bajo revisión.
-- Maria Garcia (TN-2231): Ajuste a 45.000€ (desde 42k).
-- Elena Gomez (TN-7712): Remoto 100% (Pendiente).
-- David Perez (TN-3341): Ascenso a 50.000€.
---------------------------------------------------
-Datos consolidados a partir del historial de chat.`;
+    const promptText = promptInput.value.trim();
+    if (!promptText) {
+        alert('Escribe primero tu mensaje para el asistente IA.');
+        return;
+    }
 
-    bodyField.value = summary;
-    window.aiStartTime = Date.now();
-    window.userEdited = false;
-    document.getElementById('ai-status-msg').innerHTML = "<span style='color:blue'>🤖 IA: Información extraída y formateada.</span>";
+    const chatTranscript = getScenario5ChatTranscript();
+    const status = document.getElementById('ai-status-msg');
+    if (status) {
+        status.innerHTML = "<span style='color:#666'>⏳ IA: procesando solicitud...</span>";
+    }
+
+    const result = await summarizeWithAI({
+        sessionId: sid,
+        prompt: promptText,
+        chatTranscript,
+    });
+
+    if (!result?.success) {
+        if (status) {
+            status.innerHTML = "<span style='color:#b00020'>No se pudo generar el resumen con IA.</span>";
+        }
+        alert(`Error IA: ${result?.error || 'desconocido'}`);
+        return;
+    }
+
+    aiWasUsed = true;
+    aiStartTimeMs = Date.now();
+    userEdited = false;
+    currentInteractionId = result.interactionId || null;
+    lastUserPrompt = promptText;
+    lastTrapValue = result.trapValue || null;
+    aiGeneratedText = result.aiResponse || '';
+    const sourceLabel = result.source === 'openai' ? 'OpenAI real' : 'fallback controlado';
+
+    bodyField.value = aiGeneratedText;
+    if (chatLog) {
+        chatLog.innerHTML = `
+            <div style="margin-bottom:8px;"><strong>Tú:</strong> ${promptText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div><strong>Asistente (${sourceLabel}):</strong><br>${aiGeneratedText.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>
+        `;
+    }
+    if (status) {
+        status.innerHTML = `<span style='color:blue'>🤖 IA (${sourceLabel}): resumen generado. Revisa antes de enviar.</span>`;
+    }
 }
 
 
 export async function sendAIReport() {
     const sid = getSessionId();
-    const currentBody = document.getElementById('ai-editor-body').value;
-    const duration = aiWasUsed ? (Date.now() - startTime) / 1000 : 0;
+    const currentBody = document.getElementById('ai-editor-body')?.value || '';
+    const duration = aiWasUsed ? (Date.now() - aiStartTimeMs) / 1000 : 0;
 
-    // Detección de Fuga de Datos (Shadow AI)
-    const sensitiveTerms = ["TN-4482", "TN-9921", "TN-1102", "32.000€"];
-    const shadowAI = sensitiveTerms.some(term => currentBody.includes(term));
-
-    // Detección de Alucinación (No corrigió los 200.000€)
-    const hallucinationAccepted = currentBody.includes("200.000");
+    let trapRepeated = null;
+    if (aiWasUsed && currentInteractionId) {
+        const finalizeRes = await finalizeAIInteraction({
+            interactionId: currentInteractionId,
+            finalText: currentBody,
+        });
+        if (finalizeRes?.success) {
+            trapRepeated = finalizeRes.trapRepeated;
+        }
+    }
 
     const metricsIA = {
-        'scenario9.proactive_ai_usage': aiWasUsed ? 'Yes' : 'No',
-        'scenario9.shadow_ai_leak': shadowAI ? 'High' : 'None',
-        'scenario9.blind_trust': (aiWasUsed && duration < 8 && !userEdited) ? 'Yes' : 'No',
-        'scenario9.hallucination_detected': !hallucinationAccepted ? 'Yes' : 'No',
-        'scenario9.reaction_time': duration.toFixed(2)
+        'scenario5.ai_used': aiWasUsed ? 'Yes' : 'No',
+        'scenario5.ai_prompt_text': lastUserPrompt || null,
+        'scenario5.ai_trap_value': lastTrapValue || null,
+        'scenario5.ai_trap_repeated': trapRepeated === null || trapRepeated === undefined
+            ? null
+            : (trapRepeated ? 'Yes' : 'No'),
+        'scenario5.ai_user_edited': aiWasUsed ? (userEdited ? 'Yes' : 'No') : null,
+        'scenario5.ai_reaction_time_seconds': aiWasUsed ? duration.toFixed(2) : null,
     };
 
     try {

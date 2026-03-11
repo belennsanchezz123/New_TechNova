@@ -592,6 +592,12 @@
                 📊 Ver Taxonomía
               </button>
               <button
+                class="btn-action btn-success"
+                onclick="window.viewAIInteractions()"
+              >
+                🤖 Ver Interacciones IA
+              </button>
+              <button
                 class="btn-action btn-danger"
                 onclick="window.clearAllData()"
               >
@@ -942,7 +948,7 @@
                 <div class="metric-row">
                     <div class="metric-category">${formatScenarioName(m.scenario)}</div>
                     <div class="metric-name">${formatMetricName(m.metric_name)}</div>
-                    <div class="metric-value">${formatMetricValue(m.metric_value)}</div>
+                  <div class="metric-value">${formatMetricValue(m.metric_value, m.metric_name, m.scenario)}</div>
                 </div>
             `
                     )
@@ -976,8 +982,69 @@
         return name.replace(/_/g, ' ').replace(/\./g, ' ');
       }
 
-      function formatMetricValue(val) {
+      function formatCookieAction(action) {
+        const labels = {
+          accept: 'Aceptar todas',
+          reject: 'Rechazar',
+          customize: 'Personalizar',
+          dismiss_dark_pattern: 'Cerrar (acepta por dark pattern)',
+          dismiss_essential_only: 'Cerrar (solo esenciales)',
+        };
+        return labels[action] || action;
+      }
+
+      function getCookieRiskBadge(score) {
+        const n = Number(score);
+        if (Number.isNaN(n)) return '—';
+
+        let bg = '#e8f5e9';
+        let fg = '#1b5e20';
+        let label = 'Bajo';
+
+        if (n >= 67) {
+          bg = '#ffebee';
+          fg = '#b71c1c';
+          label = 'Alto';
+        } else if (n >= 34) {
+          bg = '#fff8e1';
+          fg = '#8d6e00';
+          label = 'Medio';
+        }
+
+        return `<span style="display:inline-block; padding:4px 10px; border-radius:999px; background:${bg}; color:${fg}; font-weight:700;">${label} (${n}/100)</span>`;
+      }
+
+      function formatMetricValue(val, metricName = '', scenario = '') {
         if (val === null || val === undefined || val === 'null' || val === '—') return '—';
+
+        if (scenario === 'scenario4' && metricName === 'cookie_consent_by_site') {
+          try {
+            const parsed = typeof val === 'string' ? JSON.parse(val) : val;
+            const entries = Object.entries(parsed || {});
+            if (entries.length === 0) return '—';
+
+            return entries
+              .map(([site, action]) => {
+                const siteLabel = site === 'official'
+                  ? 'Sitio oficial'
+                  : site === 'suspicious'
+                    ? 'Sitio sospechoso'
+                    : site === 'malicious'
+                      ? 'Sitio malicioso'
+                      : site;
+                const actionLabel = formatCookieAction(action);
+                return `<div style="margin-bottom:6px;"><span style="display:inline-block; min-width:130px; font-weight:600;">${siteLabel}:</span> ${actionLabel}</div>`;
+              })
+              .join('');
+          } catch (e) {
+            return String(val);
+          }
+        }
+
+        if (scenario === 'scenario4' && metricName === 'cookie_risk_score') {
+          return getCookieRiskBadge(val);
+        }
+
         // Detect decimal similarity scores (0.0–1.0)
         const num = parseFloat(val);
         if (!isNaN(num) && num >= 0 && num <= 1 && String(val).includes('.')) {
@@ -1120,6 +1187,90 @@
             return;
           alert('Error al cargar los cuestionarios');
           console.error(error);
+        }
+      };
+
+      window.viewAIInteractions = async function () {
+        try {
+          const response = await authFetch(`${API_URL}/sessions/ai/interactions`);
+          const data = await response.json();
+
+          if (!data.success) {
+            alert('No se pudieron cargar las interacciones de IA.');
+            return;
+          }
+
+          const interactions = data.interactions || [];
+
+          if (interactions.length === 0) {
+            document.getElementById('session-details').innerHTML =
+              '<h2>Interacciones IA</h2><p>No hay interacciones registradas todavia.</p>';
+            document.getElementById('metrics-details').innerHTML = '';
+            document.getElementById('metrics-modal').classList.add('active');
+            return;
+          }
+
+          const rows = interactions
+            .map((it) => {
+              const trapClass =
+                it.trap_repeated === 1
+                  ? 'color:#b71c1c; font-weight:700;'
+                  : it.trap_repeated === 0
+                    ? 'color:#1b5e20; font-weight:700;'
+                    : 'color:#666;';
+
+              const trapText =
+                it.trap_repeated === 1
+                  ? 'Repitio trampa'
+                  : it.trap_repeated === 0
+                    ? 'Corrigio trampa'
+                    : 'Sin evaluar';
+
+              return `
+                <tr>
+                  <td>${it.id}</td>
+                  <td>${it.session_id || '-'}</td>
+                  <td>${it.participant_id || '-'}</td>
+                  <td>${formatLocalDate(it.created_at)}</td>
+                  <td><small>${(it.user_prompt || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small></td>
+                  <td><small>${(it.trap_value || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small></td>
+                  <td><span style="${trapClass}">${trapText}</span></td>
+                </tr>
+              `;
+            })
+            .join('');
+
+          const html = `
+            <div style="overflow-x:auto;">
+              <table style="width:100%; font-size:0.82em;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Sesion</th>
+                    <th>Participante</th>
+                    <th>Fecha</th>
+                    <th>Prompt Usuario</th>
+                    <th>Dato Trampa</th>
+                    <th>Resultado</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          `;
+
+          document.getElementById('session-details').innerHTML =
+            `<h2>Interacciones IA (${interactions.length})</h2>`;
+          document.getElementById('metrics-details').innerHTML = html;
+          document.getElementById('metrics-modal').classList.add('active');
+        } catch (error) {
+          if (
+            error.message === 'No autenticado' ||
+            error.message === 'Sesión expirada'
+          )
+            return;
+          console.error('Error cargando interacciones IA:', error);
+          alert('Error al cargar las interacciones de IA.');
         }
       };
 
