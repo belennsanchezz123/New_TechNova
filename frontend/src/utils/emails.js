@@ -6,6 +6,7 @@ export const emails = [
       subject: 'Bienvenido al Equipo de Ventas',
       body: 'Hola, bienvenido a TechNova. Es un placer tenerte en el equipo de Ventas. Como nuevo empleado, por favor, revisa el cronograma de incorporación. Tu primera tarea importante es familiarizarte con nuestro protocolo de gestión de documentos sensibles (lo verás en el Drive). Cualquier duda, estoy a tu disposición.',
       read: false,
+    reportedAsPhishing: false,
       type: 'legit',
       time: '9:15 AM'
     },
@@ -14,8 +15,9 @@ export const emails = [
       from: 'Soporte Técnico TechNova',
       fromEmail: 'soporte@tech-nova.org',
       subject: '[URGENTE] Verificación de Credenciales',
-      body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><span onclick="window.handlePhishingClick(true, 2)" data-preview-url="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 VERIFICAR MI CUENTA AHORA</span>',
+    body: 'Estimado/a empleado/a de TechNova, Hemos detectado una actividad de inicio de sesión inusual en su cuenta. Por motivos de seguridad, su acceso a la red y a <b>TechNova Drive</b> ha sido temporalmente suspendido. Debe hacer clic en el enlace a continuación para verificar su identidad y reactivar su cuenta antes de la medianoche, o su perfil será desactivado permanentemente.<br><br><span onclick="window.handlePhishingClick(true, 2)" data-preview-url="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" title="http://tech-n0va-login.phishsite.ru/verify?uid=83a1" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 VERIFICAR MI CUENTA AHORA</span>',
       read: false,
+    reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '9:02 AM'
     },
@@ -26,6 +28,7 @@ export const emails = [
       subject: 'Actualización de Protocolo de MFA',
       body: 'Estimado usuario, Como parte de nuestra transición de seguridad de bienvenida, se requiere que <b>todos los empleados nuevos</b> actualicen su configuración de Autenticación Multifactor (MFA) antes del final del día. Por favor, acceda al Portal de Empleados de TechNova (el enlace es siempre <code>portal.technova.com</code>) para realizar la actualización. Gracias por tu cooperación.',
       read: false,
+    reportedAsPhishing: false,
       type: 'legit',
       time: '8:45 AM'
     },
@@ -36,6 +39,7 @@ export const emails = [
       subject: "Invitación: Evento 'Team Building'",
       body: '¡Hola Alex! Sabemos que estás empezando. Te invitamos a la \'Reunión de Novedades de TechNova\' este viernes. Es una excelente oportunidad para conocer a otros empleados nuevos y a tu equipo. Confirma tu asistencia en <b>TechNova Events</b> (nuestra red social interna) antes del miércoles. ¡Te esperamos!',
       read: false,
+    reportedAsPhishing: false,
       type: 'legit',
       time: '8:15 AM'
     },
@@ -44,8 +48,9 @@ export const emails = [
       from: 'RRHH TechNova',
       fromEmail: 'rrhh-alert@technova-support.net',
       subject: 'HR Alerta: Tu Bono fue Denegado',
-      body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true, 6)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
+    body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true, 6)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" title="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
       read: false,
+    reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '8:01 AM'
     },
@@ -54,18 +59,20 @@ export const emails = [
       from: 'Seguridad Microsoft 365',
       fromEmail: 'noreply@microsoft365-security.info',
       subject: 'Su sesión de Outlook ha expirado',
-      body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true, 7)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
+    body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true, 7)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" title="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
       read: false,
+    reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '7:55 AM'
     },
     {
       id: 8,
-      from: 'Admin SharePoint',
-      fromEmail: 'sharepoint-admin@technova-cloud.net',
-      subject: 'Documento compartido: "Nóminas Q1 2026"',
-      body: 'Un compañero ha compartido contigo un archivo confidencial en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br>Haz clic a continuación para acceder al documento compartido. Se requiere autenticación para verificar tu identidad.<br><br><span onclick="window.handlePhishingClick(true, 8)" data-preview-url="http://technova-cloud.net/sharepoint/docs/nominas?auth=required" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace expira en 24 horas.</small>',
+            from: 'SharePoint Admin [EXTERNO]',
+            fromEmail: 'sharepoint-admin@technova-docs-security.com',
+            subject: '[Acción requerida] Documento compartido: "Nóminas Q1 2026"',
+        body: 'Se detectó actividad no habitual en tu acceso a documentos. Para evitar el bloqueo automático de tu cuenta, revisa ahora el archivo compartido en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br><b>Importante:</b> confirma tus credenciales corporativas para mantener el acceso activo.<br><br><span onclick="window.handlePhishingClick(true, 8)" data-preview-url="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" title="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace caduca en 10 minutos.</small>',
       read: false,
+    reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '7:40 AM'
     },
@@ -74,12 +81,33 @@ export const emails = [
       from: 'Laura Pérez (Gerente)',
       fromEmail: 'laura.perez@technova.com',
       subject: 'Re: Tareas pendientes — necesito un documento',
-      body: 'Alex, ¿podrías reenviarme la versión final del \'Plan de Introducción\' que te envié ayer? Necesito revisarla antes de nuestra reunión de las 3 PM. Puedes adjuntarlo a este correo o subirlo al Drive y compartirme el enlace. Gracias.',
+    body: 'Alex, ¿podrías reenviarme la versión final del \'Plan de Introducción\' que te compartí esta mañana? Necesito revisarla antes de nuestra reunión de las 3 PM. Puedes adjuntarlo a este correo o subirlo al Drive y compartirme el enlace. Gracias.',
       read: false,
+    reportedAsPhishing: false,
       type: 'legit',
       time: '7:30 AM'
     },
 ];
+
+let currentEmailFilter = 'all';
+
+function getFilteredEmails() {
+    switch (currentEmailFilter) {
+        case 'unread':
+            return emails.filter(email => !email.read);
+        case 'reported':
+            return emails.filter(email => email.reportedAsPhishing);
+        case 'all':
+        default:
+            return emails;
+    }
+}
+
+export function setEmailFilter(filter) {
+    const validFilters = new Set(['all', 'unread', 'reported']);
+    currentEmailFilter = validFilters.has(filter) ? filter : 'all';
+    renderEmails();
+}
 
 // ── Render email list ─────────────────────────────────────────────
 
@@ -93,25 +121,43 @@ export function renderEmails() {
             <span class="compose-icon">✏️</span>
             <span>Nuevo correo</span>
         </div>
+        <div class="email-filter-bar">
+            <button class="email-filter-btn ${currentEmailFilter === 'all' ? 'active' : ''}" onclick="window.setEmailFilter('all')">Todos</button>
+            <button class="email-filter-btn ${currentEmailFilter === 'unread' ? 'active' : ''}" onclick="window.setEmailFilter('unread')">No leídos</button>
+            <button class="email-filter-btn ${currentEmailFilter === 'reported' ? 'active' : ''}" onclick="window.setEmailFilter('reported')">Reportados</button>
+        </div>
     `;
 
-    emails.forEach(email => {
+    const visibleEmails = getFilteredEmails();
+
+    if (visibleEmails.length === 0) {
+        html += '<div class="email-empty-state">No hay correos para este filtro.</div>';
+    }
+
+    visibleEmails.forEach(email => {
         const readClass = email.read ? 'read' : 'unread';
+        const reportedClass = email.reportedAsPhishing ? 'reported' : '';
         const senderInitial = email.from.charAt(0).toUpperCase();
         
         // Color based on sender (consistent per email)
         const colors = ['#0078d4', '#e74c3c', '#2ecc71', '#9b59b6', '#e67e22', '#1abc9c', '#e91e63', '#ff5722', '#3f51b5'];
         const colorIdx = email.id % colors.length;
         const avatarColor = colors[colorIdx];
+        const reportedBadge = email.reportedAsPhishing
+            ? '<span class="email-status-badge reported">Reportado</span>'
+            : '';
 
         html += `
-            <div class="email-item ${readClass}" 
+            <div class="email-item ${readClass} ${reportedClass}" 
                  onclick="window.openEmail(${email.id})"
                  oncontextmenu="event.preventDefault(); window._showReportMenu(event, ${email.id}); return false;">
                 <div class="email-avatar" style="background: ${avatarColor};">${senderInitial}</div>
                 <div class="email-item-content">
                     <div class="email-item-header">
-                        <span class="email-sender">${email.from}</span>
+                        <span class="email-sender-wrap">
+                            <span class="email-sender">${email.from}</span>
+                            ${reportedBadge}
+                        </span>
                         <span class="email-time">${email.time}</span>
                     </div>
                     <div class="email-subject">${email.subject}</div>

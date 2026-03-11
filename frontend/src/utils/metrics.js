@@ -5,7 +5,11 @@
 //   INTEGER>1   → conteo / paso numérico
 
 export const metrics = {
+    simulation: {
+        total_time_seconds:          null    // INT: tiempo total de la simulacion (segundos)
+    },
     scenario1: {
+        time_seconds:                null,   // INT: tiempo acumulado en escenario 1 (segundos)
         wifi_public:                  null,   // INT: 1=usó red pública, 0=usó red corporativa
         mail_password_strength:       null,   // TEXT: 'Weak' | 'Medium' | 'Strong'
         default_password_flag:        null,   // INT: 1=deja la contraseña preestablecida, 0=la cambia
@@ -20,15 +24,18 @@ export const metrics = {
         teams_microphone_permission:  null,   // INT: 1=concedió, 0=denegó
     },
     scenario2: {
+        time_seconds:                null,   // INT: tiempo acumulado en escenario 2 (segundos)
         manual_lock_screen:           null    // INT: 1=bloqueó, 0=no
     },
     scenario3: {
+        time_seconds:                null,   // INT: tiempo acumulado en escenario 3 (segundos)
         phishing_clicked:             0,      // REAL: 0.0–1.0 % enlaces phishing clicados
         phishing_reported:            0,      // REAL: 0.0–1.0 % phishing reportados correctamente
-        credential_compromise:        0,      // INT: 1=entered creds on fake page, 0=no
+        credential_exposure:          0,      // INT: 1=entered creds on fake page, 0=no
         secure_data_transmission:     null    // INT: 1=used encryption (secure), 0=no encryption
     },
     scenario4: {
+        time_seconds:                null,   // INT: tiempo acumulado en escenario 4 (segundos)
         response_to_browser_warnings: null,   // TEXT: 'Ignored' | 'Heeded' | 'Not Encountered'
         cookie_consent:               null,   // TEXT: 'Accepted All' | 'Rejected' | 'Customized'
         clicked_dangerous_link:       0,      // INT: 1=sí, 0=no
@@ -38,24 +45,34 @@ export const metrics = {
         dangerous_links_clicked_pct:  null,   // REAL: % enlaces peligrosos clicados (0-100)
     },
     scenario5: {
+        time_seconds:                 null,   // INT: tiempo acumulado en escenario 5 (segundos)
         personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados
         third_party_app_authorization: null  // INT: 1=autorizó app, 0=rechazó
     },
     scenario6: {
+        time_seconds:                null,    // INT: tiempo acumulado en escenario 6 (segundos)
         data_encryption_usage:        0,     // INT: 1=usó cifrado, 0=no
         secure_data_disposal:         0,     // INT: 1=borrado seguro, 0=no
         deleted_final_report:         0      // INT: 1=borró el informe final, 0=no
     },
     scenario7: {
+        time_seconds:                null,   // INT: tiempo acumulado en escenario 7 (segundos)
         document_deleted:             0,     // INT: 1=eliminó documento sensible desde Descargas, 0=no
         recycle_bin_emptied:          0      // INT: 1=vacío la papelera, 0=no
     },
+    scenario8: {
+        time_seconds:                null    // INT: tiempo acumulado en escenario 8 (segundos)
+    },
     scenario9: {
+        time_seconds:                null,  // INT: tiempo acumulado en escenario 9 (segundos)
         proactive_ai_usage:           null,  // TEXT: descripción de uso IA
         shadow_ai_leak:               null,  // INT: 1=filtración via shadow AI, 0=no
         blind_trust:                  null,  // INT: 1=confió ciegamente en IA, 0=no
         hallucination_detected:       null,  // INT: 1=detectó alucinación, 0=no
         reaction_time:                0      // INT: segundos de reacción
+    },
+    scenario10: {
+        time_seconds:                null    // INT: tiempo acumulado en escenario 10 (segundos)
     },
     unexpected: {
         update_compliance_rate:       null,  // INT: 1=aceptó actualización falsa, 0=rechazó
@@ -83,7 +100,10 @@ export function displayResults() {
         scenario5: 'Social Media',
         scenario6: 'File Cleanup',
         scenario7: 'Downloads & Recycle Bin',
+        scenario8: 'Breach Check',
         scenario9: 'AI Assistant',
+        scenario10: 'Session End',
+        simulation: 'Simulation',
         unexpected: 'Unexpected Events',
         taskbar: 'Taskbar Updates',
     };

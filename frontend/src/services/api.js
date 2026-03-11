@@ -2,6 +2,30 @@
 const API_URL = '/api';
 import { getParticipantId } from '../utils/participant.js';
 
+async function parseApiResponse(response) {
+    const raw = await response.text();
+
+    let data = null;
+    if (raw) {
+        try {
+            data = JSON.parse(raw);
+        } catch {
+            data = null;
+        }
+    }
+
+    if (!response.ok) {
+        const fallbackError = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`;
+        return {
+            success: false,
+            error: data?.error || raw || fallbackError,
+            status: response.status
+        };
+    }
+
+    return data || { success: true };
+}
+
 /**
  * Inicia la sesión global al aceptar las políticas.
  */
@@ -12,7 +36,7 @@ export async function startSession(userIdentifier) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userIdentifier })
         });
-        return await response.json();
+        return await parseApiResponse(response);
     } catch (error) {
         console.error('Error starting session:', error);
         return { success: false, error: error.message };
@@ -36,10 +60,10 @@ export async function createRegistration(username, serviceName, passwordStrength
                 passwordReuseCount
             })
         });
-        return await res.json();
+        return await parseApiResponse(res);
     } catch (error) {
         console.error('Error in createRegistration:', error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
 
@@ -55,10 +79,10 @@ export async function saveMetrics(sessionId, metricsObject) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, metrics: metricsObject })
         });
-        return await response.json();
+        return await parseApiResponse(response);
     } catch (error) {
         console.error('Error en saveMetrics:', error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
 
@@ -72,10 +96,10 @@ export async function completeRegistration(sessionId, patch = {}) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, ...patch })
         });
-        return await res.json();
+        return await parseApiResponse(res);
     } catch (error) {
         console.error('Error in completeRegistration:', error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
 
@@ -89,7 +113,7 @@ export async function saveQuestionnaire(questionnaireData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(questionnaireData),
         });
-        return await response.json();
+        return await parseApiResponse(response);
     } catch (error) {
         console.error('Error al guardar el cuestionario:', error);
         throw error;
@@ -106,9 +130,9 @@ export async function completeSession(sessionId, consentEmail = null) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionId, consentEmail })
         });
-        return await response.json();
+        return await parseApiResponse(response);
     } catch (error) {
         console.error('Error al completar sesión:', error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
