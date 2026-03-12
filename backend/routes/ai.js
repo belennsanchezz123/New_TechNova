@@ -11,8 +11,12 @@ function buildTrapSummary() {
 - Lucia Marquez (TN-9921): Salario ${trapValue}. Solicitud de teletrabajo en revision.
 - Javier Ochoa (TN-1102): Salario 32.000€. Pide subida a 35.000€.
 - Maria Garcia (TN-2231): Ajuste a 45.000€ (desde 42.000€).
+- Sergio Lopez (TN-5542): 60.000€ + 5% bonus (sin cambios).
 - Elena Gomez (TN-7712): Remoto 100% pendiente.
 - David Perez (TN-3341): Ascenso a 50.000€.
+- Ana Belen (TN-8823): 52.000€ (sin cambios).
+- Pedro Juan (TN-1234): 30.000€ (sin cambios).
+- Laura Martinez (TN-5678): 40.000€ (sin cambios).
 
 Nota: valida los importes con el historial antes de enviar.`;
 
@@ -28,10 +32,24 @@ function injectTrapIntoSummary(text, trapValue) {
     const safeText = String(text || '').trim();
     if (!safeText) return safeText;
 
-    // Intentar reemplazar una posible linea de Lucia si existe.
-    const luciaRegex = /(Luci[aá]\s+M[áa]rquez\s*\(TN-9921\)\s*:\s*Salario\s*)([^\n\r]+)/i;
-    if (luciaRegex.test(safeText)) {
-        return safeText.replace(luciaRegex, `$1${trapValue}. Solicitud de teletrabajo en revision.`);
+    const lines = safeText.split(/\r?\n/);
+
+    // Buscar una linea de Lucia (con o sin TN-9921, con o sin formato markdown)
+    const luciaLineIndex = lines.findIndex((line) => {
+        const normalized = line
+            .toLowerCase()
+            .replace(/[\*`_]/g, '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        return /lucia\s+marquez/.test(normalized) && /\d/.test(normalized);
+    });
+
+    if (luciaLineIndex >= 0) {
+        const prefixMatch = lines[luciaLineIndex].match(/^\s*([-*]\s+|\d+\.\s+)?/);
+        const prefix = prefixMatch ? prefixMatch[0] : '- ';
+        lines[luciaLineIndex] = `${prefix}Lucia Marquez (TN-9921): Salario ${trapValue}. Solicitud de teletrabajo en revision.`;
+        return lines.join('\n');
     }
 
     // Si no existe, anadir el dato trampa al final del resumen.
@@ -74,6 +92,26 @@ async function callRealAI({ prompt, chatTranscript }) {
     return data?.choices?.[0]?.message?.content?.trim() || null;
 }
 
+function isSummaryResponseComplete(text) {
+    const normalized = String(text || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    const expectedPeople = [
+        'carlos ruiz',
+        'maria garcia',
+        'lucia marquez',
+        'javier ochoa',
+        'sergio lopez',
+        'elena gomez',
+        'david perez',
+    ];
+
+    const presentCount = expectedPeople.filter((name) => normalized.includes(name)).length;
+    return presentCount >= 5;
+}
+
 export function setupAIRoutes() {
     const router = express.Router();
 
@@ -96,10 +134,19 @@ export function setupAIRoutes() {
             const trapEnabled = shouldInjectTrap(promptText);
 
             try {
-                aiText = await callRealAI({ prompt: promptText, chatTranscript: chatTranscript || '' });
+                const summaryPrompt = trapEnabled
+                    ? `${promptText}\n\nDevuelve un resumen completo con todos los empleados mencionados, salario actual/propuesto y cambios. Usa lista clara.`
+                    : promptText;
+
+                aiText = await callRealAI({ prompt: summaryPrompt, chatTranscript: chatTranscript || '' });
                 if (aiText) source = 'openai';
             } catch (e) {
                 console.warn('Fallo IA real, usando respuesta controlada:', e.message);
+            }
+
+            if (trapEnabled && aiText && !isSummaryResponseComplete(aiText)) {
+                aiText = trap.summary;
+                source = 'fallback';
             }
 
             const aiResponse = aiText
