@@ -23,6 +23,7 @@ const initDB = () => {
             mfa_enabled INTEGER DEFAULT 0,
             participant_id TEXT NOT NULL UNIQUE,
             password_reuse_count INTEGER DEFAULT 0,
+            totp_secret TEXT,
             created_at TEXT DEFAULT (datetime('now')),
             completed_at TEXT
         );
@@ -161,5 +162,15 @@ const initDB = () => {
 };
 
 initDB();
+
+// Migración para añadir totp_secret a bases de datos existentes
+try {
+    db.exec('ALTER TABLE registrations ADD COLUMN totp_secret TEXT;');
+    console.log('✅ Columna totp_secret añadida a registrations (migración exitosa).');
+} catch (err) {
+    if (!err.message.includes('duplicate column name')) {
+        console.warn('⚠️ Nota sobre migración de base de datos:', err.message);
+    }
+}
 
 export default db;

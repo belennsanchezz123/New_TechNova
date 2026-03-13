@@ -1,6 +1,8 @@
 import express from 'express';
 import db from '../database.js';
 import { getExporter, getAvailableFormats } from '../utils/exporters/ExporterFactory.js';
+import speakeasy from 'speakeasy';
+import QRCode from 'qrcode';
 
 // ══════════════════════════════════════════════════════════════════════
 // RUTAS PÚBLICAS — usadas por los participantes (NO requieren JWT)
@@ -121,6 +123,67 @@ export function setupSessionRoutes() {
             res.json({ success: true, session: updated, changes: info.changes });
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA CONFIGURAR MFA (TOTP)
+    router.post('/mfa/setup', async (req, res) => {
+        try {
+            const { sessionId } = req.body;
+            if (!sessionId) {
+                return res.status(400).json({ success: false, error: 'Falta sessionId' });
+            }
+
+            // Generar secreto TOTP
+            const secret = speakeasy.generateSecret({
+                name: `TechNova Security (${sessionId})`,
+                length: 20
+            });
+
+            // Guardar secreto en la base de datos
+            db.prepare('UPDATE registrations SET totp_secret = ? WHERE id = ?').run(secret.base32, sessionId);
+
+            // Generar QR Code
+            const qrUrl = await QRCode.toDataURL(secret.otpauth_url);
+
+            res.json({
+                success: true,
+                secret: secret.base32,
+                qrUrl: qrUrl
+            });
+        } catch (error) {
+            console.error('Error generando TOTP:', error);
+            res.status(500).json({ success: false, error: 'Error al generar la configuración MFA' });
+        }
+    });
+
+    // RUTA PARA VERIFICAR MFA (TOTP)
+    router.post('/mfa/verify', async (req, res) => {
+        try {
+            const { sessionId, code } = req.body;
+            if (!sessionId || !code) {
+                return res.status(400).json({ success: false, error: 'Faltan datos' });
+            }
+
+            // Obtener secreto de la base de datos
+            const row = db.prepare('SELECT totp_secret FROM registrations WHERE id = ?').get(sessionId);
+            
+            if (!row || !row.totp_secret) {
+                return res.status(400).json({ success: false, error: 'MFA no configurado para esta sesión' });
+            }
+
+            // Verificar código
+            const verified = speakeasy.totp.verify({
+                secret: row.totp_secret,
+                encoding: 'base32',
+                token: code,
+                window: 1 // Permite ±30 segundos de desajuste
+            });
+
+            res.json({ success: true, verified });
+        } catch (error) {
+            console.error('Error verificando TOTP:', error);
+            res.status(500).json({ success: false, error: 'Error al verificar el código MFA' });
         }
     });
 
