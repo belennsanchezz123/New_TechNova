@@ -1,6 +1,7 @@
 // frontend/src/services/api.js
 const API_URL = '/api';
 import { getParticipantId } from '../utils/participant.js';
+import { getSessionId } from '../utils/session.js';
 
 /**
  * Inicia la sesión global al aceptar las políticas.
@@ -24,11 +25,13 @@ export async function startSession(userIdentifier) {
  */
 export async function createRegistration(username, serviceName, passwordStrength, passwordReuseCount) {
     const participantId = getParticipantId();
+    const sessionId = getSessionId();
     try {
         const res = await fetch(`${API_URL}/sessions/start`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                sessionId,
                 userIdentifier: username,
                 service: serviceName, 
                 participantId: participantId,

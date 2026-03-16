@@ -13,7 +13,7 @@ export function setupSessionRoutes() {
     // RUTA PARA INICIAR SESIÓN (Al aceptar políticas o registrar servicio)
     router.post('/start', async (req, res) => {
         try {
-            const { userIdentifier, service, participantId, passwordStrength, passwordReuseCount } = req.body;
+            const { sessionId, userIdentifier, service, participantId, passwordStrength, passwordReuseCount } = req.body;
 
             // 1. Validar identificador
             const pid = participantId || userIdentifier;
@@ -21,48 +21,62 @@ export function setupSessionRoutes() {
                 return res.status(400).json({ success: false, error: 'Se requiere participantId o userIdentifier' });
             }
 
-            // 2. Buscar si ya existe una sesión activa para este participante
-            // Esto evita crear múltiples filas para el mismo usuario (P001)
-            const existing = db.prepare(`
-                SELECT id, username, service, participant_id, created_at, 
-                       COALESCE(participant_id, username) AS user_identifier
-                FROM registrations
-                WHERE participant_id = ? OR username = ?
-                LIMIT 1
-            `).get(pid, pid);
+            // 2. Buscar si ya existe la sesión explícitamente por sessionId
+            // Esto evita que si dos navegadores usan "P001", uno machaque al otro (P001)
+            if (sessionId) {
+                const existing = db.prepare(`
+                    SELECT id, username, service, participant_id, created_at, 
+                           COALESCE(participant_id, username) AS user_identifier
+                    FROM registrations
+                    WHERE id = ?
+                    LIMIT 1
+                `).get(sessionId);
 
-            if (existing) {
-                console.log(`Sesión recuperada para: ${pid}`);
-                // ACTUALIZACIÓN CLAVE: Ponemos la fecha de creación a 'ahora' 
-                // para que el Admin la muestre como sesión nueva/activa.
-                db.prepare(`
-                UPDATE registrations 
-                SET created_at = datetime('now'), completed_at = NULL 
-                WHERE id = ?
-                `).run(existing.id);
-
-                // Si además estamos registrando un servicio real
-                if (service && service !== 'initial_setup') {
+                if (existing) {
+                    console.log(`Sesión recuperada por ID explícito: ${sessionId} (Participant: ${existing.participant_id})`);
+                    
                     db.prepare(`
                     UPDATE registrations 
-                    SET username = ?, service = ?, password_strength = ?, password_reuse_count = ?
+                    SET created_at = datetime('now'), completed_at = NULL 
                     WHERE id = ?
-                    `).run(pid, service, passwordStrength || 'pending', passwordReuseCount || 0, existing.id);
+                    `).run(existing.id);
+
+                    // Si además estamos registrando un servicio real
+                    if (service && service !== 'initial_setup') {
+                        // Si ya tiene un nombre de usuario real (!= P00X), no lo machacamos.
+                        // Usamos existing.participant_id para comprobarlo, ya que \`pid\` podría ser genérico ("P001")
+                        const isPreviousIdReal = existing.username && existing.username !== existing.participant_id;
+                        const newUsername = isPreviousIdReal ? existing.username : (userIdentifier || pid);
+
+                        db.prepare(`
+                        UPDATE registrations 
+                        SET username = ?, service = ?, password_strength = ?, password_reuse_count = ?
+                        WHERE id = ?
+                        `).run(newUsername, service, passwordStrength || 'pending', passwordReuseCount || 0, existing.id);
+                    }
+
+                    // Recuperar el objeto actualizado para devolverlo con la estructura correcta
+                    const updatedSession = db.prepare(`
+                        SELECT id, username, participant_id, service, created_at AS started_at, 
+                        COALESCE(participant_id, username) AS user_identifier 
+                        FROM registrations WHERE id = ?
+                    `).get(existing.id);
+
+                    return res.json({ success: true, session: updatedSession, created: false });
                 }
-
-                // Recuperar el objeto actualizado para devolverlo con la estructura correcta
-                const updatedSession = db.prepare(`
-                    SELECT id, username, participant_id, service, created_at AS started_at, 
-                    COALESCE(participant_id, username) AS user_identifier 
-                    FROM registrations WHERE id = ?
-                `).get(existing.id);
-
-                return res.json({ success: true, session: updatedSession, created: false });
             }
 
-            // 3. Crear nueva sesión
+            // 3. Crear nueva sesión si no hay un sessionId o no se encontró
+            // Aseguramos que el PID sea único en base de datos aunque dos ingresen "P001"
+            let finalPid = pid;
+            let counter = 1;
+            while (db.prepare('SELECT id FROM registrations WHERE participant_id = ?').get(finalPid)) {
+                finalPid = `${pid}_${counter}`;
+                counter++;
+            }
+
             // Importante: Rellenamos campos 'NOT NULL' con valores por defecto si vienen vacíos
-            const finalUsername = pid; 
+            const finalUsername = finalPid; 
             const finalService = service || 'initial_setup';
             const finalStrength = passwordStrength || 'pending';
 
@@ -75,7 +89,7 @@ export function setupSessionRoutes() {
                 finalUsername,
                 finalService,
                 finalStrength,
-                pid,
+                finalPid,
                 passwordReuseCount || 0
             );
 
@@ -86,7 +100,7 @@ export function setupSessionRoutes() {
                 FROM registrations WHERE id = ?
             `).get(result.lastInsertRowid);
 
-            console.log(`Nueva sesión generada. ID: ${result.lastInsertRowid}`);
+            console.log(`Nueva sesión generada. ID: ${result.lastInsertRowid} (Asignado: ${finalPid})`);
             return res.json({ success: true, session: newSession, created: true });
 
         } catch (error) {
