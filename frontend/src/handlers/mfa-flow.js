@@ -273,33 +273,65 @@ function getMFAStep2HTML() {
         `;
 
     } else if (method === 'App') {
-        const codeText = `Tu código TechNova es: ${mfaState.generatedCode}`;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codeText)}`;
-
         content = `
             <h3>Configurar App de Autenticación</h3>
             <p>Escanea este código QR con la cámara de tu móvil para obtener el código:</p>
             
-            <div class="mfa-qr-container" style="text-align: center;">
-                <img src="${qrUrl}" alt="Código QR" 
+            <div id="mfa-qr-loading" style="text-align: center; padding: 20px;">
+                <div class="mfa-spinner" style="display:inline-block; width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid #0078d4; border-radius:50%; animation: spin 1s linear infinite;"></div>
+                <p>Generando código QR...</p>
+            </div>
+            
+            <div id="mfa-qr-wrapper" class="mfa-qr-container" style="text-align: center; display: none;">
+                <img id="mfa-qr-image" src="" alt="Código QR" 
                      style="width: 200px; height: 200px; border: 4px solid #f0f0f0; border-radius: 8px; margin: 10px auto; display: block;">
                 <small style="display:block; margin-top:10px; color:#666;">
-                    Al escanearlo verás el código de verificación en texto plano.
+                    Escanea este código con Google Authenticator o Authy.
                 </small>
             </div>
             
             <div class="mfa-form-group" style="margin-top: 20px;">
                 <label>Introduce el código de 6 dígitos</label>
                 <input type="text" id="mfa-app-code" class="mfa-input" placeholder="______" maxlength="6"
-                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                       style="text-align:center; font-size:20px; letter-spacing:5px;" disabled>
             </div>
+            
+            <style>
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
         `;
+
+        // Fetch QR asynchronously after rendering the skeleton
+        setTimeout(async () => {
+            try {
+                const sid = getSessionId();
+                const response = await fetch('/api/sessions/mfa/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: sid })
+                });
+                const data = await response.json();
+                
+                if (data.success && data.qrUrl) {
+                    document.getElementById('mfa-qr-loading').style.display = 'none';
+                    document.getElementById('mfa-qr-image').src = data.qrUrl;
+                    document.getElementById('mfa-qr-wrapper').style.display = 'block';
+                    document.getElementById('mfa-app-code').disabled = false;
+                    document.getElementById('mfa-app-code').focus();
+                } else {
+                    document.getElementById('mfa-qr-loading').innerHTML = '<p style="color:red;">Error al generar QR. Intenta de nuevo.</p>';
+                }
+            } catch (err) {
+                console.error('Error fetching QR:', err);
+                document.getElementById('mfa-qr-loading').innerHTML = '<p style="color:red;">Error de conexión. Intenta de nuevo.</p>';
+            }
+        }, 100);
     }
 
     const actions = `
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button onclick="window.proceedToStep3()">Continuar →</button>
+            <button onclick="window.proceedToStep3()" id="mfa-proceed-btn">Continuar →</button>
             <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
         </div>
     `;
@@ -422,33 +454,61 @@ function getMFAStep6BackupConfigHTML() {
         `;
 
     } else if (method === 'App') {
-        const codeText = `Tu código TechNova (respaldo) es: ${mfaState.generatedCode}`;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codeText)}`;
-
         content = `
             <h3>Configurar App de Autenticación (Respaldo)</h3>
             <p>Escanea este código QR con la cámara de tu móvil para obtener el código:</p>
             
-            <div class="mfa-qr-container" style="text-align: center;">
-                <img src="${qrUrl}" alt="Código QR" 
+            <div id="mfa-qr-loading-backup" style="text-align: center; padding: 20px;">
+                <div class="mfa-spinner" style="display:inline-block; width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid #0078d4; border-radius:50%; animation: spin 1s linear infinite;"></div>
+                <p>Generando código QR...</p>
+            </div>
+            
+            <div id="mfa-qr-wrapper-backup" class="mfa-qr-container" style="text-align: center; display: none;">
+                <img id="mfa-qr-image-backup" src="" alt="Código QR" 
                      style="width: 200px; height: 200px; border: 4px solid #f0f0f0; border-radius: 8px; margin: 10px auto; display: block;">
                 <small style="display:block; margin-top:10px; color:#666;">
-                    Al escanearlo verás el código de verificación en texto plano.
+                    Escanea este código con Google Authenticator o Authy.
                 </small>
             </div>
             
             <div class="mfa-form-group" style="margin-top: 20px;">
                 <label>Introduce el código de 6 dígitos</label>
                 <input type="text" id="mfa-app-code" class="mfa-input" placeholder="______" maxlength="6"
-                       style="text-align:center; font-size:20px; letter-spacing:5px;">
+                       style="text-align:center; font-size:20px; letter-spacing:5px;" disabled>
             </div>
         `;
+
+        // Fetch QR asynchronously after rendering the skeleton
+        setTimeout(async () => {
+            try {
+                const sid = getSessionId();
+                const response = await fetch('/api/sessions/mfa/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: sid })
+                });
+                const data = await response.json();
+                
+                if (data.success && data.qrUrl) {
+                    document.getElementById('mfa-qr-loading-backup').style.display = 'none';
+                    document.getElementById('mfa-qr-image-backup').src = data.qrUrl;
+                    document.getElementById('mfa-qr-wrapper-backup').style.display = 'block';
+                    document.getElementById('mfa-app-code').disabled = false;
+                    document.getElementById('mfa-app-code').focus();
+                } else {
+                    document.getElementById('mfa-qr-loading-backup').innerHTML = '<p style="color:red;">Error al generar QR. Intenta de nuevo.</p>';
+                }
+            } catch (err) {
+                console.error('Error fetching QR:', err);
+                document.getElementById('mfa-qr-loading-backup').innerHTML = '<p style="color:red;">Error de conexión. Intenta de nuevo.</p>';
+            }
+        }, 100);
     }
 
     const actions = `
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button onclick="window.proceedFromBackupConfig()">Continuar →</button>
+            <button onclick="window.proceedFromBackupConfig()" id="mfa-proceed-btn-backup">Continuar →</button>
             <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
         </div>
     `;
@@ -557,7 +617,7 @@ export function skipBackupMethod() {
     renderMFAStep(4);
 }
 
-/** Valida el código introducido en un paso de configuración */
+/** Valida el código introducido en un paso de configuración (síncrono para SMS/Email) */
 function validateMethodCode(method) {
     if (method === 'SMS') {
         const code = document.getElementById('mfa-sms-code')?.value;
@@ -571,34 +631,102 @@ function validateMethodCode(method) {
             alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
             return false;
         }
-    } else if (method === 'App') {
-        const code = document.getElementById('mfa-app-code')?.value;
-        if (code !== mfaState.generatedCode) {
-            alert('Código incorrecto. Escanea el QR con la cámara de tu móvil para ver el código.');
-            return false;
-        }
     }
     return true;
 }
 
-export function proceedToStep3() {
-    if (!validateMethodCode(mfaState.primaryMethod)) return;
-    // Track email alternative if primary method is Email
-    if (mfaState.primaryMethod === 'Email') {
-        const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
-        mfaState.emailAlternative = altEmail ? 1 : 0;
+export async function proceedToStep3() {
+    const btn = document.getElementById('mfa-proceed-btn');
+    const method = mfaState.primaryMethod;
+
+    if (method === 'App') {
+        const code = document.getElementById('mfa-app-code')?.value;
+        if (!code || code.length !== 6) {
+            alert('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
+            return;
+        }
+        
+        if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+        
+        try {
+            const sid = getSessionId();
+            const response = await fetch('/api/sessions/mfa/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: sid, code })
+            });
+            const data = await response.json();
+            
+            if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
+            
+            if (!data.success || !data.verified) {
+                alert('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
+                return;
+            }
+        } catch (err) {
+            console.error('Error verifying TOTP:', err);
+            if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
+            alert('Error al verificar el código. Intenta de nuevo.');
+            return;
+        }
+    } else {
+        if (!validateMethodCode(method)) return;
+        
+        // Track email alternative if primary method is Email
+        if (method === 'Email') {
+            const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
+            mfaState.emailAlternative = altEmail ? 1 : 0;
+        }
     }
+
     renderMFAStep(3);
 }
 
 /** Avanza desde la configuración del método de respaldo a los códigos de recuperación */
-export function proceedFromBackupConfig() {
-    if (!validateMethodCode(mfaState.backupMethod)) return;
-    // Track email alternative if backup method is Email
-    if (mfaState.backupMethod === 'Email') {
-        const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
-        mfaState.emailAlternative = altEmail ? 1 : 0;
+export async function proceedFromBackupConfig() {
+    const btn = document.getElementById('mfa-proceed-btn-backup');
+    const method = mfaState.backupMethod;
+
+    if (method === 'App') {
+        const code = document.getElementById('mfa-app-code')?.value;
+        if (!code || code.length !== 6) {
+            alert('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
+            return;
+        }
+        
+        if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+        
+        try {
+            const sid = getSessionId();
+            const response = await fetch('/api/sessions/mfa/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: sid, code })
+            });
+            const data = await response.json();
+            
+            if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
+            
+            if (!data.success || !data.verified) {
+                alert('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
+                return;
+            }
+        } catch (err) {
+            console.error('Error verifying TOTP:', err);
+            if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
+            alert('Error al verificar el código. Intenta de nuevo.');
+            return;
+        }
+    } else {
+        if (!validateMethodCode(method)) return;
+        
+        // Track email alternative if backup method is Email
+        if (method === 'Email') {
+            const altEmail = document.getElementById('mfa-alt-email')?.value?.trim();
+            mfaState.emailAlternative = altEmail ? 1 : 0;
+        }
     }
+    
     renderMFAStep(4);
 }
 

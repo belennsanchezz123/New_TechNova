@@ -11,6 +11,8 @@
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
-    "lynx-platform": "file:.."
+    "lynx-platform": "file:..",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0"
   }
 }
