@@ -1,7 +1,7 @@
 import { metrics } from '../utils/metrics.js';
 import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
-import { emails, openEmail as _originalOpenEmail, openComposeEmail } from '../utils/emails.js';
+import { emails, openEmail as _originalOpenEmail, openComposeEmail, renderEmails as _renderEmails } from '../utils/emails.js';
 
 export { openComposeEmail };
 
@@ -27,6 +27,7 @@ export function areAllEmailsRead() {
 export function initScenario3() {
     const phase2 = document.getElementById('email-phase-2');
     if (phase2) phase2.style.display = 'none';
+    _syncPhishingReasonsMetric();
 }
 
 let composedEmailAttachments = [];
@@ -34,6 +35,17 @@ let composedEmailAttachments = [];
 // ── Phishing tracking (Sets para porcentajes) ─────────────────────
 const _clickedPhishingIds = new Set();
 const _reportedPhishingIds = new Set();
+const _falsePositiveReportedIds = new Set();
+const _phishingReportReasons = {
+    mensaje2: '',
+    mensaje6: '',
+    mensaje7: '',
+    mensaje8: ''
+};
+
+function _syncPhishingReasonsMetric() {
+    metrics.scenario3.phishing_report_reasons = JSON.stringify(_phishingReportReasons);
+}
 
 /** Cuenta cuántos correos de phishing existen en la bandeja */
 function _getTotalPhishingCount() {
@@ -51,16 +63,62 @@ function _updatePhishingPercentages() {
 
 // ── Phishing handling ─────────────────────────────────────────────
 
-export function handlePhishingClick(isCredPhish, emailId) {
+function _promptMaskedPassword(message) {
+    return new Promise(resolve => {
+        const existing = document.getElementById('phishing-password-modal');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'phishing-password-modal';
+        overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 12000;';
+
+        overlay.innerHTML = `
+            <div style="background: #fff; width: 90%; max-width: 420px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); padding: 18px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a1a2e;">Lynx Security</h3>
+                <p style="margin: 0 0 14px 0; color: #555; font-size: 14px; line-height: 1.4;">${message}</p>
+                <input id="phishing-password-input" type="password" autocomplete="off" placeholder="Introduce tu contraseña" style="width: 100%; box-sizing: border-box; border: 1px solid #ccd3dd; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px;" />
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button id="phishing-password-cancel" style="border: 1px solid #d5dbe5; background: #fff; color: #4a5568; border-radius: 8px; padding: 8px 12px; cursor: pointer;">Cancelar</button>
+                    <button id="phishing-password-submit" style="border: none; background: #0078d4; color: #fff; border-radius: 8px; padding: 8px 12px; cursor: pointer;">Verificar</button>
+                </div>
+            </div>
+        `;
+
+        const cleanupAndResolve = (value) => {
+            overlay.remove();
+            resolve(value);
+        };
+
+        document.body.appendChild(overlay);
+
+        const input = document.getElementById('phishing-password-input');
+        const cancelBtn = document.getElementById('phishing-password-cancel');
+        const submitBtn = document.getElementById('phishing-password-submit');
+
+        if (input) {
+            input.focus();
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') cleanupAndResolve(input.value || '');
+                if (event.key === 'Escape') cleanupAndResolve(null);
+            });
+        }
+        if (cancelBtn) cancelBtn.addEventListener('click', () => cleanupAndResolve(null));
+        if (submitBtn) submitBtn.addEventListener('click', () => cleanupAndResolve(input ? (input.value || '') : ''));
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) cleanupAndResolve(null);
+        });
+    });
+}
+
+export async function handlePhishingClick(isCredPhish, emailId) {
     // Registrar este correo como clicado
     if (emailId) _clickedPhishingIds.add(emailId);
     _updatePhishingPercentages();
 
     if (isCredPhish) {
-        const enteredCreds = prompt("Lynx Security: Please re-enter your password to verify your identity.");
+        const enteredCreds = await _promptMaskedPassword('Please re-enter your password to verify your identity.');
         if (enteredCreds) {
-            metrics.scenario3.credential_compromise = 1;
-            alert("ERROR: Invalid password. Your account may be at risk.");
+            metrics.scenario3.credential_exposure = 1;
         }
     }
 
@@ -70,14 +128,86 @@ export function handlePhishingClick(isCredPhish, emailId) {
     _saveS3Metrics();
 }
 
+function _promptPhishingReason(emailId) {
+    return new Promise(resolve => {
+        const existing = document.getElementById('phishing-report-reason-modal');
+        if (existing) existing.remove();
+
+        const reasonKey = `mensaje${emailId}`;
+        const previous = _phishingReportReasons[reasonKey] || '';
+
+        const overlay = document.createElement('div');
+        overlay.id = 'phishing-report-reason-modal';
+        overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 12000;';
+
+        overlay.innerHTML = `
+            <div style="background: #fff; width: 92%; max-width: 520px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); padding: 18px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a1a2e;">Reportar correo sospechoso</h3>
+                <p style="margin: 0 0 10px 0; color: #555; font-size: 14px; line-height: 1.4;">Explica brevemente por qué consideras que este correo es phishing.</p>
+                <textarea id="phishing-reason-input" placeholder="Ej: el dominio no es oficial y pide credenciales con urgencia" style="width: 100%; min-height: 96px; box-sizing: border-box; border: 1px solid #ccd3dd; border-radius: 8px; padding: 10px 12px; font-size: 14px; resize: vertical;">${previous}</textarea>
+                <div id="phishing-reason-error" style="display:none; color:#b42318; font-size:12px; margin-top:8px;">Este campo es obligatorio.</div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px;">
+                    <button id="phishing-reason-cancel" style="border: 1px solid #d5dbe5; background: #fff; color: #4a5568; border-radius: 8px; padding: 8px 12px; cursor: pointer;">Cancelar</button>
+                    <button id="phishing-reason-submit" style="border: none; background: #c0392b; color: #fff; border-radius: 8px; padding: 8px 12px; cursor: pointer;">Reportar</button>
+                </div>
+            </div>
+        `;
+
+        const cleanupAndResolve = (value) => {
+            overlay.remove();
+            resolve(value);
+        };
+
+        document.body.appendChild(overlay);
+
+        const input = document.getElementById('phishing-reason-input');
+        const error = document.getElementById('phishing-reason-error');
+        const cancelBtn = document.getElementById('phishing-reason-cancel');
+        const submitBtn = document.getElementById('phishing-reason-submit');
+
+        const submit = () => {
+            const reason = (input?.value || '').trim();
+            if (!reason) {
+                if (error) error.style.display = 'block';
+                input?.focus();
+                return;
+            }
+            cleanupAndResolve(reason);
+        };
+
+        input?.focus();
+        input?.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') submit();
+            if (event.key === 'Escape') cleanupAndResolve(null);
+        });
+        input?.addEventListener('input', () => {
+            if (error) error.style.display = 'none';
+        });
+        cancelBtn?.addEventListener('click', () => cleanupAndResolve(null));
+        submitBtn?.addEventListener('click', submit);
+    });
+}
+
 // ── Email reporting ───────────────────────────────────────────────
 
-export function reportEmail(id, type) {
+export async function reportEmail(id, type) {
     const email = emails.find(e => e.id === id);
+    if (!email) return;
+
+    const reason = await _promptPhishingReason(id);
+    if (reason === null) return;
+
+    const reasonKey = `mensaje${id}`;
+    _phishingReportReasons[reasonKey] = reason;
+    _syncPhishingReasonsMetric();
 
     if (type === 'phishing' && (email.type === 'phishing-creds' || email.type === 'phishing-spam')) {
         _reportedPhishingIds.add(id);
+        email.reportedAsPhishing = true;
         _updatePhishingPercentages();
+    } else if (type === 'phishing') {
+        _falsePositiveReportedIds.add(id);
+        metrics.scenario3.phishing_false_positives = _falsePositiveReportedIds.size;
     }
     // Note: reporting a legit email as phishing is a false positive but we don't penalize it
 
@@ -85,6 +215,8 @@ export function reportEmail(id, type) {
 
     alert(`This email has been reported to Lynx Security. Thank you for helping keep our platform safe.`);
     document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
+    // Refresh inbox list so the reported state remains visible.
+    _renderEmails();
 
     _saveS3Metrics();
 }
@@ -353,7 +485,9 @@ async function _saveS3Metrics() {
             await saveMetrics(sid, {
                 'scenario3.phishing_clicked':         metrics.scenario3.phishing_clicked,
                 'scenario3.phishing_reported':        metrics.scenario3.phishing_reported,
-                'scenario3.credential_compromise':    metrics.scenario3.credential_compromise,
+                'scenario3.phishing_false_positives': metrics.scenario3.phishing_false_positives,
+                'scenario3.phishing_report_reasons':  metrics.scenario3.phishing_report_reasons,
+                'scenario3.credential_exposure':      metrics.scenario3.credential_exposure,
                 'scenario3.secure_data_transmission': metrics.scenario3.secure_data_transmission
             });
         }

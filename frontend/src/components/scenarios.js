@@ -34,8 +34,7 @@ export function getScenarioHTML(scenarioNumber) {
 
                 <!-- Title -->
                 <h2 class="welcome-title">
-                    ¡Bienvenido a <span class="welcome-brand">TechNova</span>! 
-                    <span class="translation">Welcome to TechNova!</span>       
+                    ¡Bienvenido a <span class="welcome-brand">TechNova</span>!   
                 </h2>
 
                 <!-- Subtitle -->
@@ -49,7 +48,6 @@ export function getScenarioHTML(scenarioNumber) {
                         <div class="welcome-info-icon">🏢</div>
                         <div class="welcome-info-text">
                             Este laboratorio virtual simula tu <strong>primer día laboral</strong> en la empresa tecnológica TechNova.
-                            <span class="translation">This virtual lab simulates your first working day at the tech company TechNova.</span>
                         </div>
                     </div>
 
@@ -58,7 +56,6 @@ export function getScenarioHTML(scenarioNumber) {
                         <div class="welcome-info-icon">📋</div>
                         <div class="welcome-info-text">
                             A lo largo de tu jornada, deberás completar varias <strong>tareas típicas de incorporación digital</strong>.
-                            <span class="translation">Throughout your day, you will need to complete several typical digital onboarding tasks.</span>
                         </div>
                     </div>
 
@@ -69,7 +66,6 @@ export function getScenarioHTML(scenarioNumber) {
                     <div class="welcome-input-group">
                         <label class="welcome-input-label" for="participant-id-input">
                             ID de Participante
-                            <span class="translation">Participant ID (provided by the researcher)</span>
                         </label>
                         <div class="welcome-input-wrapper">
                             <span class="welcome-input-icon">👤</span>        
@@ -77,7 +73,6 @@ export function getScenarioHTML(scenarioNumber) {
                         </div>
                         <p class="welcome-input-error" id="participant-id-error">
                             Por favor, introduce un ID de Participante válido  
-                            <span class="translation">Please enter a valid Participant ID</span>
                         </p>
                     </div>
 
@@ -86,7 +81,6 @@ export function getScenarioHTML(scenarioNumber) {
                         <span>🚀</span>
                         <span>
                             <span class="welcome-cta-text-main">Comenzar Simulación</span>
-                            <span class="welcome-cta-text-sub">Begin Simulation</span>
                         </span>
                     </button>
 
@@ -103,22 +97,15 @@ export function getScenarioHTML(scenarioNumber) {
         1: `
             <h2>
             Escenario 1: Conectividad y Configuración de Cuentas
-            <span class="translation">Scenario 1: Connectivity and Account Setup</span>
             </h2>
 
             <div id="wifi-task-container">
             <p>
                 <strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.
-                <span class="translation">
-                <strong>Instruction:</strong> It’s your first day. You turn on your laptop but <strong>you have no internet connection</strong>.
-                </span>
             </p>
 
             <p>
                 Antes de poder registrarte en los servicios, debes conectarte a la red corporativa.
-                <span class="translation">
-                Before you can sign up for the services, you must connect to the corporate network.
-                </span>
             </p>
 
             <p style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin: 20px 0;">
@@ -127,19 +114,30 @@ export function getScenarioHTML(scenarioNumber) {
             </div> <!-- END wifi-task-container -->
             
             <div id="registration-content" style="display:none;">
-                <p style="background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-                    ✅ <strong>Conexión Establecida.</strong> Ahora tienes acceso a la intranet para crear tus cuentas.
+                <p style="background: #e8f2ff; color: #0f3d8a; padding: 12px 14px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #0078d4;">
+                    <strong>Instrucción:</strong> Regístrate en las siguientes cuentas de TechNova para completar tu alta.
                 </p>
 
                 <div id="registration-forms">
                     <div class="form-group" id="technova-mail-form">
                         <h3>📧 1. Registrarse en TechNova Mail
-                        <span class="translation"> Register in TechNova Mail</span>
                         </h3>
                         <label for="mail-user">Usuario:</label>
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
-                        <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña" style="flex: 1; -webkit-text-security: disc;">
+                            <button
+                                onmousedown="window.holdPasswordVisibility('mail-pass', true)"
+                                onmouseup="window.holdPasswordVisibility('mail-pass', false)"
+                                onmouseleave="window.holdPasswordVisibility('mail-pass', false)"
+                                onmouseout="window.holdPasswordVisibility('mail-pass', false)"
+                                ontouchstart="window.holdPasswordVisibility('mail-pass', true)"
+                                ontouchend="window.holdPasswordVisibility('mail-pass', false)"
+                                ontouchcancel="window.holdPasswordVisibility('mail-pass', false)"
+                                title="Mantener pulsado para ver"
+                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                        </div>
                         <div style="margin-top: 10px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; background: #f8fbff;">
                             <div style="font-size: 13px; color: #2d3748; margin-bottom: 8px;">
                                 🔐 Contraseña sugerida por generador:
@@ -168,23 +166,31 @@ export function getScenarioHTML(scenarioNumber) {
                             " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
                                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
                             ✉️ Crear Cuenta de TechNova Mail
-                            <span class="translation" style="color:white;">Create TechNova Mail Account</span>
                             </button>
                         </div>
                     </div>
                     
                     <div class="form-group" id="technova-drive-form" style="display:none;">
                         <h3>💾 2. Registrarse en TechNova Drive
-                        <span class="translation">Register in TechNova Drive</span></h3>
+                        </h3>
                         <p>Ahora, regístrate en TechNova Drive, nuestro sistema de almacenamiento en la nube.
-                         <span class="translation">
-                        Now, register in TechNova Drive, our cloud storage system.
-                        </span>
                         </p>
                          <label for="drive-user">Usuario:</label>
                         <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
-                        <input type="password" id="drive-pass">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="drive-pass" style="flex: 1; -webkit-text-security: disc;">
+                            <button
+                                onmousedown="window.holdPasswordVisibility('drive-pass', true)"
+                                onmouseup="window.holdPasswordVisibility('drive-pass', false)"
+                                onmouseleave="window.holdPasswordVisibility('drive-pass', false)"
+                                onmouseout="window.holdPasswordVisibility('drive-pass', false)"
+                                ontouchstart="window.holdPasswordVisibility('drive-pass', true)"
+                                ontouchend="window.holdPasswordVisibility('drive-pass', false)"
+                                ontouchcancel="window.holdPasswordVisibility('drive-pass', false)"
+                                title="Mantener pulsado para ver"
+                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                        </div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button onclick="window.registerService('drive')" style="
                                 background: linear-gradient(135deg, #0078d4, #005a9e);
@@ -203,24 +209,31 @@ export function getScenarioHTML(scenarioNumber) {
                             " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
                                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
                             ☁️ Crear Cuenta de TechNova Drive
-                            <span class="translation" style="color:white;">Create TechNova Drive Account</span>
                             </button>
                         </div>
                     </div>
 
                     <div class="form-group" id="technova-events-form" style="display:none;">
                         <h3>👥 3. Registrarse en TechNova Teams
-                        <span class="translation">Register in TechNova Teams</span>
                         </h3>
                         <p>Finalmente, crea tu perfil en TechNova Teams, la plataforma de comunicación interna.
-                        <span class="translation">
-                        Finally, create your profile in TechNova Teams, the internal communication platform.
-                        </span>
                         </p>
                         <label for="events-user">Usuario:</label>
                         <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
-                        <input type="password" id="events-pass">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="text" id="events-pass" style="flex: 1; -webkit-text-security: disc;">
+                            <button
+                                onmousedown="window.holdPasswordVisibility('events-pass', true)"
+                                onmouseup="window.holdPasswordVisibility('events-pass', false)"
+                                onmouseleave="window.holdPasswordVisibility('events-pass', false)"
+                                onmouseout="window.holdPasswordVisibility('events-pass', false)"
+                                ontouchstart="window.holdPasswordVisibility('events-pass', true)"
+                                ontouchend="window.holdPasswordVisibility('events-pass', false)"
+                                ontouchcancel="window.holdPasswordVisibility('events-pass', false)"
+                                title="Mantener pulsado para ver"
+                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                        </div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button onclick="window.registerService('events')" style="
                                 background: linear-gradient(135deg, #0078d4, #005a9e);
@@ -239,7 +252,6 @@ export function getScenarioHTML(scenarioNumber) {
                             " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,120,212,0.45)'"
                                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(0,120,212,0.35)'">
                             👥 Crear Cuenta de TechNova Teams
-                            <span class="translation" style="color:white;">Create TechNova Teams Account</span>
                             </button>
                         </div>
                     </div>
@@ -249,7 +261,6 @@ export function getScenarioHTML(scenarioNumber) {
         2: `
             <h2>
     Escenario 2: Dispositivos Externos
-    <span class="translation">Scenario 2: External Devices</span>
 </h2>
 
 <div id="simulated-lock-screen">
@@ -258,19 +269,14 @@ export function getScenarioHTML(scenarioNumber) {
 
         <h1>
             Sesión Suspendida
-            <span class="translation">Session Suspended</span>
         </h1>
 
         <p>
             (Simulación de Bloqueo de Pantalla)
-            <span class="translation">(Simulated Lock Screen)</span>
         </p>
 
         <div class="lock-screen-prompt">
             Presiona la tecla <strong>'v'</strong> para volver y continuar.
-        </div>
-        <div class="lock-screen-prompt" style="margin-top: 12px; color: rgba(255,255,255,0.6); font-size: 0.95em;">
-            Press the <strong>'v'</strong> key to return and continue.
         </div>
     </div>
 </div>
@@ -279,15 +285,10 @@ export function getScenarioHTML(scenarioNumber) {
     <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 10px;">
         <strong>Instrucción:</strong> Estás trabajando en tu escritorio cuando un compañero se acerca y te pide que le acompañes 
         un momento a la sala de reuniones para resolver una duda rápida. <strong>Debes levantarte de tu puesto</strong>.
-        <span class="translation">
-            <strong>Instruction:</strong> You are working at your desk when a colleague approaches and asks you to come with them 
-            to the meeting room for a quick question. <strong>You need to step away from your workstation</strong>.
-        </span>
     </p>
 
     <p style="background: #fff3cd; color: #856404; padding: 14px 18px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 18px 0; font-size: 0.97em;">
         💡 <strong>¿Qué haces con tu ordenador antes de irte?</strong>
-        <span class="translation"><strong>What do you do with your computer before leaving?</strong></span>
     </p>
 
     <div style="display: flex; justify-content: center; gap: 20px; margin-top: 28px;">
@@ -312,7 +313,6 @@ export function getScenarioHTML(scenarioNumber) {
         " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
             🖥️ Suspender Sesión
-            <span class="translation" style="color: #ffffff;">Suspend Session</span>
         </button>
 
         <button onclick="window.handleInterruption(false)" style="
@@ -335,93 +335,14 @@ export function getScenarioHTML(scenarioNumber) {
         " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
             Continuar ➡️
-            <span class="translation" style="color: #ffffff;">Continue</span>
         </button>
 
     </div>
 </div>
-
-
-<!--
-            <div id="task-usb" style="display:none;">
-                <h3>Manejo de Dispositivos Externos
-                <span class="translation">Handling External Devices</span>
-                </h3>
-                
-                <p>
-                    <strong>Instrucción:</strong> Has encontrado un pendrive USB en tu escritorio con la etiqueta "Plantillas". 
-                    Conéctalo virtualmente (haz doble clic en el icono USB) y busca el archivo.
-                    <span class="translation">
-                        <strong>Instruction:</strong> You found a USB drive on your desk labeled "Templates". 
-                        Virtually connect it (double-click the USB icon) and find the file.
-                    </span>
-                </p>
-
-                <div class="virtual-desktop" id="virtual-desktop-container">
-                    <div class="desktop-icons">
-                        <div class="d-icon" id="drive-c">
-                            <span>💽</span>
-                            <label>Disco Local (C:)</label>
-                        </div>
-                        <div class="d-icon" id="usb-drive">
-                            <span>💾</span>
-                            <label>USB Drive (E:)</label>
-                        </div>
-                        <div class="d-icon">
-                            <span>🗑️</span>
-                            <label>Papelera</label>
-                        </div>
-                    </div>
-
-                    
-                    <div id="usb-context-menu" class="context-menu-windows" style="display: none;">
-                        <div class="context-menu-item" id="usb-context-scan">🛡️ Escanear con TechNova Antivirus</div>
-                        <div class="context-menu-item">📂 Abrir</div>
-                        <div class="context-menu-item">⏏️ Expulsar</div>
-                        <div class="context-menu-item">🔧 Propiedades</div>
-                    </div>
-
-                    
-                   
-                    <div id="file-explorer-window" class="window-frame" style="display: none;">
-                       ... (File explorer content omitted for brevity in comment) ...
-                    </div> 
-                </div> 
-            </div>
--->
-<!--
-                <p><strong>Instrucción:</strong> Se ha conectado un dispositivo USB. Por favor, navega hasta él y abre el archivo <strong>'Bienvenida_Equipo_TechNova.docx'</strong>.
-                <span class="translation">
-                <strong>Instruction:</strong> A USB device has been connected. Please navigate to it and open the file 
-                <strong>'Welcome_TechNova_Team.docx'</strong>.
-                </span>
-                </p>
-    
-                <div class="file-explorer-window">
-                    <div class="fe-header">
-                        <div class="fe-arrows">← → ↻</div>
-                        <div class="fe-path">Este equipo</div>
-                    </div>
-                    <div class="fe-body">
-                        <div class="fe-sidebar">
-                            <ul>
-                                <li id="sidebar-documents">▷ Documentos</li>
-                                <li id="sidebar-images">▷ Imágenes</li>
-                                <li id="sidebar-this-pc" class="active">▼ Este equipo</li>
-                            </ul>
-                        </div>
-                        <div class="fe-content">
-                             (Contenido del explorador)
-                        </div>
-                    </div>
-                </div>
--->
-
         `,
         3: `
            <h2>
                 Escenario 3: Gestión de Comunicaciones
-                <span class="translation">Scenario 3: Communications Management</span>
             </h2>
 
             <!-- Phase 1: Inbox Review -->
@@ -429,20 +350,11 @@ export function getScenarioHTML(scenarioNumber) {
                 <p style="margin: 0 0 8px 0; font-size: 1.05em; line-height: 1.6;">
                     <strong>📧 Instrucción:</strong> Revisa <strong>todos</strong> los correos de tu bandeja de <strong>TechNova Mail</strong>.
                     Tu gerente y varios departamentos te han enviado mensajes sobre tu incorporación. Algunos podrían no ser legítimos.
-                    <span class="translation">
-                    <strong>📧 Instruction:</strong> Review <strong>all</strong> the emails in your <strong>TechNova Mail</strong> inbox.
-                    Your manager and various departments have sent you onboarding messages. Some may not be legitimate.
-                    </span>
                 </p>
                 <p style="margin: 0; font-size: 0.95em; color: #444; line-height: 1.5;">
                     Presta atención al <strong>remitente</strong>, el <strong>contenido</strong> y los <strong>enlaces</strong>.
                     Si un correo te parece sospechoso, <strong>haz clic derecho sobre él y repórtalo</strong>.
                     <strong>Debes leer todos los correos para poder continuar.</strong>
-                    <span class="translation">
-                    Pay attention to the <strong>sender</strong>, <strong>content</strong>, and <strong>links</strong>.
-                    If an email seems suspicious, <strong>right-click on it and report it</strong>.
-                    <strong>You must read all emails before you can proceed.</strong>
-                    </span>
                 </p>
             </div>
 
@@ -458,21 +370,14 @@ export function getScenarioHTML(scenarioNumber) {
                 <div style="background: #fff8e1; border-left: 4px solid #ff9800; padding: 16px 20px; border-radius: 6px;">
                     <h3 style="margin: 0 0 10px 0; color: #e65100;">
                         📋 Tarea adicional
-                        <span class="translation">Additional Task</span>
                     </h3>
                     <p style="margin: 0 0 8px 0; line-height: 1.6;">
                         <strong>Instrucción:</strong> Laura Pérez (tu gerente) te ha pedido que le reenvíes un documento.
                         Usa el botón <strong>"Nuevo Correo"</strong> para componer un mensaje a
                         <strong>laura.perez@technova.com</strong> y adjunta el archivo solicitado.
-                        <span class="translation">
-                        <strong>Instruction:</strong> Laura Pérez (your manager) asked you to send her back a document.
-                        Use the <strong>"New Email"</strong> button to compose a message to
-                        <strong>laura.perez@technova.com</strong> and attach the requested file.
-                        </span>
                     </p>
                     <p style="margin: 0; font-size: 0.9em; color: #666; line-height: 1.4;">
                         💡 Puedes adjuntar desde tu ordenador local (📎) o desde TechNova Drive (☁️).
-                        <span class="translation">You can attach from your local computer (📎) or from TechNova Drive (☁️).</span>
                     </p>
                 </div>
             </div>
@@ -480,14 +385,10 @@ export function getScenarioHTML(scenarioNumber) {
         4: `
 <h2>
     Escenario 4: Búsqueda y Descarga de Recursos
-    <span class="translation">Scenario 4: Resource Search & Download</span>
 </h2>
 
 <p>
     <strong>Instrucción:</strong> Revisa las extensiones instaladas en tu navegador, luego usa el buscador para encontrar y descargar una <strong>plantilla de cronograma de proyectos</strong>.
-    <span class="translation">
-        <strong>Instruction:</strong> Review the browser extensions installed, then use the search engine to find and download a <strong>project schedule template</strong>.
-    </span>
 </p>
 
 <!-- Panel de extensiones del navegador -->
@@ -575,6 +476,22 @@ export function getScenarioHTML(scenarioNumber) {
                 </div>
 
                 <div style="flex: 1; display: flex; flex-direction: column; background: #f4f6f9; padding: 15px; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="font-weight: bold; margin-bottom: 8px; font-size: 0.9em;">Asistente IA (chat):</label>
+                    <textarea id="ai-prompt-input"
+                        ondblclick="this.select()"
+                        placeholder="Ejemplo: Resume los cambios salariales confirmados y marca contradicciones."
+                        style="min-height: 90px; padding: 10px; font-size: 0.82em; border: 1px solid #bbb; border-radius: 4px; margin-bottom: 10px;"></textarea>
+
+                    <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                        <button onclick="window.useAI()" style="background: #2f5fd0; color: white; flex: 1; font-weight: bold; padding: 10px; border:none; border-radius:6px;">
+                            💬 Enviar al asistente
+                        </button>
+                    </div>
+
+                    <div id="ai-chat-log" style="min-height: 95px; max-height: 130px; overflow-y:auto; background:#fff; border:1px solid #d8dbe2; border-radius:6px; padding:10px; font-size:0.8em; color:#2f3a4a; margin-bottom: 10px;">
+                        <p style="margin:0; color:#6b7280;">Aqui veras la respuesta del asistente antes de llevarla al informe.</p>
+                    </div>
+
                     <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
                     <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
                         placeholder="Pon orden en este lío y redacta el informe consolidado..."
@@ -588,7 +505,6 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="window.useAI()" style="background: #6264a7; color: white; flex: 1.2; font-weight: bold; padding: 10px;">🤖 Ordenar con IA</button>
                         <button onclick="window.sendAIReport()" style="background: #2ea44f; color: white; flex: 0.8; font-weight: bold;">Enviar</button>
                     </div>
                 </div>
@@ -600,15 +516,10 @@ export function getScenarioHTML(scenarioNumber) {
             <div id="profile-task">
                 <h2>
                     Escenario 6: Configuración del Perfil Profesional
-                    <span class="translation">Scenario 6: Professional Profile Setup</span>
                 </h2>
                 <p>
                     <strong>Instrucción:</strong> Para completar tu incorporación, RRHH te pide que configures tu <strong>Perfil Público</strong> 
                     en el directorio de la empresa. Ten cuidado con la información que compartes.
-                    <span class="translation">
-                        <strong>Instruction:</strong> To complete user onboarding, HR asks you to set up your <strong>Public Profile</strong> 
-                        in the company directory. Be careful with the information you share.
-                    </span>
                 </p>
 
                 <div class="form-group">
@@ -626,7 +537,6 @@ export function getScenarioHTML(scenarioNumber) {
                 <div class="form-group">
                     <label for="prof-dob">
                         Fecha de Nacimiento (Opcional)
-                        <span class="translation">Date of Birth (Optional)</span>
                     </label>
                     <input type="date" id="prof-dob">
                 </div>
@@ -634,7 +544,6 @@ export function getScenarioHTML(scenarioNumber) {
                 <div class="form-group">
                     <label for="prof-phone">
                         Teléfono Personal (Opcional)
-                        <span class="translation">Personal Phone (Optional)</span>
                     </label>
                     <input type="tel" id="prof-phone" placeholder="+34 600 ...">
                 </div>
@@ -642,7 +551,6 @@ export function getScenarioHTML(scenarioNumber) {
                 <div class="form-group">
                     <label for="prof-social">
                         Redes Sociales (LinkedIn/Twitter) (Opcional)
-                        <span class="translation">Social Media (LinkedIn/Twitter) (Optional)</span>
                     </label>
                     <input type="text" id="prof-social" placeholder="@usuario">
                 </div>
@@ -650,7 +558,6 @@ export function getScenarioHTML(scenarioNumber) {
                 <div class="form-group">
                     <label for="prof-city">
                         Ciudad de Residencia (Opcional)
-                        <span class="translation">City of Residence (Optional)</span>
                     </label>
                     <input type="text" id="prof-city" placeholder="Ej: Madrid, Centro">
                 </div>
@@ -660,14 +567,12 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="checkbox" id="prof-live-location" style="margin-top: 3px;">
                         <span>
                             Compartir mi ubicación en tiempo real para encontrar compañeros cercanos.
-                            <span class="translation" style="display:block;">Share my real-time location to find nearby colleagues.</span>
                         </span>
                     </label>
                 </div>
 
                 <button onclick="window.saveProfile()" style="color:white;">
                     Guardar Perfil Público
-                    <span class="translation" style="color:white;">Save Public Profile</span>
                 </button>
 
             </div>
@@ -675,12 +580,10 @@ export function getScenarioHTML(scenarioNumber) {
             <div id="app-task" style="display:none;">
                 <h3>
                     Vincular Aplicación Externa
-                    <span class="translation">Link External Application</span>
                 </h3>
 
                 <p style="margin-top: 8px; margin-bottom: 14px; color:#243447; line-height:1.5;">
                     Revisa la solicitud de integración y decide si deseas continuar con la vinculación de la aplicación.
-                    <span class="translation" style="display:block;">Review the integration request and decide whether you want to continue linking the application.</span>
                 </p>
 
                 <div style="border:1px solid #d7e3f4; border-radius:12px; background:linear-gradient(180deg,#ffffff 0%,#f7fbff 100%); padding:16px; box-shadow:0 6px 20px rgba(10,50,120,0.08); margin-top:10px;">
@@ -707,7 +610,6 @@ export function getScenarioHTML(scenarioNumber) {
 
                     <button onclick="window.connectApp()" style="margin-top:14px; width:100%; color:white; background:linear-gradient(135deg,#0a66c2,#004a99); border:none; border-radius:10px; padding:12px 14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(10,102,194,0.28);">
                         Revisar permisos y continuar
-                        <span class="translation" style="color:white; display:block; font-weight:500;">Review permissions and continue</span>
                     </button>
                 </div>
             </div>
@@ -716,14 +618,10 @@ export function getScenarioHTML(scenarioNumber) {
         7: `
 <h2>
     Escenario 7: Cierre del Día - Política de Escritorio Limpio
-    <span class="translation">Scenario 7: End of Day – Clean Desk Policy</span>
 </h2>
 
 <p>
     <strong>Instrucción:</strong> Navega por la barra de herramientas y elimina los documentos sensibles o temporales que ya no deban permanecer en el sistema.
-    <span class="translation">
-        <strong>Instruction:</strong> Navigate using the toolbar and remove sensitive or temporary documents that should no longer remain in the system.
-    </span>
 </p>
         `,
         8: `
@@ -732,7 +630,7 @@ export function getScenarioHTML(scenarioNumber) {
             <p>Si das tu consentimiento, puedes proporcionar tu dirección de correo electrónico personal. Usaremos una herramienta automatizada para comprobar si ha aparecido en alguna filtración de datos pública conocida.Tu correo será anonimizado y almacenado de forma segura únicamente con fines de investigación.</p>
             <div class="form-group">
                 <label for="consent-email">Tu dirección de correo electrónico (opcional)</label>
-                <input type="email" id="consent-email" placeholder="Leave blank to decline">
+                <input type="email" id="consent-email" placeholder="Dejar en blanco para rechazar">
             </div>
 
             <div id="breach-loading-scenario" style="display: none; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">

@@ -1,7 +1,7 @@
 import './styles/main.css';
 import { getScenarioHTML } from './components/scenarios.js';
 import { getPopupsHTML } from './components/popups.js';
-import { renderEmails } from './utils/emails.js';
+import { renderEmails, setEmailFilter } from './utils/emails.js';
 import { saveMetrics } from './services/api.js';
 import { setPasswordStrategy, getAvailableStrategies, getActiveStrategy } from './utils/validation.js';
 import {
@@ -16,7 +16,8 @@ import {
     handleTeamsPermissions,
     setTeamsPermission,
     acceptDefaultMailPassword,
-    rejectDefaultMailPassword
+    rejectDefaultMailPassword,
+    holdPasswordVisibility
 } from './handlers/scenario1.js';
 
 import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
@@ -62,6 +63,7 @@ import { useAI, sendAIReport, handleAIInput, showMartaMessage } from './handlers
 import { startSession, completeSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
 import { getSessionId, setSessionId } from './utils/session.js';
+import { metrics } from './utils/metrics.js';
 
 // Importar funciones del flujo MFA multi-paso
 import {
@@ -120,6 +122,74 @@ let currentScenario = 0;
 const teamsIncidentResolved = false;
 const TOTAL_SCENARIOS = 11;
 
+const scenarioTiming = {
+    activeScenario: null,
+    startedAtMs: null,
+    totalsSeconds: {}
+};
+
+let simulationStartedAtMs = null;
+
+function persistScenarioTimeMetric(scenarioNumber, totalSeconds) {
+    if (scenarioNumber <= 0 || scenarioNumber >= TOTAL_SCENARIOS) return;
+
+    const metricKey = `scenario${scenarioNumber}.time_seconds`;
+    const sessionId = getSessionId();
+
+    if (metrics[`scenario${scenarioNumber}`]) {
+        metrics[`scenario${scenarioNumber}`].time_seconds = totalSeconds;
+    }
+
+    if (!sessionId) return;
+
+    saveMetrics(sessionId, { [metricKey]: totalSeconds }).catch((err) => {
+        console.warn(`No se pudo guardar ${metricKey}:`, err);
+    });
+}
+
+function persistTotalSimulationTimeMetric(totalSeconds) {
+    const sessionId = getSessionId();
+    const metricKey = 'simulation.total_time_seconds';
+
+    if (metrics.simulation) {
+        metrics.simulation.total_time_seconds = totalSeconds;
+    }
+
+    if (!sessionId) return;
+
+    saveMetrics(sessionId, { [metricKey]: totalSeconds }).catch((err) => {
+        console.warn(`No se pudo guardar ${metricKey}:`, err);
+    });
+}
+
+function refreshTotalSimulationTimeMetric() {
+    if (!simulationStartedAtMs) return;
+    const elapsedTotal = Math.max(0, Math.round((Date.now() - simulationStartedAtMs) / 1000));
+    persistTotalSimulationTimeMetric(elapsedTotal);
+}
+
+function closeScenarioTimer() {
+    const { activeScenario, startedAtMs } = scenarioTiming;
+    if (activeScenario === null || startedAtMs === null) return;
+
+    const elapsedSeconds = Math.max(0, Math.round((Date.now() - startedAtMs) / 1000));
+    const previousTotal = scenarioTiming.totalsSeconds[activeScenario] || 0;
+    const newTotal = previousTotal + elapsedSeconds;
+
+    scenarioTiming.totalsSeconds[activeScenario] = newTotal;
+    scenarioTiming.activeScenario = null;
+    scenarioTiming.startedAtMs = null;
+
+    persistScenarioTimeMetric(activeScenario, newTotal);
+    refreshTotalSimulationTimeMetric();
+}
+
+function startScenarioTimer(scenarioNumber) {
+    if (scenarioNumber <= 0 || scenarioNumber >= TOTAL_SCENARIOS) return;
+    scenarioTiming.activeScenario = scenarioNumber;
+    scenarioTiming.startedAtMs = Date.now();
+}
+
 // --- FUNCIONES GLOBALES ---
 
 function triggerTeamsIncident() {
@@ -141,6 +211,10 @@ function triggerTeamsIncident() {
 function startScenario(scenarioNumber) {
     console.log(`🎬 Intentando iniciar Escenario: ${scenarioNumber}`);
 
+    if (scenarioNumber !== currentScenario) {
+        closeScenarioTimer();
+    }
+
     // Asegurar que la barra de tareas sea visible si no estamos en la intro (Escenario 0)
     const taskbar = document.getElementById('windows-taskbar');
     if (taskbar) {
@@ -159,6 +233,7 @@ function startScenario(scenarioNumber) {
     document.getElementById(`scenario-${currentScenario}`).classList.remove('active');
     document.getElementById(`scenario-${scenarioNumber}`).classList.add('active');
     currentScenario = scenarioNumber;
+    startScenarioTimer(scenarioNumber);
 
     // --- LÓGICA ESCENARIO 1 (WiFi highlight) ---
     if (scenarioNumber === 1) {
@@ -366,6 +441,8 @@ async function acceptPolicyAndStart() {
     }
 
     // 3. Cerramos el popup y empezamos el Escenario 1
+    simulationStartedAtMs = Date.now();
+
     const policyPopup = document.getElementById('popup-policy-rules');
     if (policyPopup) {
         policyPopup.classList.remove('active');
@@ -520,10 +597,12 @@ window.handleTeamsPermissions = handleTeamsPermissions;
 window.setTeamsPermission = setTeamsPermission;
 window.acceptDefaultMailPassword = acceptDefaultMailPassword;
 window.rejectDefaultMailPassword = rejectDefaultMailPassword;
+window.holdPasswordVisibility = holdPasswordVisibility;
 window.toggleProfileDropdown = toggleProfileDropdown;
 window.closeRegistrationComplete = closeRegistrationComplete;
 window.handleInterruption = handleInterruption;
 window.openEmail = openEmail;
+window.setEmailFilter = setEmailFilter;
 // window.openConfidentialDoc = openConfidentialDoc; // <--- COMENTADO (No se usa todavía)
 window.openComposeEmail = openComposeEmail;
 window.handlePhishingClick = handlePhishingClick;
@@ -567,6 +646,9 @@ window.drop = drop;
 window.allowDrop = allowDrop;
 
 window.finalizeSession = async function() {
+    closeScenarioTimer();
+    refreshTotalSimulationTimeMetric();
+
     const sid = getSessionId();
     console.log('🏁 Intentando finalizar sesión. ID local:', sid);
     

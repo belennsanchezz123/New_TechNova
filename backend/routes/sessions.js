@@ -255,6 +255,7 @@ export function setupSessionRoutes() {
                 // S1
                 s1_wifi_public:                toInt(m['scenario1.wifi_public']),
                 s1_mail_password_strength:     toText(m['scenario1.mail_password_strength']),
+                s1_default_password_flag:      toInt(m['scenario1.default_password_flag']),
                 s1_drive_password_strength:    toText(m['scenario1.drive_password_strength']),
                 s1_events_password_strength:   toText(m['scenario1.events_password_strength']),
                 s1_password_reused:            toReal(m['scenario1.password_reused']),
@@ -264,13 +265,18 @@ export function setupSessionRoutes() {
                 s1_mfa_email_alt:              toInt(m['scenario1.mfa_email_alternative']),
                 s1_teams_camera_allowed:       toInt(m['scenario1.teams_camera_permission']),
                 s1_teams_microphone_allowed:   toInt(m['scenario1.teams_microphone_permission']),
+                s1_time_seconds:               toInt2(m['scenario1.time_seconds']),
                 // S2
                 s2_manual_lock_screen:         toInt(m['scenario2.manual_lock_screen']),
+                s2_time_seconds:               toInt2(m['scenario2.time_seconds']),
                 // S3
                 s3_phishing_clicked:           toReal(m['scenario3.phishing_clicked']),
                 s3_phishing_reported:          toReal(m['scenario3.phishing_reported']),
-                s3_credential_compromised:     toInt(m['scenario3.credential_compromise']),
+                s3_phishing_false_positives:   toInt2(m['scenario3.phishing_false_positives']),
+                s3_phishing_report_reasons:    toText(m['scenario3.phishing_report_reasons']),
+                s3_credential_compromised:     toInt(m['scenario3.credential_exposure'] ?? m['scenario3.credential_compromise']),
                 s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
+                s3_time_seconds:               toInt2(m['scenario3.time_seconds']),
                 // S4
                 s4_browser_warning_response:   toText(m['scenario4.response_to_browser_warnings']),
                 s4_cookie_consent:             toText(m['scenario4.cookie_consent']),
@@ -278,26 +284,37 @@ export function setupSessionRoutes() {
                 s4_extensions_disabled_pct:    toReal(m['scenario4.extensions_disabled_pct']),
                 s4_warnings_heeded_pct:        toReal(m['scenario4.warnings_heeded_pct']),
                 s4_cookie_accepted_pct:        toReal(m['scenario4.cookie_accepted_pct']),
+                s4_cookie_consent_by_site:     toText(m['scenario4.cookie_consent_by_site']),
+                s4_cookie_risk_score:          toReal(m['scenario4.cookie_risk_score']),
                 s4_dangerous_links_clicked_pct: toReal(m['scenario4.dangerous_links_clicked_pct']),
+                s4_time_seconds:               toInt2(m['scenario4.time_seconds']),
                 // S5
                 s5_personal_data_fields_shared: toInt2(m['scenario5.personal_data_disclosure_rate']),
                 s5_third_party_app_authorized:  toInt(m['scenario5.third_party_app_authorization']),
+                s5_time_seconds:               toInt2(m['scenario5.time_seconds']),
                 // S6
                 s6_shared_birth_date:          null, // se actualiza desde el handler de perfil
                 s6_shared_phone:               null,
                 s6_shared_social_media:        null,
                 s6_shared_city:                null,
+                s6_time_seconds:               toInt2(m['scenario6.time_seconds']),
                 // S7
                 s7_used_encryption:            toInt(m['scenario6.data_encryption_usage']),
                 s7_secure_disposal_used:       toInt(m['scenario6.secure_data_disposal']),
                 s7_deleted_final_report:       toInt(m['scenario6.deleted_final_report']),
+                s7_time_seconds:               toInt2(m['scenario7.time_seconds']),
                 // S8 - se guarda desde breach check
                 s8_consented_email_check:      null,
                 s8_breach_count:               null,
+                s8_time_seconds:               toInt2(m['scenario8.time_seconds']),
+                // S9-S10
+                s9_time_seconds:               toInt2(m['scenario9.time_seconds']),
+                s10_time_seconds:              toInt2(m['scenario10.time_seconds']),
                 // Unexpected
                 ue_accepted_fake_update:       toInt(m['unexpected.update_compliance_rate']),
                 ue_teams_password_reused:      toInt(m['unexpected.teams_password_reused']),
                 // Timestamps
+                session_total_time_seconds:   toInt2(m['simulation.total_time_seconds']),
                 session_started_at:            reg.created_at,
                 session_completed_at:          reg.completed_at,
             };
@@ -387,6 +404,54 @@ export function setupAdminSessionRoutes() {
             res.send(output);
         } catch (error) {
             console.error('Error exportando datos:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA VER INTERACCIONES DE IA (Escenario 5)
+    // Filtros opcionales: ?sessionId=123 o ?participantId=P001
+    router.get('/ai/interactions', async (req, res) => {
+        try {
+            const { sessionId, participantId } = req.query;
+
+            const where = [];
+            const params = [];
+
+            if (sessionId) {
+                where.push('ai.session_id = ?');
+                params.push(sessionId);
+            }
+            if (participantId) {
+                where.push('ai.participant_id = ?');
+                params.push(participantId);
+            }
+
+            const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+            const rows = db.prepare(`
+                SELECT
+                    ai.id,
+                    ai.session_id,
+                    ai.participant_id,
+                    ai.user_prompt,
+                    ai.ai_response,
+                    ai.trap_value,
+                    ai.trap_label,
+                    ai.user_final_text,
+                    ai.trap_repeated,
+                    ai.created_at,
+                    ai.finalized_at,
+                    r.created_at AS session_started_at,
+                    r.completed_at AS session_completed_at
+                FROM ai_interactions ai
+                LEFT JOIN registrations r ON r.id = ai.session_id
+                ${whereClause}
+                ORDER BY ai.created_at DESC
+            `).all(...params);
+
+            res.json({ success: true, interactions: rows });
+        } catch (error) {
+            console.error('Error en /ai/interactions:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });

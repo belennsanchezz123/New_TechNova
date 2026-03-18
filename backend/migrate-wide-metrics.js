@@ -26,6 +26,7 @@ try {
 
             s1_wifi_public                 INTEGER,
             s1_mail_password_strength       TEXT,
+            s1_default_password_flag        INTEGER,
             s1_drive_password_strength      TEXT,
             s1_events_password_strength     TEXT,
             s1_password_reused              REAL,
@@ -35,13 +36,18 @@ try {
             s1_mfa_email_alt                INTEGER,
             s1_teams_camera_allowed         INTEGER,
             s1_teams_microphone_allowed     INTEGER,
+            s1_time_seconds                 INTEGER,
 
             s2_manual_lock_screen           INTEGER,
+            s2_time_seconds                 INTEGER,
 
             s3_phishing_clicked             REAL,
             s3_phishing_reported            REAL,
+            s3_phishing_false_positives     INTEGER,
+            s3_phishing_report_reasons      TEXT,
             s3_credential_compromised       INTEGER,
             s3_secure_data_transmission     TEXT,
+            s3_time_seconds                 INTEGER,
 
             s4_browser_warning_response     TEXT,
             s4_cookie_consent               TEXT,
@@ -49,30 +55,58 @@ try {
             s4_extensions_disabled_pct      REAL,
             s4_warnings_heeded_pct          REAL,
             s4_cookie_accepted_pct          REAL,
+            s4_cookie_consent_by_site       TEXT,
+            s4_cookie_risk_score            REAL,
             s4_dangerous_links_clicked_pct  REAL,
+            s4_time_seconds                 INTEGER,
 
             s5_personal_data_fields_shared  INTEGER,
             s5_third_party_app_authorized   INTEGER,
+            s5_time_seconds                 INTEGER,
 
             s6_shared_birth_date            INTEGER,
             s6_shared_phone                 INTEGER,
             s6_shared_social_media          INTEGER,
             s6_shared_city                  INTEGER,
+            s6_time_seconds                 INTEGER,
 
             s7_used_encryption              INTEGER,
             s7_secure_disposal_used         INTEGER,
             s7_deleted_final_report         INTEGER,
+            s7_time_seconds                 INTEGER,
 
             s8_consented_email_check        INTEGER,
             s8_breach_count                 INTEGER,
+            s8_time_seconds                 INTEGER,
+
+            s9_time_seconds                 INTEGER,
+            s10_time_seconds                INTEGER,
 
             ue_accepted_fake_update         INTEGER,
             ue_teams_password_reused        INTEGER,
 
+            session_total_time_seconds      INTEGER,
             session_started_at              TEXT,
             session_completed_at            TEXT,
             recorded_at                     TEXT DEFAULT (datetime('now'))
         );
+
+        CREATE TABLE IF NOT EXISTS ai_interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            participant_id TEXT,
+            user_prompt TEXT,
+            ai_response TEXT,
+            trap_value TEXT,
+            trap_label TEXT,
+            user_final_text TEXT,
+            trap_repeated INTEGER,
+            created_at TEXT DEFAULT (datetime('now')),
+            finalized_at TEXT
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_session ON ai_interactions(session_id);
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_participant ON ai_interactions(participant_id);
     `);
     console.log('✅ Tabla participant_metrics creada (o ya existía).');
 
@@ -81,7 +115,23 @@ try {
         { name: 's4_extensions_disabled_pct', type: 'REAL' },
         { name: 's4_warnings_heeded_pct', type: 'REAL' },
         { name: 's4_cookie_accepted_pct', type: 'REAL' },
+        { name: 's4_cookie_consent_by_site', type: 'TEXT' },
+        { name: 's4_cookie_risk_score', type: 'REAL' },
         { name: 's4_dangerous_links_clicked_pct', type: 'REAL' },
+        { name: 's3_phishing_false_positives', type: 'INTEGER' },
+        { name: 's3_phishing_report_reasons', type: 'TEXT' },
+        { name: 's1_default_password_flag', type: 'INTEGER' },
+        { name: 's1_time_seconds', type: 'INTEGER' },
+        { name: 's2_time_seconds', type: 'INTEGER' },
+        { name: 's3_time_seconds', type: 'INTEGER' },
+        { name: 's4_time_seconds', type: 'INTEGER' },
+        { name: 's5_time_seconds', type: 'INTEGER' },
+        { name: 's6_time_seconds', type: 'INTEGER' },
+        { name: 's7_time_seconds', type: 'INTEGER' },
+        { name: 's8_time_seconds', type: 'INTEGER' },
+        { name: 's9_time_seconds', type: 'INTEGER' },
+        { name: 's10_time_seconds', type: 'INTEGER' },
+        { name: 'session_total_time_seconds', type: 'INTEGER' },
     ];
 
     for (const col of newColumns) {

@@ -31,7 +31,7 @@ export function getTaskbarHTML() {
                     <button class="system-icon" id="update-indicator" style="display:none;" title="Actualización disponible" onclick="window.openUpdateNotificationFromTaskbar()">
                         <span>🔄</span>
                     </button>
-                    <button class="system-icon" id="wifi-icon-taskbar" onclick="window.toggleWifiMenu()" title="Red">
+                    <button class="system-icon" id="wifi-icon-taskbar" onclick="window.toggleWifiMenu()" title="Sin conexión">
                         <span id="wifi-icon-status">📡</span>
                     </button>
                     

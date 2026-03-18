@@ -9,6 +9,7 @@ export let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
 const DEFAULT_MAIL_PASSWORD = 'X9m!Q2v@T7k#L4r$Z8';
+let isWifiLocked = false;
 
 export function acceptDefaultMailPassword() {
     const passInput = document.getElementById('mail-pass');
@@ -27,6 +28,19 @@ export function rejectDefaultMailPassword() {
         passInput.value = '';
     }
     passInput.focus();
+}
+
+function _applyPasswordVisibility(input, holdVisible) {
+    if (!input) return;
+    // Keep input as text and mask/unmask via CSS to avoid browser password manager leak popups.
+    input.style.webkitTextSecurity = holdVisible ? 'none' : 'disc';
+}
+
+export function holdPasswordVisibility(inputId, show) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    _applyPasswordVisibility(input, show);
 }
 
 function goNext(service) {
@@ -239,6 +253,8 @@ export function closeRegistrationComplete() {
 }
 
 export function toggleWifiMenu() {
+    if (isWifiLocked) return;
+
     const menu = document.getElementById('wifi-menu');
     if (menu) {
         if (menu.style.display === 'none' || menu.style.display === '') {
@@ -250,8 +266,11 @@ export function toggleWifiMenu() {
 }
 
 export function connectWifi(type) {
+    if (isWifiLocked) return;
+
     const menu = document.getElementById('wifi-menu');
     const icon = document.getElementById('wifi-icon-status');
+    const wifiBtn = document.getElementById('wifi-icon-taskbar');
 
     if (type === 'secure') {
         const password = prompt("🔐 TechNova_Corp_Secure está protegida.\n\nClave:");
@@ -268,14 +287,29 @@ export function connectWifi(type) {
         metrics.scenario1.wifi_public = (type === 'public') ? 1 : 0;
 
 
-        if (icon) icon.textContent = '📶';
+        if (icon) icon.textContent = '🛜';
         if (menu) menu.style.display = 'none';
+
+        // Bloquear cambio de red tras la primera conexión.
+        isWifiLocked = true;
+        if (wifiBtn) {
+            wifiBtn.disabled = true;
+            wifiBtn.classList.add('locked');
+            wifiBtn.title = 'WiFi conectado';
+        }
+
         document.body.style.cursor = 'default';
 
         // Mostrar el contenido de registro
         const registrationContent = document.getElementById('registration-content');
         if (registrationContent) {
             registrationContent.style.display = 'block';
+        }
+
+        // Ocultar el bloque inicial de conexión para evitar confusión tras conectarse.
+        const wifiTaskContainer = document.getElementById('wifi-task-container');
+        if (wifiTaskContainer) {
+            wifiTaskContainer.style.display = 'none';
         }
 
         console.log(`✅ Conectado a WiFi: ${type === 'public' ? 'TechNova_Public' : 'TechNova_Corp_Secure'}`);

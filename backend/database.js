@@ -89,6 +89,7 @@ const initDB = () => {
             -- ── Escenario 1: Creación de cuentas y WiFi ──────────────
             s1_wifi_public                 INTEGER,    -- 1=pública, 0=corporativa
             s1_mail_password_strength       TEXT,       -- 'Weak' | 'Medium' | 'Strong'
+            s1_default_password_flag        INTEGER,    -- 1=acepta sugerida, 0=la cambia
             s1_drive_password_strength      TEXT,
             s1_events_password_strength     TEXT,
             s1_password_reused              REAL,       -- 0.0–1.0 similitud promedio entre pares
@@ -98,15 +99,20 @@ const initDB = () => {
             s1_mfa_email_alt                INTEGER,    -- 1=puso email alternativo
             s1_teams_camera_allowed         INTEGER,    -- 1=sí, 0=no, NULL=no vió
             s1_teams_microphone_allowed     INTEGER,
+            s1_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 1
 
             -- ── Escenario 2: Bloqueo de pantalla ─────────────────────
             s2_manual_lock_screen           INTEGER,    -- 1=bloqueó, 0=no
+            s2_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 2
 
             -- ── Escenario 3: Email y Phishing ─────────────────────────
             s3_phishing_clicked             REAL,       -- 0.0–1.0 % enlaces phishing clicados
             s3_phishing_reported            REAL,       -- 0.0–1.0 % phishing reportados correctamente
+            s3_phishing_false_positives     INTEGER,    -- nº de correos legítimos reportados como phishing
+            s3_phishing_report_reasons      TEXT,       -- JSON: {"mensaje2":"...","mensaje6":"..."}
             s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
             s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
+            s3_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 3
 
             -- ── Escenario 4: Navegación web ───────────────────────────
             s4_browser_warning_response     TEXT,       -- 'Ignored' | 'Heeded' | 'Not Encountered'
@@ -115,32 +121,46 @@ const initDB = () => {
             s4_extensions_disabled_pct      REAL,       -- % extensiones sospechosas desactivadas (0-100)
             s4_warnings_heeded_pct          REAL,       -- % avisos de seguridad atendidos (0-100)
             s4_cookie_accepted_pct          REAL,       -- % banners donde aceptó todas las cookies (0-100)
+            s4_cookie_consent_by_site       TEXT,       -- JSON por sitio: {"official":"reject",...}
+            s4_cookie_risk_score            REAL,       -- score de riesgo por decisiones de cookies (0-100)
             s4_dangerous_links_clicked_pct  REAL,       -- % enlaces peligrosos clicados (0-100)
+            s4_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 4
 
             -- ── Escenario 5: Chat RRHH / AI ───────────────────────────
             s5_personal_data_fields_shared  INTEGER,    -- nº de campos de datos personales revelados
             s5_third_party_app_authorized   INTEGER,    -- 1=autorizó, 0=rechazó, NULL=no llegó
+            s5_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 5
 
             -- ── Escenario 6: Perfil profesional ───────────────────────
             s6_shared_birth_date            INTEGER,    -- 1=sí, 0=no
             s6_shared_phone                 INTEGER,
             s6_shared_social_media          INTEGER,
             s6_shared_city                  INTEGER,
+            s6_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 6
 
             -- ── Escenario 7: Limpieza de archivos ─────────────────────
             s7_used_encryption              INTEGER,    -- 1=sí, 0=no
             s7_secure_disposal_used         INTEGER,    -- 1=sí, 0=no
             s7_deleted_final_report         INTEGER,    -- 1=sí, 0=no
+            s7_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 7
 
             -- ── Escenario 8: Breach check ─────────────────────────────
             s8_consented_email_check        INTEGER,    -- 1=otorgó consentimiento, 0=declinó
             s8_breach_count                 INTEGER,    -- NULL si no consintió
+            s8_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 8
+
+            -- ── Escenario 9: Cuestionario final ───────────────────────
+            s9_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 9
+
+            -- ── Escenario 10: Cierre ───────────────────────────────────
+            s10_time_seconds                INTEGER,    -- tiempo acumulado en escenario 10
 
             -- ── Unexpected Events (cross-scenario) ───────────────────
             ue_accepted_fake_update         INTEGER,    -- 1=aceptó update falso, 0=rechazó
             ue_teams_password_reused        INTEGER,    -- 1=sí, 0=no
 
             -- ── Timestamps ───────────────────────────────────────────
+            session_total_time_seconds      INTEGER,
             session_started_at              TEXT,
             session_completed_at            TEXT,
             recorded_at                     TEXT DEFAULT (datetime('now'))
@@ -158,6 +178,25 @@ const initDB = () => {
         );
 
         CREATE INDEX IF NOT EXISTS idx_metrics_session ON session_metrics(session_id);
+
+        -- Historial de interacciones con IA (escenario 5)
+        CREATE TABLE IF NOT EXISTS ai_interactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id INTEGER NOT NULL,
+            participant_id TEXT,
+            user_prompt TEXT,
+            ai_response TEXT,
+            trap_value TEXT,
+            trap_label TEXT,
+            user_final_text TEXT,
+            trap_repeated INTEGER,
+            created_at TEXT DEFAULT (datetime('now')),
+            finalized_at TEXT,
+            FOREIGN KEY(session_id) REFERENCES registrations(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_session ON ai_interactions(session_id);
+        CREATE INDEX IF NOT EXISTS idx_ai_interactions_participant ON ai_interactions(participant_id);
     `);
 };
 
