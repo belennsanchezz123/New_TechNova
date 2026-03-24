@@ -279,14 +279,10 @@ export function getPopupsHTML() {
 
         <h3>
             📘 Notificación de Seguridad – IT TechNova
-            <span class="translation">📘 Security Notice – IT TechNova</span>
         </h3>
 
         <p style="font-size: 1.1em; font-weight: bold; margin-bottom: 15px;">
             Antes de comenzar, por favor revise las políticas de uso de plataformas internas. Su cumplimiento es obligatorio.
-            <span class="translation">
-                Before starting, please review the policies for the use of internal platforms. Compliance is mandatory.
-            </span>
         </p>
 
         <div style="text-align: left; padding: 15px; border: 1px solid #cce5ff; background: #e6f3ff; border-radius: 4px; font-size: 0.98em;">
@@ -294,73 +290,41 @@ export function getPopupsHTML() {
             <!-- Política IA -->
             <h4 style="margin-bottom: 8px;">
                 🔐 Política de Privacidad y Uso de Asistentes de IA:
-                <span class="translation">🔐 Privacy Policy and Use of AI Assistants:</span>
             </h4>
 
             <ul style="padding-left: 24px; margin-top: 0;">
                 <li style="margin-left: 10px;">
                     No se permite ingresar, copiar o analizar ningún documento que contenga datos personales, financieros o sensibles en el Asistente de IA.
-                    <span class="translation">
-                        It is not permitted to enter, copy, or analyze any document containing personal, financial, or sensitive data in the AI Assistant.
-                    </span>
                 </li>
 
                 <li style="margin-left: 10px;">
                     Queda prohibido el uso del asistente para tratar información identificable de empleados, clientes o proveedores.
-                    <span class="translation">
-                        The assistant must not be used to process identifiable information of employees, clients, or suppliers.
-                    </span>
                 </li>
             </ul>
 
             <!-- Política de Contraseñas -->
             <h4 style="margin-top: 18px; margin-bottom: 8px;">
                 🔑 Política de Seguridad de Contraseñas:
-                <span class="translation">🔑 Password Security Policy:</span>
             </h4>
 
             <ul style="padding-left: 24px; margin-top: 0;">
                 <li style="margin-left: 10px;">
                     Debe utilizar una contraseña única y robusta para cada plataforma interna (correo, nube, red social, etc.).
-                    <span class="translation">
-                        You must use a strong and unique password for each internal platform (email, cloud, network, etc.).
-                    </span>
                 </li>
 
                 <li style="margin-left: 10px;">
                     Se recomienda activar la autenticación multifactor (MFA) siempre que esté disponible.
-                    <span class="translation">
-                        It is recommended to enable multi-factor authentication (MFA) whenever available.
-                    </span>
-                </li>
-
-                <li style="margin-left: 10px;">
-                    Evite reutilizar contraseñas entre plataformas personales y corporativas.
-                    <span class="translation">
-                        Avoid reusing passwords across personal and corporate platforms.
-                    </span>
                 </li>
             </ul>
 
             <!-- Política de Gestión de Información -->
             <h4 style="margin-top: 18px; margin-bottom: 8px;">
                 📁 Política de Gestión de Información:
-                <span class="translation">📁 Information Management Policy:</span>
             </h4>
 
             <ul style="padding-left: 24px; margin-top: 0;">
                 <li style="margin-left: 10px;">
                     No está permitido almacenar archivos confidenciales en servicios no autorizados.
-                    <span class="translation">
-                        It is not permitted to store confidential files on unauthorized services.
-                    </span>
-                </li>
-
-                <li style="margin-left: 10px;">
-                    Todos los documentos internos deben ser tratados bajo las normas de clasificación de TechNova.
-                    <span class="translation">
-                        All internal documents must be handled following TechNova’s classification standards.
-                    </span>
                 </li>
             </ul>
         </div>
@@ -368,7 +332,6 @@ export function getPopupsHTML() {
         <div style="text-align: center;">
         <button onclick="window.acceptPolicyAndStart()" style="margin-top: 25px; color: white;">
             He leído y acepto las Políticas de Seguridad
-            <span class="translation" style="color: white;">I have read and accept the Security Policies</span>
         </button>
         </div>
 

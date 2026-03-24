@@ -303,10 +303,6 @@ export function setupSessionRoutes() {
                 s7_secure_disposal_used:       toInt(m['scenario6.secure_data_disposal']),
                 s7_deleted_final_report:       toInt(m['scenario6.deleted_final_report']),
                 s7_time_seconds:               toInt2(m['scenario7.time_seconds']),
-                // S8 - se guarda desde breach check
-                s8_consented_email_check:      null,
-                s8_breach_count:               null,
-                s8_time_seconds:               toInt2(m['scenario8.time_seconds']),
                 // S9-S10
                 s9_time_seconds:               toInt2(m['scenario9.time_seconds']),
                 s10_time_seconds:              toInt2(m['scenario10.time_seconds']),

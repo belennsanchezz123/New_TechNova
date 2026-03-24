@@ -79,7 +79,6 @@ const initDB = () => {
         --    s5_ → Escenario 5: AI / Chat RRHH
         --    s6_ → Escenario 6: Profile & Apps
         --    s7_ → Escenario 7: File Cleanup
-        --    s8_ → Escenario 8: Breach Check
         --    s9_ → Escenario 9: Questionnaire behaviour
         --    ue_ → Unexpected Events (cross-scenario)
         -- ============================================================
@@ -143,11 +142,6 @@ const initDB = () => {
             s7_secure_disposal_used         INTEGER,    -- 1=sí, 0=no
             s7_deleted_final_report         INTEGER,    -- 1=sí, 0=no
             s7_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 7
-
-            -- ── Escenario 8: Breach check ─────────────────────────────
-            s8_consented_email_check        INTEGER,    -- 1=otorgó consentimiento, 0=declinó
-            s8_breach_count                 INTEGER,    -- NULL si no consintió
-            s8_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 8
 
             -- ── Escenario 9: Cuestionario final ───────────────────────
             s9_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 9

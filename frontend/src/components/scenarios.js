@@ -527,11 +527,6 @@ export function getScenarioHTML(scenarioNumber) {
                     <input type="text" id="prof-fullname" placeholder="Escribe tu nombre completo" required>
                 </div>
                 
-                <div class="form-group">
-                    <label for="prof-dni">DNI (Opcional)</label>
-                    <input type="text" id="prof-dni" placeholder="Ej: 12345678A">
-                </div>
-
                 <hr style="margin: 20px 0;">
 
                 <div class="form-group">
@@ -553,6 +548,13 @@ export function getScenarioHTML(scenarioNumber) {
                         Redes Sociales (LinkedIn/Twitter) (Opcional)
                     </label>
                     <input type="text" id="prof-social" placeholder="@usuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="prof-personal-email">
+                        Email Personal (Opcional)
+                    </label>
+                    <input type="email" id="prof-personal-email" placeholder="Ej: nombre@gmail.com">
                 </div>
 
                 <div class="form-group">
@@ -623,25 +625,6 @@ export function getScenarioHTML(scenarioNumber) {
 <p>
     <strong>Instrucción:</strong> Navega por la barra de herramientas y elimina los documentos sensibles o temporales que ya no deban permanecer en el sistema.
 </p>
-        `,
-        8: `
-            <h2>Escenario 8: Verificación de filtración de datos</h2>
-            <p>Como parte de nuestra investigación, estamos estudiando cómo la exposición de datos públicos se relaciona con el comportamiento en ciberseguridad. Esta fase es <strong>100% voluntaria</strong>.</p>
-            <p>Si das tu consentimiento, puedes proporcionar tu dirección de correo electrónico personal. Usaremos una herramienta automatizada para comprobar si ha aparecido en alguna filtración de datos pública conocida.Tu correo será anonimizado y almacenado de forma segura únicamente con fines de investigación.</p>
-            <div class="form-group">
-                <label for="consent-email">Tu dirección de correo electrónico (opcional)</label>
-                <input type="email" id="consent-email" placeholder="Dejar en blanco para rechazar">
-            </div>
-
-            <div id="breach-loading-scenario" style="display: none; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
-                <div class="spinner" style="border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
-                <p>Checking email against breach databases...</p>
-            </div>
-
-            <div id="breach-results-scenario" style="display: none; margin: 20px 0;"></div>
-
-            <button id="consent-submit-btn" onclick="window.finishSimulation(true)">I Consent and Submit</button>
-            <button class="secondary" onclick="window.finishSimulation(false)">No, Thank You. Finish.</button>
         `,
         9: `
             <h2>Escenario 9: Cuestionario Final</h2>

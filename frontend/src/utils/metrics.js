@@ -70,9 +70,6 @@ export const metrics = {
         document_deleted:             0,     // INT: 1=eliminó documento sensible desde Descargas, 0=no
         recycle_bin_emptied:          0      // INT: 1=vacío la papelera, 0=no
     },
-    scenario8: {
-        time_seconds:                null    // INT: tiempo acumulado en escenario 8 (segundos)
-    },
     scenario9: {
         time_seconds:                null,  // INT: tiempo acumulado en escenario 9 (segundos)
         proactive_ai_usage:           null,  // TEXT: descripción de uso IA
@@ -110,7 +107,6 @@ export function displayResults() {
         scenario5: 'Social Media',
         scenario6: 'File Cleanup',
         scenario7: 'Downloads & Recycle Bin',
-        scenario8: 'Breach Check',
         scenario9: 'AI Assistant',
         scenario10: 'Session End',
         simulation: 'Simulation',

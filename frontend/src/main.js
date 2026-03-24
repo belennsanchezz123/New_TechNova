@@ -57,7 +57,6 @@ import {
     allowDrop
 } from './handlers/scenario7.js';
 
-import { finishSimulation } from './handlers/scenario8.js';
 import { submitTaxonomy } from './handlers/scenario9.js';
 import { useAI, sendAIReport, handleAIInput, showMartaMessage } from './handlers/scenario5.js';
 import { startSession, completeSession } from './services/api.js';
@@ -639,7 +638,6 @@ window.openTempFolder = openTempFolder;
 window.showContextMenu = showContextMenu;
 window.performDelete = performDelete;
 window.openMyPC = openMyPC;
-window.finishSimulation = finishSimulation;
 window.submitTaxonomy = submitTaxonomy;
 window.drag = drag;
 window.drop = drop;

@@ -231,7 +231,7 @@ export function performDelete(method) {
         setTimeout(() => {
             const container = document.getElementById('desktop-window-container');
             if (container) container.innerHTML = '';
-            window.startScenario(8);
+            window.startScenario(9);
         }, 1000);
     })();
 }

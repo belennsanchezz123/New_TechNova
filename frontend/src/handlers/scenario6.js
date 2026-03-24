@@ -44,14 +44,20 @@ export function saveProfile() {
         disclosedData.push('Redes Sociales Externas');
     }
 
-    // 5. Compartir ubicación en tiempo real (Riesgo: exposición de ubicación)
+    // 5. Email Personal (Riesgo: Phishing / Suplantación)
+    const personalEmailInput = document.getElementById('prof-personal-email');
+    if (personalEmailInput && personalEmailInput.value.trim() !== '') {
+        disclosedData.push('Email Personal');
+    }
+
+    // 6. Compartir ubicación en tiempo real (Riesgo: exposición de ubicación)
     const liveLocationCheckbox = document.getElementById('prof-live-location');
     if (liveLocationCheckbox && liveLocationCheckbox.checked) {
         disclosedData.push('Ubicación en tiempo real');
     }
 
     // Cálculo de la métrica
-    const totalOptionalFields = 5; // Ahora son 5 campos opcionales
+    const totalOptionalFields = 6; // Ahora son 6 campos opcionales
     const count = disclosedData.length;
 
     // Guardamos una cadena descriptiva en lugar de solo un número
