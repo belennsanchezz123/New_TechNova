@@ -252,6 +252,10 @@ export function setupSessionRoutes() {
 
             const wideRow = {
                 participant_id:               reg.participant_id,
+
+                // S0
+                s0_policy_acceptance_time_seconds: toInt2(m['scenario0.policy_acceptance_time_seconds']),
+                
                 // S1
                 s1_wifi_public:                toInt(m['scenario1.wifi_public']),
                 s1_mail_password_strength:     toText(m['scenario1.mail_password_strength']),

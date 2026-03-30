@@ -23,6 +23,7 @@ try {
     db.exec(`
         CREATE TABLE IF NOT EXISTS participant_metrics (
             participant_id TEXT PRIMARY KEY,
+            s0_policy_acceptance_time_seconds INTEGER,
 
             s1_wifi_public                 INTEGER,
             s1_mail_password_strength       TEXT,
@@ -132,6 +133,7 @@ try {
         { name: 's9_time_seconds', type: 'INTEGER' },
         { name: 's10_time_seconds', type: 'INTEGER' },
         { name: 'session_total_time_seconds', type: 'INTEGER' },
+        { name: 's0_policy_acceptance_time_seconds', type: 'INTEGER' },
     ];
 
     for (const col of newColumns) {

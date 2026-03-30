@@ -128,6 +128,7 @@ const scenarioTiming = {
 };
 
 let simulationStartedAtMs = null;
+let policyPopupShownAtMs = null;
 
 function persistScenarioTimeMetric(scenarioNumber, totalSeconds) {
     if (scenarioNumber <= 0 || scenarioNumber >= TOTAL_SCENARIOS) return;
@@ -412,10 +413,12 @@ function validateAndStart() {
 }
 
 function showPolicyPopup() {
+    policyPopupShownAtMs = Date.now();
     document.getElementById('popup-policy-rules').classList.add('active');
 }
 
 async function acceptPolicyAndStart() {
+    const clickTimeMs = Date.now();
     const pid = getParticipantId(); // Obtiene el P00x del localStorage
     if (!pid) {
         alert("Por favor, introduce tu ID de participante antes de empezar.");
@@ -432,6 +435,15 @@ async function acceptPolicyAndStart() {
             setSessionId(sid);
 
             console.log("✅ Sesión vinculada al participante:", pid, "ID de Sesión:", sid);
+
+            // Métrica de tiempo de aceptación de políticas
+            if (policyPopupShownAtMs) {
+                const elapsedSeconds = Math.round((clickTimeMs - policyPopupShownAtMs) / 1000);
+                metrics.scenario0.policy_acceptance_time_seconds = elapsedSeconds;
+                saveMetrics(sid, { 'scenario0.policy_acceptance_time_seconds': elapsedSeconds }).catch(err => {
+                    console.warn("No se pudo guardar la métrica de políticas:", err);
+                });
+            }
         } else {
             console.warn("No se pudo obtener un ID de sesión del servidor, las métricas podrían fallar.");
         }

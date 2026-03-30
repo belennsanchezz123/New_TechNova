@@ -8,6 +8,9 @@ export const metrics = {
     simulation: {
         total_time_seconds:          null    // INT: tiempo total de la simulacion (segundos)
     },
+    scenario0: {
+        policy_acceptance_time_seconds: null // INT: tiempo de aceptación de políticas (segundos)
+    },
     scenario1: {
         time_seconds:                null,   // INT: tiempo acumulado en escenario 1 (segundos)
         wifi_public:                  null,   // INT: 1=usó red pública, 0=usó red corporativa
@@ -100,6 +103,7 @@ export function displayResults() {
     tbody.innerHTML = '';
 
     const friendlyNames = {
+        scenario0: 'Políticas de Uso',
         scenario1: 'Account Creation',
         scenario2: 'Interruptions & Peripherals',
         scenario3: 'Email & Communications',

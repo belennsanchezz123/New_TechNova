@@ -85,7 +85,8 @@ const initDB = () => {
         CREATE TABLE IF NOT EXISTS participant_metrics (
             participant_id TEXT PRIMARY KEY,
 
-            -- ── Escenario 1: Creación de cuentas y WiFi ──────────────
+            -- ── Escenario 0: Políticas de Uso ────────────────────────
+            s0_policy_acceptance_time_seconds INTEGER,
             s1_wifi_public                 INTEGER,    -- 1=pública, 0=corporativa
             s1_mail_password_strength       TEXT,       -- 'Weak' | 'Medium' | 'Strong'
             s1_default_password_flag        INTEGER,    -- 1=acepta sugerida, 0=la cambia
