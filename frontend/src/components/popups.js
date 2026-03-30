@@ -355,6 +355,33 @@ export function getPopupsHTML() {
 
     </div>
 </div>
+
+<div id="popup-wifi-password" class="popup-overlay">
+    <div class="popup-content wifi-password-popup">
+        <div class="wifi-popup-header">
+            <span class="wifi-popup-icon">🔒</span>
+            <h3 id="wifi-popup-name">Seguridad de red</h3>
+        </div>
+        <p>Escribe la clave de seguridad de red</p>
+        <div class="wifi-input-container">
+            <input type="text" id="wifi-password-input" placeholder="Clave de seguridad" autocomplete="off" style="-webkit-text-security: disc;">
+            <button
+                onmousedown="window.holdPasswordVisibility('wifi-password-input', true)"
+                onmouseup="window.holdPasswordVisibility('wifi-password-input', false)"
+                onmouseleave="window.holdPasswordVisibility('wifi-password-input', false)"
+                onmouseout="window.holdPasswordVisibility('wifi-password-input', false)"
+                ontouchstart="window.holdPasswordVisibility('wifi-password-input', true)"
+                ontouchend="window.holdPasswordVisibility('wifi-password-input', false)"
+                ontouchcancel="window.holdPasswordVisibility('wifi-password-input', false)"
+                title="Mantener pulsado para ver"
+                class="wifi-eye-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="wifi-popup-actions">
+            <button class="wifi-cancel-btn" onclick="window.closeWifiPasswordPopup()">Cancelar</button>
+            <button class="wifi-confirm-btn" onclick="window.confirmWifiConnection()">Siguiente</button>
+        </div>
+    </div>
+</div>
     `;
 }
 // ----------------------------------------------------

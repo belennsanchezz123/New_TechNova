@@ -12,6 +12,7 @@
 @import './teams-permissions.css';
 @import './taskbar.css';
 @import './wifi-dropdown.css';
+@import './wifi-password.css';
 @import './welcome.css';
 
 /* --- Scenario 2: Simulated Lock Screen --- */

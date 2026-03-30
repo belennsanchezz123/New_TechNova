@@ -17,7 +17,9 @@ import {
     setTeamsPermission,
     acceptDefaultMailPassword,
     rejectDefaultMailPassword,
-    holdPasswordVisibility
+    holdPasswordVisibility,
+    closeWifiPasswordPopup,
+    confirmWifiConnection
 } from './handlers/scenario1.js';
 
 import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
@@ -597,6 +599,8 @@ window.goToAI = function () {
 // --- ASIGNACIONES A WINDOW ---
 window.toggleWifiMenu = toggleWifiMenu;
 window.connectWifi = connectWifi;
+window.closeWifiPasswordPopup = closeWifiPasswordPopup;
+window.confirmWifiConnection = confirmWifiConnection;
 window.validateAndStart = validateAndStart;
 window.startScenario = startScenario;
 window.previousScenario = previousScenario;

@@ -125,8 +125,8 @@ export function getScenarioHTML(scenarioNumber) {
                         <label for="mail-user">Usuario:</label>
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña" style="flex: 1; -webkit-text-security: disc;">
+                        <div class="sc1-pass-container">
+                            <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña" class="sc1-pass-input" style="-webkit-text-security: disc;">
                             <button
                                 onmousedown="window.holdPasswordVisibility('mail-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('mail-pass', false)"
@@ -136,7 +136,7 @@ export function getScenarioHTML(scenarioNumber) {
                                 ontouchend="window.holdPasswordVisibility('mail-pass', false)"
                                 ontouchcancel="window.holdPasswordVisibility('mail-pass', false)"
                                 title="Mantener pulsado para ver"
-                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                                class="sc1-eye-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                         </div>
                         <div style="margin-top: 10px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; background: #f8fbff;">
                             <div style="font-size: 13px; color: #2d3748; margin-bottom: 8px;">
@@ -178,8 +178,8 @@ export function getScenarioHTML(scenarioNumber) {
                          <label for="drive-user">Usuario:</label>
                         <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="drive-pass" style="flex: 1; -webkit-text-security: disc;">
+                        <div class="sc1-pass-container">
+                            <input type="text" id="drive-pass" class="sc1-pass-input" style="-webkit-text-security: disc;">
                             <button
                                 onmousedown="window.holdPasswordVisibility('drive-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('drive-pass', false)"
@@ -189,7 +189,7 @@ export function getScenarioHTML(scenarioNumber) {
                                 ontouchend="window.holdPasswordVisibility('drive-pass', false)"
                                 ontouchcancel="window.holdPasswordVisibility('drive-pass', false)"
                                 title="Mantener pulsado para ver"
-                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                                class="sc1-eye-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                         </div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button onclick="window.registerService('drive')" style="
@@ -221,8 +221,8 @@ export function getScenarioHTML(scenarioNumber) {
                         <label for="events-user">Usuario:</label>
                         <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <input type="text" id="events-pass" style="flex: 1; -webkit-text-security: disc;">
+                        <div class="sc1-pass-container">
+                            <input type="text" id="events-pass" class="sc1-pass-input" style="-webkit-text-security: disc;">
                             <button
                                 onmousedown="window.holdPasswordVisibility('events-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('events-pass', false)"
@@ -232,7 +232,7 @@ export function getScenarioHTML(scenarioNumber) {
                                 ontouchend="window.holdPasswordVisibility('events-pass', false)"
                                 ontouchcancel="window.holdPasswordVisibility('events-pass', false)"
                                 title="Mantener pulsado para ver"
-                                style="border: 1px solid #d0d7de; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer;">👁️</button>
+                                class="sc1-eye-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                         </div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button onclick="window.registerService('events')" style="

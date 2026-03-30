@@ -9,7 +9,7 @@ export let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
 const DEFAULT_MAIL_PASSWORD = 'X9m!Q2v@T7k#L4r$Z8';
-let isWifiLocked = false;
+// let isWifiLocked = false;
 
 export function acceptDefaultMailPassword() {
     const passInput = document.getElementById('mail-pass');
@@ -253,7 +253,7 @@ export function closeRegistrationComplete() {
 }
 
 export function toggleWifiMenu() {
-    if (isWifiLocked) return;
+    // Ya no bloqueamos el menú de WiFi
 
     const menu = document.getElementById('wifi-menu');
     if (menu) {
@@ -266,36 +266,103 @@ export function toggleWifiMenu() {
 }
 
 export function connectWifi(type) {
-    if (isWifiLocked) return;
+    // Ya no bloqueamos la conexión para permitir cambiar de red
 
+    if (type === 'secure') {
+        const popup = document.getElementById('popup-wifi-password');
+        const input = document.getElementById('wifi-password-input');
+        if (popup && input) {
+            input.value = '';
+            input.type = 'text';
+            input.style.webkitTextSecurity = 'disc';
+            input.style.borderColor = '#b0b0b0';
+            const prevErr = document.getElementById('wifi-password-error');
+            if (prevErr) prevErr.remove();
+            // Limpiar error al escribir
+            input.oninput = () => {
+                input.style.borderColor = '#b0b0b0';
+                const err = document.getElementById('wifi-password-error');
+                if (err) err.remove();
+            };
+            popup.classList.add('active');
+            input.focus();
+        }
+        return;
+    }
+
+    // Para la red pública conectamos directamente
+    _processWifiConnection('public');
+}
+
+export function toggleWifiPasswordVisibility() {
+    const input = document.getElementById('wifi-password-input');
+    if (input) {
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+}
+
+export function closeWifiPasswordPopup() {
+    const popup = document.getElementById('popup-wifi-password');
+    if (popup) popup.classList.remove('active');
+}
+
+export function confirmWifiConnection() {
+    const input = document.getElementById('wifi-password-input');
+    const password = input ? input.value.trim() : '';
+
+    if (password !== "UniversidadMurcia2026!") {
+        // Feedback visual de error
+        if (input) {
+            input.style.borderColor = '#d32f2f';
+            input.classList.add('shake');
+            setTimeout(() => input.classList.remove('shake'), 500);
+        }
+        // Mostrar mensaje de error
+        let errMsg = document.getElementById('wifi-password-error');
+        if (!errMsg) {
+            errMsg = document.createElement('p');
+            errMsg.id = 'wifi-password-error';
+            errMsg.style.cssText = 'color:#d32f2f; font-size:12px; margin:0; padding:0;';
+            input.closest('.wifi-input-container').insertAdjacentElement('afterend', errMsg);
+        }
+        errMsg.textContent = 'La clave de seguridad de red no es correcta. Vuelve a intentarlo.';
+        return;
+    }
+
+    closeWifiPasswordPopup();
+    _processWifiConnection('secure');
+}
+
+function _processWifiConnection(type) {
     const menu = document.getElementById('wifi-menu');
     const icon = document.getElementById('wifi-icon-status');
     const wifiBtn = document.getElementById('wifi-icon-taskbar');
-
-    if (type === 'secure') {
-        const password = prompt("🔐 TechNova_Corp_Secure está protegida.\n\nClave:");
-        if (password !== "UniversidadMurcia2026!") {
-            alert("❌ Contraseña incorrecta.");
-            return;
-        }
-    }
 
     // Feedback visual (cursor de espera)
     document.body.style.cursor = 'wait';
 
     setTimeout(() => {
         metrics.scenario1.wifi_public = (type === 'public') ? 1 : 0;
-
-
-        if (icon) icon.textContent = '🛜';
         if (menu) menu.style.display = 'none';
 
-        // Bloquear cambio de red tras la primera conexión.
-        isWifiLocked = true;
+        // Actualizar icono de la barra de tareas (mismo icono para ambas)
+        if (icon) {
+            icon.textContent = '🛜';
+        }
+
+        // Feedback en el menú (marcar como conectado)
+        const items = document.querySelectorAll('.wifi-item');
+        items.forEach(item => {
+            item.classList.remove('connected');
+            const name = item.querySelector('.wifi-name').textContent;
+            if (type === 'public' && name === 'TechNova_Public') item.classList.add('connected');
+            if (type === 'secure' && name === 'TechNova_Corp_Secure') item.classList.add('connected');
+        });
+
+        // Feedback visual en el botón de la barra de tareas
         if (wifiBtn) {
-            wifiBtn.disabled = true;
-            wifiBtn.classList.add('locked');
-            wifiBtn.title = 'WiFi conectado';
+            wifiBtn.classList.add('connected');
+            wifiBtn.title = `Conectado a ${type === 'public' ? 'TechNova_Public' : 'TechNova_Corp_Secure'}`;
         }
 
         document.body.style.cursor = 'default';
@@ -306,7 +373,8 @@ export function connectWifi(type) {
             registrationContent.style.display = 'block';
         }
 
-        // Ocultar el bloque inicial de conexión para evitar confusión tras conectarse.
+        // Ocultar el bloque inicial de instrucción de WiFi solo si lo desea, 
+        // pero mejor lo dejamos oculto tras la primera conexión exitosa.
         const wifiTaskContainer = document.getElementById('wifi-task-container');
         if (wifiTaskContainer) {
             wifiTaskContainer.style.display = 'none';
