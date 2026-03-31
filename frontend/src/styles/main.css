@@ -14,6 +14,7 @@
 @import './wifi-dropdown.css';
 @import './wifi-password.css';
 @import './welcome.css';
+@import './scenario1-stepper.css';
 
 /* --- Scenario 2: Simulated Lock Screen --- */
 #simulated-lock-screen {

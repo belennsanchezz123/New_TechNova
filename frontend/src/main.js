@@ -69,6 +69,7 @@ import { metrics } from './utils/metrics.js';
 // Importar funciones del flujo MFA multi-paso
 import {
     startMFAFlow,
+    proceedToStep1,
     selectPrimaryMethod,
     selectBackupMethod,
     skipBackupMethod,
@@ -296,7 +297,7 @@ function showWifiHighlight() {
     const highlight = document.createElement('div');
     highlight.id = 'wifi-highlight-box';
     highlight.className = 'wifi-highlight-box';
-    highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Haz clic aquí para conectarte</span>';
+    highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Clic aquí para cambiar de red en cualquier momento</span>';
     wifiBtn.style.position = 'relative';
     wifiBtn.appendChild(highlight);
 
@@ -714,6 +715,7 @@ window.valorTeams = () => isEventsRegistrationComplete;
 
 // --- FUNCIONES MFA MULTI-PASO ---
 window.startMFAFlow = startMFAFlow;
+window.proceedToStep1 = proceedToStep1;
 window.selectPrimaryMethod = selectPrimaryMethod;
 window.selectBackupMethod = selectBackupMethod;
 window.skipBackupMethod = skipBackupMethod;

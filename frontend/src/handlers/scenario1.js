@@ -45,25 +45,71 @@ export function holdPasswordVisibility(inputId, show) {
 
 function goNext(service) {
     const currentForm = document.getElementById(`technova-${service}-form`);
+    const username = registrations[service]?.username || '';
 
+    // 1. Hide the current form
     if (currentForm) {
+        currentForm.classList.remove('active-form');
         currentForm.style.display = 'none';
-    } else {
-        console.error(`Error: No se encontró el formulario con ID: technova-${service}-form.`);
     }
 
-    if (service === 'mail') {
-        const driveForm = document.getElementById('technova-drive-form');
-        if (driveForm) driveForm.style.display = 'block';
-    } else if (service === 'drive') {
-        // Iniciar el flujo MFA multi-paso
-        const sessionId = registrations['drive']?.id;
+    // 2. Show completed account summary
+    const serviceNames = { mail: 'TechNova Mail', drive: 'TechNova Drive', events: 'TechNova Teams' };
+    const serviceIcons = { mail: '📧', drive: '☁️', events: '👥' };
+    const container = document.getElementById('completed-accounts-container');
+    if (container) {
+        const summary = document.createElement('div');
+        summary.className = 'completed-account';
+        summary.innerHTML = `
+            <div class="completed-account-icon">✓</div>
+            <div class="completed-account-info">
+                <span class="completed-account-service">${serviceIcons[service]} ${serviceNames[service]}</span>
+                <span class="completed-account-username">Usuario: ${username}</span>
+            </div>
+            <span class="completed-account-badge">Completado</span>
+        `;
+        container.appendChild(summary);
+    }
 
-        // Importar dinámicamente y llamar a startMFAFlow
+    // 3. Update stepper
+    const stepperMap = { mail: 'stepper-mail', drive: 'stepper-drive', events: 'stepper-events' };
+    const lineMap = { mail: 'stepper-line-1', drive: 'stepper-line-2' };
+
+    // Mark current step as completed
+    const currentStep = document.getElementById(stepperMap[service]);
+    if (currentStep) {
+        currentStep.classList.remove('active');
+        currentStep.classList.add('completed');
+        const circle = currentStep.querySelector('.stepper-circle');
+        if (circle) circle.textContent = '✓';
+    }
+
+    // Mark connecting line as completed
+    if (lineMap[service]) {
+        const line = document.getElementById(lineMap[service]);
+        if (line) line.classList.add('completed');
+    }
+
+    // 4. Navigate to next step
+    if (service === 'mail') {
+        // Activate drive stepper + show drive form
+        const driveStep = document.getElementById('stepper-drive');
+        if (driveStep) driveStep.classList.add('active');
+        const driveForm = document.getElementById('technova-drive-form');
+        if (driveForm) {
+            driveForm.style.display = 'block';
+            driveForm.classList.add('active-form');
+        }
+    } else if (service === 'drive') {
+        // Activate events stepper (but don't show form yet — MFA comes first)
+        const eventsStep = document.getElementById('stepper-events');
+        if (eventsStep) eventsStep.classList.add('active');
+
+        // Start MFA flow
+        const sessionId = registrations['drive']?.id;
         import('./mfa-flow.js').then(({ startMFAFlow }) => {
             startMFAFlow(sessionId);
         });
-
     } else if (service === 'events') {
         localStorage.setItem('sc1_completed', 'true');
     }
@@ -338,6 +384,48 @@ function _processWifiConnection(type) {
     const icon = document.getElementById('wifi-icon-status');
     const wifiBtn = document.getElementById('wifi-icon-taskbar');
 
+    // Feedback visual inmediato en el panel inline (nuevo)
+    const secureItem = document.querySelector('.wifi-network-item[onclick*="secure"]');
+    const publicItem = document.querySelector('.wifi-network-item[onclick*="public"]');
+
+    if (secureItem && publicItem) {
+        if (type === 'secure') {
+            secureItem.innerHTML = `
+                <div class="wifi-panel-connected" style="background: linear-gradient(135deg, #f0f7ff, #e6f0fa); border: 2px solid #0078d4; border-radius: 12px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15); display: flex; align-items: center; gap: 15px; width: 100%; box-sizing: border-box;">
+                    <span class="wifi-connected-icon" style="font-size: 2.2em; filter: drop-shadow(0 2px 4px rgba(0,120,212,0.3));">🔒</span>
+                    <div class="wifi-connected-info" style="flex: 1;">
+                        <div class="wifi-connected-name" style="color: #004578; font-weight: 800; font-size: 1.15em; letter-spacing: -0.2px;">TechNova_Corp_Secure</div>
+                        <div class="wifi-connected-status" style="color: #0078d4; font-size: 0.95em; margin-top: 4px; font-weight: 500;">Conectada</div>
+                    </div>
+                </div>
+            `;
+            secureItem.style.pointerEvents = 'none';
+            secureItem.style.padding = '0';
+            secureItem.style.border = 'none';
+            secureItem.style.background = 'transparent';
+            secureItem.style.boxShadow = 'none';
+            publicItem.style.opacity = '0.4';
+            publicItem.style.pointerEvents = 'none';
+        } else {
+            publicItem.innerHTML = `
+                <div class="wifi-panel-connected" style="background: linear-gradient(135deg, #f0f7ff, #e6f0fa); border: 2px solid #0078d4; border-radius: 12px; padding: 18px 22px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15); display: flex; align-items: center; gap: 15px; width: 100%; box-sizing: border-box;">
+                    <span class="wifi-connected-icon" style="font-size: 2.2em; filter: drop-shadow(0 2px 4px rgba(0,120,212,0.3));">📶</span>
+                    <div class="wifi-connected-info" style="flex: 1;">
+                        <div class="wifi-connected-name" style="color: #004578; font-weight: 800; font-size: 1.15em; letter-spacing: -0.2px;">TechNova_Public</div>
+                        <div class="wifi-connected-status" style="color: #0078d4; font-size: 0.95em; margin-top: 4px; font-weight: 500;">Conectada</div>
+                    </div>
+                </div>
+            `;
+            publicItem.style.pointerEvents = 'none';
+            publicItem.style.padding = '0';
+            publicItem.style.border = 'none';
+            publicItem.style.background = 'transparent';
+            publicItem.style.boxShadow = 'none';
+            secureItem.style.opacity = '0.4';
+            secureItem.style.pointerEvents = 'none';
+        }
+    }
+
     // Feedback visual (cursor de espera)
     document.body.style.cursor = 'wait';
 
@@ -345,16 +433,16 @@ function _processWifiConnection(type) {
         metrics.scenario1.wifi_public = (type === 'public') ? 1 : 0;
         if (menu) menu.style.display = 'none';
 
-        // Actualizar icono de la barra de tareas (mismo icono para ambas)
+        // Actualizar icono de la barra de tareas
         if (icon) {
             icon.textContent = '🛜';
         }
 
-        // Feedback en el menú (marcar como conectado)
+        // Feedback en el menú taskbar (marcar como conectado)
         const items = document.querySelectorAll('.wifi-item');
         items.forEach(item => {
             item.classList.remove('connected');
-            const name = item.querySelector('.wifi-name').textContent;
+            const name = item.querySelector('.wifi-name')?.textContent;
             if (type === 'public' && name === 'TechNova_Public') item.classList.add('connected');
             if (type === 'secure' && name === 'TechNova_Corp_Secure') item.classList.add('connected');
         });
@@ -371,10 +459,10 @@ function _processWifiConnection(type) {
         const registrationContent = document.getElementById('registration-content');
         if (registrationContent) {
             registrationContent.style.display = 'block';
+            registrationContent.style.animation = 'fadeInScale 0.4s ease';
         }
 
-        // Ocultar el bloque inicial de instrucción de WiFi solo si lo desea, 
-        // pero mejor lo dejamos oculto tras la primera conexión exitosa.
+        // Ocultar el bloque inicial de instrucción de WiFi
         const wifiTaskContainer = document.getElementById('wifi-task-container');
         if (wifiTaskContainer) {
             wifiTaskContainer.style.display = 'none';

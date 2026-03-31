@@ -13,7 +13,7 @@ import { getSessionId } from '../utils/session.js';
 // --- ESTADO DEL FLUJO ---
 const mfaState = {
     currentStep: 1,
-    totalSteps: 5,
+    totalSteps: 4,
     startTime: null,
     primaryMethod: null,
     backupMethod: null,
@@ -117,7 +117,7 @@ if (!document.getElementById('mfa-toast-styles')) {
 
 // --- RESET ---
 function resetMFAState() {
-    mfaState.currentStep = 1;
+    mfaState.currentStep = 0;
     mfaState.startTime = Date.now();
     mfaState.primaryMethod = null;
     mfaState.backupMethod = null;
@@ -134,13 +134,11 @@ export function startMFAFlow(sessionId) {
     const popup = document.getElementById('popup-mfa');
     if (popup) {
         popup.classList.add('active');
-        renderMFAStep(1);
+        renderMFAStep(0);
     }
 }
 
 // --- RENDERIZAR PASO ---
-// Pasos: 1=Seleccionar principal, 2=Configurar principal, 3=Seleccionar respaldo,
-//        6=Configurar respaldo (interno), 4=Códigos de recuperación, 5=Confirmación
 export function renderMFAStep(step) {
     mfaState.currentStep = step;
     const container = document.getElementById('mfa-step-container');
@@ -148,27 +146,36 @@ export function renderMFAStep(step) {
 
     let html = '';
     switch (step) {
+        case 0: html = getMFAStep0HTML(); break;
         case 1: html = getMFAStep1HTML(); break;
         case 2: html = getMFAStep2HTML(); break;
         case 3: html = getMFAStep3HTML(); break;
-        case 4: html = getMFAStep4HTML(); break;
         case 5: html = getMFAStep5HTML(); break;
         case 6: html = getMFAStep6BackupConfigHTML(); break;
     }
     container.innerHTML = html;
+}
 
-    // Post-render: checkbox del paso 4
-    if (step === 4) {
-        setTimeout(() => {
-            const checkbox = document.getElementById('mfa-codes-saved');
-            const btn = document.getElementById('proceed-step5-btn');
-            if (checkbox && btn) {
-                checkbox.addEventListener('change', () => {
-                    btn.disabled = !checkbox.checked;
-                });
-            }
-        }, 100);
-    }
+export function proceedToStep1() {
+    renderMFAStep(1);
+}
+
+// =============================================
+// PASO 0: Inicio / Prompt
+// =============================================
+function getMFAStep0HTML() {
+    return `
+        <div style="text-align: center; padding: 30px 10px;">
+            <p style="font-size: 1.3em; color: #1a1a2e; margin-bottom: 40px; line-height: 1.5; font-weight: 500;">
+                ¿Quieres activar el MFA para tus cuentas en TechNova?
+            </p>
+            
+            <div class="mfa-actions" style="justify-content: center; gap: 20px;">
+                <button onclick="window.proceedToStep1()" style="width: 140px; padding: 12px; font-size: 1.1em; background-color: #0078d4;">Sí</button>
+                <button class="secondary" onclick="window.skipMFA()" style="width: 140px; padding: 12px; font-size: 1.1em;">No</button>
+            </div>
+        </div>
+    `;
 }
 
 // =============================================
@@ -201,7 +208,7 @@ function getMFAStep1HTML() {
         </div>
         
         <div class="mfa-actions">
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
+            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
         </div>
     `;
 }
@@ -332,7 +339,6 @@ function getMFAStep2HTML() {
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.proceedToStep3()" id="mfa-proceed-btn">Continuar →</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
         </div>
     `;
 
@@ -378,12 +384,16 @@ function getMFAStep3HTML() {
                     <div class="mfa-method-title">App Autenticadora</div>
                 </button>
             ` : ''}
+
+            <button class="mfa-method-card" onclick="window.skipBackupMethod()" style="border: 2px dashed #b0b0b0;">
+                <div class="mfa-icon" style="filter: grayscale(1);">🚫</div>
+                <div class="mfa-method-title" style="color: #666;">Ninguno</div>
+                <div class="mfa-method-desc" style="color: #888;">No usar método de respaldo</div>
+            </button>
         </div>
         
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button class="secondary" onclick="window.skipBackupMethod()">No configurar backup</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir MFA</button>
         </div>
     `;
 }
@@ -509,7 +519,6 @@ function getMFAStep6BackupConfigHTML() {
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.proceedFromBackupConfig()" id="mfa-proceed-btn-backup">Continuar →</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
         </div>
     `;
 
@@ -520,52 +529,17 @@ function getMFAStep6BackupConfigHTML() {
     `;
 }
 
-// =============================================
-// PASO 4: Códigos de Recuperación
-// =============================================
-function getMFAStep4HTML() {
-    const recoveryCodes = Array.from({ length: 10 }, () => {
-        const r1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const r2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        return `${r1}-${r2}`;
-    });
 
-    return `
-        <div class="mfa-progress">Paso 4 de ${mfaState.totalSteps}</div>
-        <h3>Códigos de Recuperación</h3>
-        <p>Guarda estos códigos en un lugar seguro. Podrás usarlos si pierdes acceso a tus métodos de autenticación:</p>
-        
-        <div class="mfa-recovery-codes">
-            ${recoveryCodes.map((code, idx) =>
-                `<div class="recovery-code-item">${idx + 1}. ${code}</div>`
-            ).join('')}
-        </div>
-        
-        <div class="mfa-warning">
-            ⚠️ <strong>Importante:</strong> Cada código solo se puede usar una vez. Descárgalos o escríbelos ahora.
-        </div>
-        
-        <div class="mfa-form-group" style="margin-top: 20px;">
-            <label style="display: flex; align-items: center; cursor: pointer;">
-                <input type="checkbox" id="mfa-codes-saved" style="margin-right: 10px; width: 20px; height: 20px;">
-                <span>He guardado mis códigos de recuperación de forma segura</span>
-            </label>
-        </div>
-        
-        <div class="mfa-actions">
-            <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
-            <button onclick="window.proceedToStep5()" id="proceed-step5-btn" disabled>Continuar →</button>
-            <button class="secondary" onclick="window.skipMFA()">Omitir por ahora</button>
-        </div>
-    `;
-}
+
+
+// =============================================
 
 // =============================================
 // PASO 5: Confirmación Final
 // =============================================
 function getMFAStep5HTML() {
     return `
-        <div class="mfa-progress">Paso 5 de ${mfaState.totalSteps}</div>
+        <div class="mfa-progress">Paso ${mfaState.totalSteps} de ${mfaState.totalSteps}</div>
         <h3>🎉 ¡Confirmación Final!</h3>
         <p>Revisa tu configuración de MFA antes de activarla:</p>
         
@@ -573,14 +547,11 @@ function getMFAStep5HTML() {
             <div class="summary-item">
                 <strong>Método Principal:</strong> ${mfaState.primaryMethod || 'No configurado'}
             </div>
-            ${mfaState.backupMethod ? `
+            ${mfaState.backupMethod && mfaState.backupMethod !== 'None' ? `
                 <div class="summary-item">
                     <strong>Método de Respaldo:</strong> ${mfaState.backupMethod}
                 </div>
             ` : ''}
-            <div class="summary-item">
-                <strong>Códigos de Recuperación:</strong> Guardados ✓
-            </div>
         </div>
         
         <div class="mfa-confirmation">
@@ -593,7 +564,6 @@ function getMFAStep5HTML() {
         <div class="mfa-actions">
             <button class="secondary" onclick="window.goBackMFA()">← Atrás</button>
             <button onclick="window.completeMFA()" style="background-color: #2e7d32;">✓ Activar MFA Ahora</button>
-            <button class="secondary" onclick="window.skipMFA()">Cancelar</button>
         </div>
     `;
 }
@@ -614,7 +584,36 @@ export function selectBackupMethod(method) {
 
 export function skipBackupMethod() {
     mfaState.backupMethod = 'None';
-    renderMFAStep(4);
+    renderMFAStep(5);
+}
+
+function showMFAError(msg) {
+    let errDiv = document.getElementById('mfa-inline-error');
+    if (!errDiv) {
+        errDiv = document.createElement('div');
+        errDiv.id = 'mfa-inline-error';
+        errDiv.style.color = '#c62828';
+        errDiv.style.backgroundColor = '#ffcdd2';
+        errDiv.style.padding = '10px';
+        errDiv.style.borderRadius = '6px';
+        errDiv.style.marginBottom = '15px';
+        errDiv.style.textAlign = 'center';
+        errDiv.style.fontWeight = '500';
+        errDiv.style.fontSize = '0.9em';
+        
+        const actionsDiv = document.querySelector('.mfa-actions');
+        if (actionsDiv && actionsDiv.parentNode) {
+            actionsDiv.parentNode.insertBefore(errDiv, actionsDiv);
+        } else {
+            const container = document.getElementById('mfa-step-container');
+            if (container) container.appendChild(errDiv);
+        }
+    }
+    errDiv.innerHTML = msg;
+    
+    setTimeout(() => {
+        if (errDiv.parentNode) errDiv.parentNode.removeChild(errDiv);
+    }, 4500);
 }
 
 /** Valida el código introducido en un paso de configuración (síncrono para SMS/Email) */
@@ -622,13 +621,13 @@ function validateMethodCode(method) {
     if (method === 'SMS') {
         const code = document.getElementById('mfa-sms-code')?.value;
         if (code !== mfaState.generatedCode) {
-            alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
+            showMFAError('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
             return false;
         }
     } else if (method === 'Email') {
         const code = document.getElementById('mfa-email-code')?.value;
         if (code !== mfaState.generatedCode) {
-            alert('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
+            showMFAError('Código incorrecto. Revisa la notificación en la esquina superior derecha.');
             return false;
         }
     }
@@ -642,7 +641,7 @@ export async function proceedToStep3() {
     if (method === 'App') {
         const code = document.getElementById('mfa-app-code')?.value;
         if (!code || code.length !== 6) {
-            alert('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
+            showMFAError('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
             return;
         }
         
@@ -660,13 +659,13 @@ export async function proceedToStep3() {
             if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
             
             if (!data.success || !data.verified) {
-                alert('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
+                showMFAError('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
                 return;
             }
         } catch (err) {
             console.error('Error verifying TOTP:', err);
             if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
-            alert('Error al verificar el código. Intenta de nuevo.');
+            showMFAError('Error al verificar el código. Intenta de nuevo.');
             return;
         }
     } else {
@@ -690,7 +689,7 @@ export async function proceedFromBackupConfig() {
     if (method === 'App') {
         const code = document.getElementById('mfa-app-code')?.value;
         if (!code || code.length !== 6) {
-            alert('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
+            showMFAError('Introduce el código de 6 dígitos que aparece en tu App Authenticator.');
             return;
         }
         
@@ -708,13 +707,13 @@ export async function proceedFromBackupConfig() {
             if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
             
             if (!data.success || !data.verified) {
-                alert('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
+                showMFAError('Código incorrecto o expirado. Prueba de nuevo con el que aparece en tu App.');
                 return;
             }
         } catch (err) {
             console.error('Error verifying TOTP:', err);
             if (btn) { btn.disabled = false; btn.textContent = 'Continuar →'; }
-            alert('Error al verificar el código. Intenta de nuevo.');
+            showMFAError('Error al verificar el código. Intenta de nuevo.');
             return;
         }
     } else {
@@ -727,13 +726,13 @@ export async function proceedFromBackupConfig() {
         }
     }
     
-    renderMFAStep(4);
+    renderMFAStep(5);
 }
 
 export function proceedToStep5() {
     const checkbox = document.getElementById('mfa-codes-saved');
     if (!checkbox?.checked) {
-        alert('Debes confirmar que has guardado tus códigos de recuperación.');
+        showMFAError('Debes confirmar que has guardado tus códigos de recuperación.');
         return;
     }
     mfaState.codesAccepted = true;
@@ -745,14 +744,14 @@ export function goBackMFA() {
     if (step === 6) {
         // Desde configurar respaldo → volver a selección de respaldo
         renderMFAStep(3);
-    } else if (step === 4) {
-        // Desde códigos de recuperación → volver a config respaldo (o selección si se omitió)
+    } else if (step === 5) {
+        // Desde confirmación → volver a config respaldo (o selección si se omitió)
         if (mfaState.backupMethod && mfaState.backupMethod !== 'None') {
             renderMFAStep(6);
         } else {
             renderMFAStep(3);
         }
-    } else if (step > 1) {
+    } else if (step > 0) {
         renderMFAStep(step - 1);
     }
 }

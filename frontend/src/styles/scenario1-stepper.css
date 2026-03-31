@@ -1,0 +1,278 @@
+/* ========================================
+   Scenario 1 — WiFi Panel + Stepper + Completed State
+   ======================================== */
+
+/* --- WiFi Inline Selection Panel --- */
+.wifi-selection-panel {
+    background: linear-gradient(135deg, #f8fbff, #e8f2ff);
+    border: 1px solid #c5ddf5;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 4px 16px rgba(0, 120, 212, 0.08);
+}
+
+.wifi-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.wifi-panel-header h3 {
+    margin: 0;
+    color: #0f3d8a;
+    font-size: 1.15em;
+}
+
+.wifi-panel-icon {
+    font-size: 1.6em;
+}
+
+.wifi-panel-description {
+    color: #555;
+    font-size: 0.95em;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.wifi-network-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wifi-network-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 2px solid #e0e8f0;
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.wifi-network-item:hover {
+    border-color: #0078d4;
+    background: #f0f7ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 120, 212, 0.12);
+}
+
+.wifi-network-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.wifi-network-icon {
+    font-size: 1.5em;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f4f8;
+    border-radius: 8px;
+}
+
+.wifi-network-name {
+    font-weight: 700;
+    color: #1a1a2e;
+    font-size: 1.02em;
+}
+
+.wifi-network-detail {
+    font-size: 0.82em;
+    color: #777;
+    margin-top: 2px;
+}
+
+.wifi-signal-strength {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0078d4;
+}
+
+.wifi-panel-connected {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #e6f9ed;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    padding: 14px 18px;
+    animation: fadeInScale 0.4s ease;
+}
+
+.wifi-panel-connected .wifi-connected-icon {
+    font-size: 1.6em;
+}
+
+.wifi-panel-connected .wifi-connected-info {
+    flex: 1;
+}
+
+.wifi-panel-connected .wifi-connected-name {
+    font-weight: 700;
+    color: #2e7d32;
+}
+
+.wifi-panel-connected .wifi-connected-status {
+    font-size: 0.82em;
+    color: #4caf50;
+}
+
+/* --- Registration Stepper --- */
+.registration-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 24px 0 28px;
+    padding: 0 20px;
+}
+
+.stepper-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.stepper-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95em;
+    transition: all 0.35s ease;
+    border: 3px solid #d0d7de;
+    background: #f5f7fa;
+    color: #999;
+}
+
+.stepper-step.active .stepper-circle {
+    border-color: #0078d4;
+    background: #0078d4;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.15);
+    animation: stepPulse 2s infinite;
+}
+
+.stepper-step.completed .stepper-circle {
+    border-color: #4caf50;
+    background: #4caf50;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.12);
+}
+
+.stepper-label {
+    font-size: 0.75em;
+    color: #999;
+    font-weight: 600;
+    text-align: center;
+    max-width: 90px;
+    transition: color 0.3s ease;
+}
+
+.stepper-step.active .stepper-label {
+    color: #0078d4;
+}
+
+.stepper-step.completed .stepper-label {
+    color: #4caf50;
+}
+
+.stepper-line {
+    flex: 1;
+    height: 3px;
+    background: #d0d7de;
+    margin: 0 8px;
+    margin-bottom: 22px;
+    transition: background 0.4s ease;
+    border-radius: 2px;
+}
+
+.stepper-line.completed {
+    background: #4caf50;
+}
+
+@keyframes stepPulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(0, 120, 212, 0.15); }
+    50% { box-shadow: 0 0 0 8px rgba(0, 120, 212, 0.08); }
+}
+
+/* --- Completed Account Summary --- */
+.completed-account {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8f2);
+    border: 2px solid #81c784;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    animation: fadeInScale 0.4s ease;
+}
+
+.completed-account-icon {
+    width: 42px;
+    height: 42px;
+    background: #4caf50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3em;
+    flex-shrink: 0;
+}
+
+.completed-account-info {
+    flex: 1;
+}
+
+.completed-account-service {
+    display: block;
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 0.95em;
+}
+
+.completed-account-username {
+    display: block;
+    font-size: 0.85em;
+    color: #555;
+    margin-top: 2px;
+}
+
+.completed-account-badge {
+    font-size: 0.72em;
+    color: #4caf50;
+    font-weight: 700;
+    background: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #81c784;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* --- Active form highlight --- */
+.form-group.active-form {
+    border-left: 4px solid #0078d4;
+    padding-left: 16px;
+    animation: fadeInScale 0.35s ease;
+}

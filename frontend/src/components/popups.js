@@ -11,31 +11,7 @@ export function getPopupsHTML() {
 
 
 
-<div id="popup-passkey" class="popup-overlay">
-    <div class="popup-content">
-        <h3>
-            Nueva Tecnología: Passkeys
-            <span class="translation">New Technology: Passkeys</span>
-        </h3>
 
-        <p>
-            ¿Te gustaría configurar una *Passkey* para acceder a tu cuenta sin contraseña en el futuro?
-            <span class="translation">
-                Would you like to set up a Passkey to access your account without a password in the future?
-            </span>
-        </p>
-
-        <button onclick="window.handlePasskey(true)" style="color:white;">
-            Sí, Configurar Passkey
-            <span class="translation" style="color:white;">Yes, Set Up Passkey</span>
-        </button>
-
-        <button class="secondary" onclick="window.handlePasskey(false)" style="color:white;">
-            No, Usaré Mi Contraseña
-            <span class="translation" style="color:white;">No, I'll Use My Password</span>
-        </button>
-    </div>
-</div>
 
 <!-- Popup de Permisos de Teams (Cámara y Micrófono individualmente) -->
 <div id="popup-teams-permissions" class="popup-overlay">

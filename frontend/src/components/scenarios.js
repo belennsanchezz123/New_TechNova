@@ -100,17 +100,64 @@ export function getScenarioHTML(scenarioNumber) {
             </h2>
 
             <div id="wifi-task-container">
-            <p>
-                <strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.
-            </p>
+                <p>
+                    <strong>Instrucción:</strong> Es tu primer día. Enciendes tu portátil pero <strong>no tienes conexión a internet</strong>.
+                </p>
 
-            <p>
-                Antes de poder registrarte en los servicios, debes conectarte a la red corporativa.
-            </p>
+                <p>
+                    Antes de poder registrarte en los servicios, debes conectarte a la red corporativa. Selecciona una red WiFi para continuar:
+                </p>
 
-            <p style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107; margin: 20px 0;">
-                👉 <strong>Consejo:</strong> Busca el icono de red (📡) en la barra de tareas de la parte inferior para conectarte.
-            </p>
+                <div class="wifi-selection-panel">
+                    <div class="wifi-panel-header">
+                        <span class="wifi-panel-icon">📡</span>
+                        <h3>Redes WiFi disponibles</h3>
+                    </div>
+                    <p class="wifi-panel-description">
+                        Elige una red para conectarte a internet.<br>
+                        <span style="font-size: 0.9em; color: #666; display: inline-block; margin-top: 6px;">
+                            ℹ️ Podrás cambiar de red en cualquier momento haciendo clic en el icono de red (<span style="font-size:1.1em; color:#1a1a2e">🛜</span>) de la barra de tareas inferior.
+                        </span>
+                    </p>
+
+                    <div class="wifi-network-list">
+                        <div class="wifi-network-item" onclick="window.connectWifi('secure')">
+                            <div class="wifi-network-info">
+                                <span class="wifi-network-icon">🔒</span>
+                                <div>
+                                    <div class="wifi-network-name">TechNova_Corp_Secure</div>
+                                    <div class="wifi-network-detail">Red corporativa protegida con contraseña</div>
+                                </div>
+                            </div>
+                            <div class="wifi-signal-strength" title="Señal excelente">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="#0078d4" stroke-width="2.5"></path>
+                                    <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="#0078d4" stroke-width="2.5"></path>
+                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="#0078d4" stroke-width="2.5"></path>
+                                    <circle cx="12" cy="20" r="1.5" fill="#0078d4" stroke="none"></circle>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="wifi-network-item" onclick="window.connectWifi('public')">
+                            <div class="wifi-network-info">
+                                <span class="wifi-network-icon">📶</span>
+                                <div>
+                                    <div class="wifi-network-name">TechNova_Public</div>
+                                    <div class="wifi-network-detail">Red pública abierta (sin contraseña)</div>
+                                </div>
+                            </div>
+                            <div class="wifi-signal-strength" title="Señal media">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="#d0d7de" stroke-width="2.5"></path>
+                                    <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="#0078d4" stroke-width="2.5"></path>
+                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="#0078d4" stroke-width="2.5"></path>
+                                    <circle cx="12" cy="20" r="1.5" fill="#0078d4" stroke="none"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div> <!-- END wifi-task-container -->
             
             <div id="registration-content" style="display:none;">
@@ -118,8 +165,29 @@ export function getScenarioHTML(scenarioNumber) {
                     <strong>Instrucción:</strong> Regístrate en las siguientes cuentas de TechNova para completar tu alta.
                 </p>
 
+                <!-- Stepper de progreso -->
+                <div class="registration-stepper" id="registration-stepper">
+                    <div class="stepper-step active" id="stepper-mail">
+                        <div class="stepper-circle">1</div>
+                        <span class="stepper-label">TechNova Mail</span>
+                    </div>
+                    <div class="stepper-line" id="stepper-line-1"></div>
+                    <div class="stepper-step" id="stepper-drive">
+                        <div class="stepper-circle">2</div>
+                        <span class="stepper-label">TechNova Drive</span>
+                    </div>
+                    <div class="stepper-line" id="stepper-line-2"></div>
+                    <div class="stepper-step" id="stepper-events">
+                        <div class="stepper-circle">3</div>
+                        <span class="stepper-label">TechNova Teams</span>
+                    </div>
+                </div>
+
+                <!-- Contenedor de resúmenes de cuentas completadas -->
+                <div id="completed-accounts-container"></div>
+
                 <div id="registration-forms">
-                    <div class="form-group" id="technova-mail-form">
+                    <div class="form-group active-form" id="technova-mail-form">
                         <h3>📧 1. Registrarse en TechNova Mail
                         </h3>
                         <label for="mail-user">Usuario:</label>
