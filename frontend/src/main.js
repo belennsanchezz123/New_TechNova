@@ -54,6 +54,7 @@ import {
     showContextMenu,
     performDelete,
     openMyPC,
+    openFilesExplorer,
     drag,
     drop,
     allowDrop
@@ -212,6 +213,9 @@ function triggerTeamsIncident() {
 }
 
 function startScenario(scenarioNumber) {
+    // Escenario 8 eliminado: saltar directamente al 9
+    if (scenarioNumber === 8) scenarioNumber = 9;
+
     console.log(`🎬 Intentando iniciar Escenario: ${scenarioNumber}`);
 
     if (scenarioNumber !== currentScenario) {
@@ -271,6 +275,11 @@ function startScenario(scenarioNumber) {
         setTimeout(() => initBrowser(), 100);
     }
 
+    // --- LÓGICA ESCENARIO 7 (Limpieza de Archivos) ---
+    if (scenarioNumber === 7) {
+        showFileExplorerHighlight();
+    }
+
     // --- LÓGICA ESCENARIO 5 (Laboratorio de IA / Nóminas) ---
     if (scenarioNumber === 5) {
         console.log("🤖 Iniciando Escenario 5 (Nóminas)...");
@@ -308,6 +317,24 @@ function showWifiHighlight() {
     }, 10000);
 }
 
+// --- File Explorer Highlight (señalar el icono 📁 durante 10s en el escenario 7) ---
+function showFileExplorerHighlight() {
+    const startBtn = document.querySelector('.taskbar-start-btn');
+    if (!startBtn) return;
+
+    const highlight = document.createElement('div');
+    highlight.id = 'explorer-highlight-box';
+    highlight.className = 'wifi-highlight-box';
+    highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Abre el menú de inicio y selecciona Explorador</span>';
+    startBtn.style.position = 'relative';
+    startBtn.appendChild(highlight);
+
+    setTimeout(() => {
+        const existing = document.getElementById('explorer-highlight-box');
+        if (existing) existing.remove();
+    }, 10000);
+}
+
 function updateNavigationButtons() {
     const prevBtn = document.getElementById('prev-scenario-btn');
     const nextBtn = document.getElementById('next-scenario-btn');
@@ -316,6 +343,7 @@ function updateNavigationButtons() {
     if (prevBtn && nextBtn) {
         prevBtn.disabled = currentScenario <= 0;
         nextBtn.disabled = (currentScenario === 0) || (currentScenario >= TOTAL_SCENARIOS);
+        nextBtn.style.visibility = (currentScenario === TOTAL_SCENARIOS - 1) ? 'hidden' : 'visible';
     }
 
     if (currentNum) {
@@ -654,10 +682,20 @@ window.openTempFolder = openTempFolder;
 window.showContextMenu = showContextMenu;
 window.performDelete = performDelete;
 window.openMyPC = openMyPC;
+window.openFilesExplorer = openFilesExplorer;
 window.submitTaxonomy = submitTaxonomy;
 window.drag = drag;
 window.drop = drop;
 window.allowDrop = allowDrop;
+
+let sessionFinalized = false;
+
+window.addEventListener('beforeunload', function(e) {
+    if (currentScenario === TOTAL_SCENARIOS - 1 && !sessionFinalized) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 
 window.finalizeSession = async function() {
     closeScenarioTimer();
@@ -684,6 +722,8 @@ window.finalizeSession = async function() {
         console.error('❌ Error fatal al finalizar sesión:', err);
     }
     
+    sessionFinalized = true;
+
     // LIMPIEZA TOTAL
     console.log('🧹 Limpiando localStorage y recargando...');
     localStorage.removeItem('session_id');
@@ -764,7 +804,6 @@ initApp();
         { n: 5,  label: '5 · Chat RRHH / AI' },
         { n: 6,  label: '6 · Perfil Público' },
         { n: 7,  label: '7 · Limpieza Archivos' },
-        { n: 8,  label: '8 · Breach Check' },
         { n: 9,  label: '9 · Cuestionario' },
         { n: 10, label: '10 · Finalizar' },
     ];

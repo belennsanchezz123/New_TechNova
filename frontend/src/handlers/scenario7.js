@@ -13,12 +13,12 @@ let currentTask = 'save'; // 'save' (guardar doc) o 'delete' (borrar temp)
 export function openWordDocs() {
     if (currentTask !== 'save') return;
 
-    const container = document.getElementById('desktop-window-container');
+    const container = document.getElementById('s7-window-container');
     container.innerHTML = `
         <div class="window-frame" style="width: 500px; height: 300px; top: 80px; left: 150px;">
             <div class="window-header" style="background: #2b579a; color: white;">
                 <span>Word - Informe_Estrategia_Q4_Final.docx</span>
-                <button onclick="document.getElementById('desktop-window-container').innerHTML=''" style="color: white; background:none; border:none; cursor:pointer;">✕</button>
+                <button onclick="document.getElementById('s7-window-container').innerHTML=''" style="color: white; background:none; border:none; cursor:pointer;">✕</button>
             </div>
             <div class="window-body" style="flex-direction: column; padding: 0;">
                 <div style="background: #f3f3f3; padding: 5px; border-bottom: 1px solid #ccc;">
@@ -40,12 +40,12 @@ export function openWordDocs() {
 
 // Función que abre el Explorador de Archivos en modo "Guardar"
 export function openSaveDialog() {
-    const container = document.getElementById('desktop-window-container');
+    const container = document.getElementById('s7-window-container');
     container.innerHTML = `
         <div class="window-frame">
             <div class="window-header">
                 <span>Guardar como</span>
-                <button onclick="document.getElementById('desktop-window-container').innerHTML=''">✕</button>
+                <button onclick="document.getElementById('s7-window-container').innerHTML=''">✕</button>
             </div>
             <div class="window-body">
                 <div class="window-sidebar">
@@ -91,12 +91,12 @@ export function openTempFolder() {
         return;
     }
     console.log("✅ Abriendo carpeta de descargas con Drag & Drop...");
-    const container = document.getElementById('desktop-window-container');
+    const container = document.getElementById('s7-window-container');
     container.innerHTML = `
         <div class="window-frame">
             <div class="window-header">
                 <span>Explorador de Archivos - Descargas</span>
-                <button onclick="document.getElementById('desktop-window-container').innerHTML=''">✕</button>
+                <button onclick="document.getElementById('s7-window-container').innerHTML=''">✕</button>
             </div>
             <div class="window-body">
                 <div class="window-sidebar">
@@ -140,6 +140,20 @@ export function openMyPC() {
     alert('Acceso denegado por política de administrador local.');
 }
 
+export function openFilesExplorer() {
+    if (!document.getElementById('s7-window-container')) {
+        const container = document.createElement('div');
+        container.id = 's7-window-container';
+        const scenario7 = document.getElementById('scenario-7');
+        if (scenario7) scenario7.appendChild(container);
+    }
+    if (currentTask === 'save') {
+        openWordDocs();
+    } else {
+        openTempFolder();
+    }
+}
+
 // ----------------------------------------------------------------------
 // 2. LÓGICA DE ACCIONES (Guardar, Borrar, Menú Contextual)
 // ----------------------------------------------------------------------
@@ -150,7 +164,7 @@ export function finalizeSave() {
     // MÉTRICA 1: Uso de Cifrado
     metrics.scenario6.data_encryption_usage = isEncrypted ? 'Yes' : 'No';
 
-    const container = document.getElementById('desktop-window-container');
+    const container = document.getElementById('s7-window-container');
 
     if (isEncrypted) {
         alert('🔒 Archivo cifrado y subido al servidor correctamente.');
@@ -229,7 +243,7 @@ export function performDelete(method) {
             console.warn('Failed saving scenario6 deletion metric:', err);
         }
         setTimeout(() => {
-            const container = document.getElementById('desktop-window-container');
+            const container = document.getElementById('s7-window-container');
             if (container) container.innerHTML = '';
             window.startScenario(9);
         }, 1000);

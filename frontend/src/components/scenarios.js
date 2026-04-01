@@ -721,6 +721,7 @@ export function getScenarioHTML(scenarioNumber) {
 <p>
     <strong>Instrucción:</strong> Navega por la barra de herramientas y elimina los documentos sensibles o temporales que ya no deban permanecer en el sistema.
 </p>
+<div id="desktop-window-container"></div>
         `,
         9: `
             <h2>Escenario 9: Cuestionario Final</h2>
@@ -919,9 +920,9 @@ export function getScenarioHTML(scenarioNumber) {
     <div class="simulation-end-container">
     <h2>¡Simulación Completada!</h2>
     <p>Gracias por tu participación. Tus respuestas y acciones han sido registradas correctamente para nuestro estudio sobre ciberseguridad.</p>
-            <p>Ya puedes cerrar esta ventana o informar al investigador.</p>
+            <p><strong>⚠️ Importante:</strong> Antes de cerrar esta ventana, pulsa el botón <strong>"Finalizar Sesión"</strong> para guardar correctamente todos tus datos.</p>
             <button class="btn-primary" onclick="window.finalizeSession()">Finalizar Sesión</button>
-        </div>   
+        </div>
         `,
     };
     return scenarios[scenarioNumber] || "";

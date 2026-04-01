@@ -10,7 +10,7 @@ export function getTaskbarHTML() {
                     <span class="search-icon">🔍</span>
                 </button>
             </div>
-            
+
             <div class="taskbar-center">
                 <div class="taskbar-app-icon active" title="TechNova Mail">
                     <span>📧</span>
