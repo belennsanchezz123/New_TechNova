@@ -53,31 +53,10 @@ export async function handleInterruption(didLock) {
     }
 
     if (didLock) {
-        // Opción A: Bloquear pantalla
-        const lockScreen = document.getElementById('simulated-lock-screen');
-        if (lockScreen) {
-            lockScreen.style.display = 'flex';
-            lockScreen.focus();
-        }
-
-        // Listener para desbloquear con 'v'
-        const unlockAndGo = (event) => {
-            if (event.key === 'v' || event.key === 'V') {
-                if (lockScreen) lockScreen.style.display = 'none';
-                document.removeEventListener('keydown', unlockAndGo);
-
-                // Mostrar tarea USB (COMENTADO)
-                // showUsbTask();
-                // Ir directo al siguiente escenario
-                window.startScenario(3);
-            }
-        };
-        document.addEventListener('keydown', unlockAndGo);
-
+        // Opción A: Bloquea pantalla (Métrica guardada arriba) -> Ir directo al siguiente escenario
+        window.startScenario(3);
     } else {
-        // Opción B: Continuar sin bloquear -> Ir directo a tarea USB (COMENTADO)
-        // showUsbTask();
-        // Ir directo al siguiente escenario
+        // Opción B: Continuar sin bloquear -> Ir directo al siguiente escenario
         window.startScenario(3);
     }
 }

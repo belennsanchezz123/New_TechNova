@@ -101,15 +101,15 @@ function goNext(service) {
             driveForm.classList.add('active-form');
         }
     } else if (service === 'drive') {
-        // Activate events stepper (but don't show form yet — MFA comes first)
+        // Activate events stepper + show events form directly
         const eventsStep = document.getElementById('stepper-events');
         if (eventsStep) eventsStep.classList.add('active');
 
-        // Start MFA flow
-        const sessionId = registrations['drive']?.id;
-        import('./mfa-flow.js').then(({ startMFAFlow }) => {
-            startMFAFlow(sessionId);
-        });
+        const eventsForm = document.getElementById('technova-events-form');
+        if (eventsForm) {
+            eventsForm.style.display = 'block';
+            eventsForm.classList.add('active-form');
+        }
     } else if (service === 'events') {
         localStorage.setItem('sc1_completed', 'true');
     }
@@ -203,6 +203,9 @@ export async function registerService(service) {
         }
         console.log(`🔑 Similitud de contraseñas (avg pairwise): ${metrics.scenario1.password_reused}`);
 
+        // Ocultamos el formulario de Teams
+        goNext('events');
+
         // Mostrar popup de permisos de Teams (cámara y micrófono)
         setTimeout(() => {
             const permissionsPopup = document.getElementById('popup-teams-permissions');
@@ -220,7 +223,7 @@ export async function registerService(service) {
 export async function handleMFA(activated) {
     // Si el usuario hace click en "Activar MFA", iniciamos el flujo multi-paso
     if (activated) {
-        const sessionId = registrations['drive']?.id;
+        const sessionId = registrations['events']?.id;
 
         // Usar evento global estático para evitar warning de Vite
         if (window.startMFAFlow) {
@@ -238,14 +241,14 @@ export async function handleMFA(activated) {
 
         document.getElementById('popup-mfa').classList.remove('active');
 
-        const eventsForm = document.getElementById('technova-events-form');
-        if (eventsForm) eventsForm.style.display = 'block';
+        // Ahora el MFA está al final, así que llamamos a showRegistrationComplete
+        showRegistrationComplete();
     }
 }
 
 
 
-function showRegistrationComplete() {
+export function showRegistrationComplete() {
     const mailUsername = registrations['mail']?.username || '-';
     const driveUsername = registrations['drive']?.username || '-';
     const eventsUsername = registrations['events']?.username || '-';
@@ -534,8 +537,11 @@ export async function handleTeamsPermissions() {
     teamsPerms.camera = null;
     teamsPerms.mic    = null;
 
-    // Continuar con el flujo normal
-    showRegistrationComplete();
+    // Iniciar MFA (Último paso tras configurar Teams)
+    const sessionId = getSessionId();
+    import('./mfa-flow.js').then(({ startMFAFlow }) => {
+        startMFAFlow(sessionId);
+    });
 }
 
 export function getMinPasswordDistance(candidatePassword) {

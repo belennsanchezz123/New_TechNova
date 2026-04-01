@@ -328,85 +328,113 @@ export function getScenarioHTML(scenarioNumber) {
         `,
         2: `
             <h2>
-    Escenario 2: Dispositivos Externos
+    Escenario 2: Interrupción en el Puesto Físico
 </h2>
 
-<div id="simulated-lock-screen">
-    <div class="lock-screen-content">
-        <div class="lock-screen-icon">🖥️</div>
+<div id="task-interruption" style="min-height: 600px; background: linear-gradient(135deg, #f4f7fb 0%, #e2e8f0 100%); border-radius: 16px; border: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-shadow: inset 0 2px 20px rgba(255,255,255,0.5);">
+    
+    <style>
+        .decision-btn {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 15px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            width: 100%;
+        }
+        .decision-btn:hover {
+            border-color: #6366f1;
+            background: #ffffff;
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+        }
+        .decision-btn .emoji-icon {
+            font-size: 26px;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .decision-btn:hover .emoji-icon {
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            transform: scale(1.05);
+        }
+    </style>
 
-        <h1>
-            Sesión Suspendida
-        </h1>
+    <!-- Notificación simulada centrada (Premium Teams Style) -->
+    <div style="background: white; width: 100%; max-width: 500px; border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.1), 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); margin: 0 auto 40px auto; animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="background: linear-gradient(135deg, #4f46e5, #4338ca); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px;">
+                <span style="background: rgba(255,255,255,0.2); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 11px;">TN</span>
+                TechNova Teams
+            </div>
+            <span style="font-size: 11px; opacity: 0.85;">URGENTE</span>
+        </div>
+        <div style="padding: 22px;">
+            <div style="display: flex; gap: 16px;">
+                <div style="width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); display: flex; align-items: center; justify-content: center; font-size: 26px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    👨‍💼
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 6px 0; font-size: 16px; color: #111827; font-weight: 700;">Director de Proyecto</h4>
+                    <p style="margin: 0; font-size: 14px; color: #4b5563; line-height: 1.5;">
+                        "La reunión ya ha comenzado y el CEO te necesita para revisar el presupuesto de forma inmediata. <b>¡Ven a la Sala 3 ahora mismo, trae tu libreta!</b> Te esperamos."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <p>
-            (Simulación de Bloqueo de Pantalla)
-        </p>
+    <!-- Pregunta y opciones -->
+    <div style="width: 100%; max-width: 600px; margin: 0 auto; animation: fadeIn 0.8s ease-out 0.2s both;">
+        <h3 style="color: #1f2937; margin: 0 0 8px 0; font-size: 20px; text-align: center; font-weight: 700;">¿Cómo reaccionas ante este aviso?</h3>
+        <p style="color: #6b7280; font-size: 14px; margin: 0 0 30px 0; text-align: center;">Selecciona la acción que realizarías físicamente en tu entorno de trabajo antes de acudir:</p>
 
-        <div class="lock-screen-prompt">
-            Presiona la tecla <strong>'v'</strong> para volver y continuar.
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            
+            <button class="decision-btn" onclick="window.handleInterruption(false)">
+                <div class="emoji-icon">🏃‍♂️</div>
+                <div>
+                    <strong style="display:block; color:#1f2937; margin-bottom: 3px; font-size: 15px;">Levantarme y salir de inmediato</strong>
+                    <span style="color:#6b7280; font-size: 13px; line-height: 1.4;">Dejo el sistema tal cual, recojo mis notas físicas y acudo a la sala rápidamente.</span>
+                </div>
+            </button>
+
+            <button class="decision-btn" onclick="window.handleInterruption(false)">
+                <div class="emoji-icon">⏬</div>
+                <div>
+                    <strong style="display:block; color:#1f2937; margin-bottom: 3px; font-size: 15px;">Minimizar las ventanas al escritorio (Win + D)</strong>
+                    <span style="color:#6b7280; font-size: 13px; line-height: 1.4;">Oculto visualmente mi trabajo en curso y luego voy a la sala.</span>
+                </div>
+            </button>
+
+            <button class="decision-btn" onclick="window.handleInterruption(true)">
+                <div class="emoji-icon">🔒</div>
+                <div>
+                    <strong style="display:block; color:#1f2937; margin-bottom: 3px; font-size: 15px;">Bloquear sesión de usuario (Win + L)</strong>
+                    <span style="color:#6b7280; font-size: 13px; line-height: 1.4;">Suspendo y aseguro el acceso informático al equipo, luego me dirijo a la sala.</span>
+                </div>
+            </button>
+
         </div>
     </div>
 </div>
 
-<div id="task-interruption">
-    <p style="font-size: 1.05em; line-height: 1.7; margin-bottom: 10px;">
-        <strong>Instrucción:</strong> Estás trabajando en tu escritorio cuando un compañero se acerca y te pide que le acompañes 
-        un momento a la sala de reuniones para resolver una duda rápida. <strong>Debes levantarte de tu puesto</strong>.
-    </p>
-
-    <p style="background: #fff3cd; color: #856404; padding: 14px 18px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 18px 0; font-size: 0.97em;">
-        💡 <strong>¿Qué haces con tu ordenador antes de irte?</strong>
-    </p>
-
-    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 28px;">
-
-        <button onclick="window.handleInterruption(true)" style="
-            flex: 1;
-            max-width: 280px;
-            background: linear-gradient(135deg, #4a5568, #3a4250);
-            color: #ffffff;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 10px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(74, 85, 104, 0.35);
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
-           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
-            🖥️ Suspender Sesión
-        </button>
-
-        <button onclick="window.handleInterruption(false)" style="
-            flex: 1;
-            max-width: 280px;
-            background: linear-gradient(135deg, #4a5568, #3a4250);
-            color: #ffffff;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 10px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(74, 85, 104, 0.35);
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(74,85,104,0.45)'"
-           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(74,85,104,0.35)'">
-            Continuar ➡️
-        </button>
-
-    </div>
-</div>
         `,
         3: `
            <h2>

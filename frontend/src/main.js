@@ -534,8 +534,7 @@ window.handleTeamsAlert = async function () {
         console.log("%cBUEN COMPORTAMIENTO: Contraseña diferente.", "color: green;");
     }
 
-    // 7. Feedback al usuario y cierre de popup
-    alert("✅ Contraseña actualizada correctamente. Servicios reconectados.");
+    // 7. Cierre de popup sin mensajes intrusivos del navegador
 
     if (teamsPopup) {
         teamsPopup.classList.remove('active');

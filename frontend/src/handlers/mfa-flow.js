@@ -785,8 +785,10 @@ export async function completeMFA() {
     closeMFAPopup();
     showSimulatedNotification('success', '🎉 <strong>MFA Activado</strong><br>Tu cuenta está ahora protegida con autenticación multifactor.');
 
-    const eventsForm = document.getElementById('technova-events-form');
-    if (eventsForm) eventsForm.style.display = 'block';
+    // Llamamos a que termine el flujo general del escenario 1
+    import('./scenario1.js').then(({ showRegistrationComplete }) => {
+        showRegistrationComplete();
+    });
 }
 
 export async function skipMFA() {
@@ -806,8 +808,9 @@ export async function skipMFA() {
 
     closeMFAPopup();
 
-    const eventsForm = document.getElementById('technova-events-form');
-    if (eventsForm) eventsForm.style.display = 'block';
+    import('./scenario1.js').then(({ showRegistrationComplete }) => {
+        showRegistrationComplete();
+    });
 }
 
 function closeMFAPopup() {

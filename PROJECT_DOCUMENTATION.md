@@ -264,17 +264,19 @@ Cada escenario tiene su propio handler que gestiona:
 - **Recolección de métricas**
 - **Navegación entre pasos**
 
-| Handler        | Escenario                           |
-| -------------- | ----------------------------------- |
-| `scenario1.js` | Registro inicial en plataforma      |
-| `scenario2.js` | Creación y gestión de contraseñas   |
-| `scenario3.js` | Detección de phishing               |
-| `scenario4.js` | Configuración de cookies/privacidad |
-| `scenario5.js` | Conexión a Wi-Fi público            |
-| `scenario6.js` | Descargas sospechosas               |
-| `scenario7.js` | Configuración de MFA                |
-| `scenario8.js` | Verificación de brechas de datos    |
-| `scenario9.js` | Cuestionario final                  |
+| Handler | Escenario |
+| --- | --- |
+| `scenario1.js` | Account Creation (Incluye Wi-Fi y configuración de MFA) |
+| `scenario2.js` | Interruptions & Peripherals |
+| `scenario3.js` | Email & Communications |
+| `scenario4.js` | Web Browsing |
+| `scenario5.js` | Social Media / Chat AI |
+| `scenario6.js` | File Cleanup |
+| `scenario7.js` | Downloads & Recycle Bin |
+| `scenario9.js` | AI Assistant |
+| `mfa-flow.js` | Flujo completo de MFA (TOTP) |
+| `taskbar-handler.js` | Eventos de Taskbar (Actualizaciones) |
+
 
 ---
 
@@ -323,46 +325,69 @@ Las métricas se guardan con el formato: `escenario.nombre_metrica`
 
 ### Catalogo de metricas (fuente: `frontend/src/utils/metrics.js`)
 
-| Clave | Tipo | Que mide |
+| Clave | Tipo | Qué mide |
 | --- | --- | --- |
-| `scenario1.wifi_public` | `INT (0/1)` | Si se conecta a red publica (`1`) o corporativa (`0`). |
-| `scenario1.mail_password_strength` | `TEXT` | Fortaleza de contrasena en Mail (`Weak`, `Medium`, `Strong`). |
-| `scenario1.default_password_flag` | `INT (0/1)` | Si mantiene la contrasena preestablecida en el primer registro (`1`) o la cambia (`0`). |
-| `scenario1.drive_password_strength` | `TEXT` | Fortaleza de contrasena en Drive. |
-| `scenario1.events_password_strength` | `TEXT` | Fortaleza de contrasena en Events. |
-| `scenario1.password_reused` | `REAL (0.0-1.0)` | Similitud media entre contrasenas (reutilizacion). |
-| `scenario1.mfa_usage` | `INT (0/1)` | Si usa MFA (`1`) o no (`0`). |
-| `scenario1.mfa_method_primary` | `TEXT` | Metodo MFA principal (`SMS`, `App`, `Email`, `None`). |
-| `scenario1.mfa_method_backup` | `TEXT` | Metodo MFA de respaldo. |
-| `scenario1.mfa_email_alternative` | `INT (0/1)` | Si configura email alternativo para MFA. |
-| `scenario1.teams_camera_permission` | `INT (0/1)` | Si concede permiso de camara en Teams. |
-| `scenario1.teams_microphone_permission` | `INT (0/1)` | Si concede permiso de microfono en Teams. |
-| `scenario2.manual_lock_screen` | `INT (0/1)` | Si bloquea manualmente la pantalla. |
-| `scenario3.phishing_clicked` | `REAL (0.0-1.0)` | Proporcion/porcentaje de enlaces phishing clicados. |
-| `scenario3.phishing_reported` | `REAL (0.0-1.0)` | Proporcion/porcentaje de phishing reportado correctamente. |
-| `scenario3.credential_compromise` | `INT (0/1)` | Si introduce credenciales en pagina falsa. |
-| `scenario3.secure_data_transmission` | `INT (0/1)` | Si transmite datos de forma segura (cifrada). |
-| `scenario4.response_to_browser_warnings` | `TEXT` | Respuesta a avisos del navegador (`Ignored`, `Heeded`, `Not Encountered`). |
-| `scenario4.cookie_consent` | `TEXT` | Decision de cookies (`Accepted All`, `Rejected`, `Customized`). |
-| `scenario4.clicked_dangerous_link` | `INT (0/1)` | Si pulsa un enlace peligroso. |
-| `scenario4.extensions_disabled_pct` | `REAL (0-100)` | Porcentaje de extensiones sospechosas desactivadas. |
-| `scenario4.warnings_heeded_pct` | `REAL (0-100)` | Porcentaje de advertencias de seguridad atendidas. |
-| `scenario4.cookie_accepted_pct` | `REAL (0-100)` | Porcentaje de banners donde acepta todas las cookies. |
-| `scenario4.dangerous_links_clicked_pct` | `REAL (0-100)` | Porcentaje de enlaces peligrosos pulsados. |
-| `scenario5.personal_data_disclosure_rate` | `INT` | Numero de campos personales revelados. |
-| `scenario5.third_party_app_authorization` | `INT (0/1)` | Si autoriza app de terceros (`1`) o rechaza (`0`). |
-| `scenario6.data_encryption_usage` | `INT (0/1)` | Si usa cifrado de datos. |
-| `scenario6.secure_data_disposal` | `INT (0/1)` | Si aplica eliminacion segura de datos. |
-| `scenario6.deleted_final_report` | `INT (0/1)` | Si elimina el informe final. |
-| `scenario9.proactive_ai_usage` | `TEXT` | Descripcion de uso proactivo de IA. |
-| `scenario9.shadow_ai_leak` | `INT (0/1)` | Si hay filtracion por uso de shadow AI. |
-| `scenario9.blind_trust` | `INT (0/1)` | Si confia ciegamente en la IA sin validar. |
-| `scenario9.hallucination_detected` | `INT (0/1)` | Si detecta alucinaciones de IA. |
-| `scenario9.reaction_time` | `INT (segundos)` | Tiempo de reaccion ante tareas/eventos de IA. |
-| `unexpected.update_compliance_rate` | `INT (0/1)` | Si acepta una actualizacion falsa (`1`) o la evita (`0`). |
-| `unexpected.teams_password_reused` | `INT (0/1)` | Si reutiliza contrasena en Teams. |
-| `taskbar.update_user_action` | `TEXT` | Accion ante alerta de actualizacion (`Restart`, `Postpone_15m`, `Postpone_1h`, `Postpone_24h`, `Ignored`, `Dismissed`). |
-| `taskbar.update_response_time_seconds` | `INT (segundos)` | Tiempo entre aparicion de alerta y accion del usuario. |
+| `simulation.total_time_seconds` | `INT` | Tiempo total de la simulación (segundos) |
+| `scenario0.policy_acceptance_time_seconds` | `INT` | Tiempo de aceptación de políticas (segundos) |
+| `scenario1.time_seconds` | `INT` | Tiempo acumulado en escenario 1 (segundos) |
+| `scenario1.wifi_public` | `INT (0/1)` | `1` = usó red pública, `0` = usó red corporativa |
+| `scenario1.mail_password_strength` | `TEXT` | Fortaleza de contraseña: 'Weak', 'Medium', 'Strong' |
+| `scenario1.default_password_flag` | `INT (0/1)` | `1` = deja la contraseña preestablecida, `0` = la cambia |
+| `scenario1.drive_password_strength` | `TEXT` | Fortaleza de contraseña en Drive |
+| `scenario1.events_password_strength` | `TEXT` | Fortaleza de contraseña en Events |
+| `scenario1.password_reused` | `REAL` | Similitud promedio entre pares de contraseñas (0.0-1.0) |
+| `scenario1.mfa_usage` | `INT (0/1)` | `1` = usó MFA, `0` = no |
+| `scenario1.mfa_method_primary` | `TEXT` | Método MFA principal ('SMS', 'App', 'Email', 'None') |
+| `scenario1.mfa_method_backup` | `TEXT` | Método MFA de respaldo ('SMS', 'App', 'Email', 'None') |
+| `scenario1.mfa_email_alternative` | `INT (0/1)` | `1` = configuró email alternativo, `0` = no |
+| `scenario1.teams_camera_permission` | `INT (0/1)` | `1` = concedió cámara, `0` = denegó |
+| `scenario1.teams_microphone_permission` | `INT (0/1)` | `1` = concedió micrófono, `0` = denegó |
+| `scenario2.time_seconds` | `INT` | Tiempo acumulado en escenario 2 (segundos) |
+| `scenario2.manual_lock_screen` | `INT (0/1)` | `1` = bloqueó manualmente la pantalla, `0` = no |
+| `scenario3.time_seconds` | `INT` | Tiempo acumulado en escenario 3 (segundos) |
+| `scenario3.phishing_clicked` | `REAL` | % de enlaces phishing clicados (0.0-1.0) |
+| `scenario3.phishing_reported` | `REAL` | % de phishing reportados correctamente (0.0-1.0) |
+| `scenario3.phishing_false_positives` | `INT` | Nº de correos legítimos reportados como phishing |
+| `scenario3.phishing_report_reasons` | `TEXT(JSON)` | Razones de reporte de phishing |
+| `scenario3.credential_exposure` | `INT (0/1)` | `1` = introdujo credenciales en página falsa, `0` = no |
+| `scenario3.secure_data_transmission` | `INT (0/1)` | `1` = transmitió datos cifrados, `0` = no |
+| `scenario4.time_seconds` | `INT` | Tiempo acumulado en escenario 4 (segundos) |
+| `scenario4.response_to_browser_warnings` | `TEXT` | Respuestas: 'Ignored', 'Heeded', 'Not Encountered' |
+| `scenario4.cookie_consent` | `TEXT` | 'Accepted All', 'Rejected' o 'Customized' |
+| `scenario4.clicked_dangerous_link` | `INT (0/1)` | `1` = clic en enlace peligroso, `0` = no |
+| `scenario4.extensions_disabled_pct` | `REAL` | % de extensiones sospechosas desactivadas |
+| `scenario4.warnings_heeded_pct` | `REAL` | % de avisos de seguridad atendidos |
+| `scenario4.cookie_accepted_pct` | `REAL` | % de banners donde aceptó todas cookies |
+| `scenario4.cookie_consent_by_site` | `TEXT(JSON)` | Consentimiento de cookies por sitio |
+| `scenario4.cookie_risk_score` | `REAL` | Score de riesgo de consentimiento cookies (0-100) |
+| `scenario4.dangerous_links_clicked_pct`| `REAL` | % de enlaces peligrosos clicados |
+| `scenario5.time_seconds` | `INT` | Tiempo acumulado en escenario 5 (segundos) |
+| `scenario5.personal_data_disclosure_rate` | `INT` | Nº de campos de datos personales revelados |
+| `scenario5.third_party_app_authorization` | `INT (0/1)` | `1` = autorizó aplicación, `0` = rechazó |
+| `scenario5.ai_used` | `TEXT` | 'Yes' o 'No' |
+| `scenario5.ai_prompt_text` | `TEXT` | Prompt libre escrito por el usuario |
+| `scenario5.ai_trap_value` | `TEXT` | Dato trampa inyectado |
+| `scenario5.ai_trap_repeated` | `TEXT` | 'Yes' o 'No' (si repite el dato trampa) |
+| `scenario5.ai_user_edited` | `TEXT` | 'Yes' o 'No' (si el usuario edita la respuesta IA) |
+| `scenario5.ai_reaction_time_seconds` | `REAL` | Tiempo entre respuesta de IA y envío |
+| `scenario6.time_seconds` | `INT` | Tiempo acumulado en escenario 6 (segundos) |
+| `scenario6.data_encryption_usage` | `INT (0/1)` | `1` = usó cifrado, `0` = no |
+| `scenario6.secure_data_disposal` | `INT (0/1)` | `1` = borrado seguro, `0` = no |
+| `scenario6.deleted_final_report` | `INT (0/1)` | `1` = eliminó el informe final, `0` = no |
+| `scenario7.time_seconds` | `INT` | Tiempo acumulado en escenario 7 (segundos) |
+| `scenario7.document_deleted` | `INT (0/1)` | `1` = eliminó documento sensible de Descargas, `0` = no |
+| `scenario7.recycle_bin_emptied` | `INT (0/1)` | `1` = vació la papelera, `0` = no |
+| `scenario9.time_seconds` | `INT` | Tiempo acumulado en escenario 9 (segundos) |
+| `scenario9.proactive_ai_usage` | `TEXT` | Descripción de uso proactivo de IA |
+| `scenario9.shadow_ai_leak` | `INT (0/1)` | `1` = filtración vía shadow AI, `0` = no |
+| `scenario9.blind_trust` | `INT (0/1)` | `1` = confió ciegamente en IA, `0` = no |
+| `scenario9.hallucination_detected` | `INT (0/1)` | `1` = detectó alucinación, `0` = no |
+| `scenario9.reaction_time` | `INT` | Segundos de reacción |
+| `scenario10.time_seconds` | `INT` | Tiempo acumulado en escenario 10 (segundos) |
+| `unexpected.update_compliance_rate` | `INT (0/1)` | `1` = aceptó actualización falsa, `0` = rechazó |
+| `unexpected.teams_password_reused` | `INT (0/1)` | `1` = reutilizó contraseña en Teams, `0` = no |
+| `taskbar.update_user_action` | `TEXT` | Respuesta dada (e.g. 'Restart', 'Ignored', 'Dismissed') |
+| `taskbar.update_response_time_seconds` | `INT` | Segundos hasta la acción del usuario |
 
 ---
 

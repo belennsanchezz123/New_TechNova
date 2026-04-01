@@ -146,7 +146,6 @@ export function getPopupsHTML() {
         </p>
 
         <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
-
             <button onclick="window.handleUpdate('install')" style="color:white;">
                 Reiniciar ahora
                 <span class="translation" style="color:white;">Restart Now</span>
@@ -156,48 +155,54 @@ export function getPopupsHTML() {
                 Posponer
                 <span class="translation" style="color:white;">Postpone</span>
             </button>
-
         </div>
-
     </div>
 </div>
-<div id="popup-teams-alert" class="popup-overlay" style="z-index: 9999;">
-            <div class="popup-content" style="border-top: 5px solid #464775;"> <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                    <span style="font-size: 24px; color: #464775;">👥</span>
-                    <h3 style="margin:0;">TechNova Teams</h3>
-                </div>
-                
-                <p style="color: #d32f2f; font-weight: bold;">
-                ⚠️ Acción Requerida: Caducidad de Credenciales
-                <span class="translation">Action Required: Credential Expiration</span>
-                </p>
-                
-                <p>
-                Por política de seguridad, tu contraseña de Teams ha expirado hoy.
-                <span class="translation">
-                Due to security policy, your Teams password has expired today.
-                </span>
-                </p>
-                
-                <p>
-                Debes establecer una nueva contraseña para no perder el acceso a los chats del equipo.
-                <span class="translation">
-                You must set a new password to avoid losing access to the team chats.
-                </span>
-                </p>
 
-                <div style="text-align: left; margin-top: 20px; background: #f3f2f1; padding: 15px; border-radius: 4px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #666;">NUEVA CONTRASEÑA
-                    </label>
-                    <input type="password" id="teams-new-pass" placeholder="Introduce nueva contraseña..." style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #999;">
-                </div>
-
-                <button onclick="window.handleTeamsAlert()" style="margin-top: 20px; background-color: #464775;">
-                Actualizar y Conectar
-                <span class="translation" style="color:white;">Update and Connect</span>
-                </button>
+<div id="popup-teams-alert" class="popup-overlay" style="z-index: 10000; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);">
+    <div class="popup-content" style="max-width: 450px; border-radius: 20px; padding: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+        
+        <!-- Header más limpio y elegante -->
+        <div style="background: #ffffff; padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid #f3f4f6; position: relative;">
+            <div style="width: 64px; height: 64px; background: #6264a7; color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px auto; box-shadow: 0 8px 16px rgba(98, 100, 167, 0.2);">
+                👥
             </div>
+            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #1f2937; letter-spacing: -0.5px;">TechNova Teams</h3>
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; color: #6b7280; font-weight: 600;">Seguridad de la Cuenta</div>
         </div>
+
+        <div style="padding: 30px; text-align: center;">
+            <h4 style="color: #dc2626; font-size: 15px; margin: 0 0 10px 0; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                ⚠️ Acción requerida
+            </h4>
+            
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 24px 0;">
+                Tu contraseña ha caducado por la política de seguridad actual. 
+                <strong>Actualízala ahora</strong> para continuar operando con normalidad.
+            </p>
+
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label style="display: block; font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Nueva Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="teams-new-pass" 
+                           placeholder="Introduce tu nueva contraseña..." 
+                           style="width: 100%; padding: 12px 16px; background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #111827; transition: all 0.2s ease; outline: none; box-sizing: border-box;"
+                           onfocus="this.style.borderColor='#6264a7'; this.style.background='#fff'; this.style.boxShadow='0 0 0 4px rgba(98, 100, 167, 0.1)';"
+                           onblur="this.style.borderColor='#e5e7eb'; this.style.background='#f9fafb'; this.style.boxShadow='none';">
+                </div>
+            </div>
+
+            <button onclick="window.handleTeamsAlert()" 
+                    style="width: 100%; background: #6264a7; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 12px rgba(98, 100, 167, 0.3);"
+                    onmouseover="this.style.background='#464775'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(98, 100, 167, 0.4)';"
+                    onmouseout="this.style.background='#6264a7'; this.style.transform='translateY(0)';">
+                Actualizar y Reconectar →
+            </button>
+            <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">Tus cambios se aplicarán en todos los dispositivos</p>
+        </div>
+    </div>
+</div>
+
 
         <div id="popup-registration-complete" class="popup-overlay">
             <div class="popup-content">
