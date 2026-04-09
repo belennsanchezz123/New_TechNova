@@ -100,7 +100,10 @@ import {
     openRecycleBinWindow,
     showRecycleBinContextMenu,
     emptyRecycleBin,
-    toggleStartMenu
+    toggleStartMenu,
+    showRecycleBinItemContextMenu,
+    showPermanentDeleteDialog,
+    permanentlyDeleteFromBin
 } from './handlers/taskbar-handler.js';
 
 // --- FUNCIONES TASKBAR ---
@@ -117,6 +120,9 @@ window.openRecycleBinWindow = openRecycleBinWindow;
 window.showRecycleBinContextMenu = showRecycleBinContextMenu;
 window.emptyRecycleBin = emptyRecycleBin;
 window.toggleStartMenu = toggleStartMenu;
+window.showRecycleBinItemContextMenu = showRecycleBinItemContextMenu;
+window.showPermanentDeleteDialog = showPermanentDeleteDialog;
+window.permanentlyDeleteFromBin = permanentlyDeleteFromBin;
 
 
 
