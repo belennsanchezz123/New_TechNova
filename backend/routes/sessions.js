@@ -317,6 +317,13 @@ export function setupSessionRoutes() {
                 ue_update_response_time:       toInt2(m['taskbar.update_response_time_seconds']),
                 ue_update_postpone_count:      toInt2(m['taskbar.update_postpone_count']),
                 ue_update_postpone_delay_mins: toInt2(m['taskbar.update_postpone_delay_minutes']),
+                // Notas (bloc de notas)
+                notes_used:                    toInt(m['notes.notes_used']),
+                notes_had_content_at_end:      toInt(m['notes.notes_had_content_at_end']),
+                notes_cleared_before_end:      toInt(m['notes.notes_cleared_before_end']),
+                notes_open_at_end:             toInt(m['notes.notes_open_at_end']),
+                notes_file_saved:              toInt(m['notes.notes_file_saved']),
+                notes_file_deleted_before_end: toInt(m['notes.notes_file_deleted_before_end']),
                 // Timestamps
                 session_total_time_seconds:   toInt2(m['simulation.total_time_seconds']),
                 session_started_at:            reg.created_at,
