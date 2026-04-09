@@ -209,7 +209,7 @@ export function getTaskbarHTML() {
                         <span class="pinned-icon">⏰</span>
                         <span class="pinned-name">Reloj</span>
                     </div>
-                    <div class="pinned-item" title="Bloc de notas">
+                    <div class="pinned-item" onclick="window.toggleNotesWindow(); window.toggleStartMenu();" title="Bloc de notas">
                         <span class="pinned-icon">📝</span>
                         <span class="pinned-name">Notas</span>
                     </div>

@@ -93,6 +93,14 @@ export const metrics = {
         update_response_time_seconds: null,  // INT: segundos hasta la acción del usuario
         update_postpone_count:        0,     // INT: cuántas veces ha pospuesto
         update_postpone_delay_minutes:null    // INT: minutos elegidos en el último posponer
+    },
+    notes: {
+        notes_used:                    null,  // INT: 1=escribió algo en el bloc, 0=no lo usó nunca
+        notes_had_content_at_end:      null,  // INT: 1=quedó texto al finalizar sesión, 0=estaba vacío
+        notes_cleared_before_end:      null,  // INT: 1=borró activamente el contenido, 0=no lo borró
+        notes_open_at_end:             null,  // INT: 1=ventana abierta al finalizar, 0=cerrada o nunca abierta
+        notes_file_saved:              null,  // INT: 1=guardó al menos un archivo de notas, 0=no
+        notes_file_deleted_before_end: null   // INT: 1=eliminó el archivo de notas antes de acabar, 0=no
     }
 };
 
@@ -118,6 +126,7 @@ export function displayResults() {
         simulation: 'Simulation',
         unexpected: 'Unexpected Events',
         taskbar: 'Taskbar Updates',
+        notes: 'Notepad Usage',
     };
 
     // Helper para mostrar valores legibles en el panel de resultados

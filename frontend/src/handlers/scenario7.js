@@ -1,6 +1,7 @@
 import { metrics } from '../utils/metrics.js';
 import { saveMetrics } from '../services/api.js';
 import { getSessionId } from '../utils/session.js';
+import { makeDraggable } from '../utils/drag.js';
 
 // Estado interno del "Mini Sistema Operativo"
 let currentTask = 'save'; // 'save' (guardar doc) o 'delete' (borrar temp)
@@ -36,6 +37,7 @@ export function openWordDocs() {
             </div>
         </div>
     `;
+    makeDraggable(container.querySelector('.window-frame'), container.querySelector('.window-header'));
 }
 
 // Función que abre el Explorador de Archivos en modo "Guardar"
@@ -80,6 +82,7 @@ export function openSaveDialog() {
             </div>
         </div>
     `;
+    makeDraggable(container.querySelector('.window-frame'), container.querySelector('.window-header'));
 }
 
 // Función para abrir la carpeta de Descargas (Tarea de borrado)
@@ -122,9 +125,9 @@ export function openTempFolder() {
                         <span>logo_technova.png</span>
                     </div>
                     
-                    <div id="recycle-bin-droppable" 
-                         ondrop="window.drop(event)" 
-                         ondragover="window.allowDrop(event)" 
+                    <div id="recycle-bin-droppable"
+                         ondrop="window.drop(event)"
+                         ondragover="window.allowDrop(event)"
                          style="margin-top: 20px; border: 2px dashed #ccc; padding: 15px; border-radius: 8px; text-align: center; color: #666; background: #f9f9f9;">
                         <span style="font-size: 24px; display: block;">🗑️</span>
                         <span>Arrastra aquí para eliminar (Papelera)</span>
@@ -134,6 +137,7 @@ export function openTempFolder() {
             </div>
         </div>
     `;
+    makeDraggable(container.querySelector('.window-frame'), container.querySelector('.window-header'));
 }
 
 export function openMyPC() {

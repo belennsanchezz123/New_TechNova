@@ -3,6 +3,53 @@ import { getSessionId } from '../utils/session.js';
 import { getParticipantId } from '../utils/participant.js';
 import { saveQuestionnaire, completeSession } from '../services/api.js';
 
+const SCENARIO9_MIN_TIME_MS = 5 * 60 * 1000; // 5 minutos mínimos
+let scenario9StartTime = null;
+let scenario9TimerInterval = null;
+
+export function initScenario9Timer() {
+    scenario9StartTime = Date.now();
+
+    // Limpiar intervalo previo si existiera
+    if (scenario9TimerInterval) clearInterval(scenario9TimerInterval);
+
+    scenario9TimerInterval = setInterval(() => {
+        const elapsed = Date.now() - scenario9StartTime;
+        const remaining = Math.max(0, SCENARIO9_MIN_TIME_MS - elapsed);
+
+        const countdownEl = document.getElementById('questionnaire-countdown');
+        const waitingEl = document.getElementById('questionnaire-timer-waiting');
+        const readyEl = document.getElementById('questionnaire-timer-ready');
+        const submitBtn = document.getElementById('questionnaire-submit-btn');
+
+        if (!countdownEl) return; // El escenario ya no está en pantalla
+
+        if (remaining > 0) {
+            const mins = Math.floor(remaining / 60000);
+            const secs = Math.floor((remaining % 60000) / 1000);
+            countdownEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        } else {
+            // Tiempo alcanzado
+            clearInterval(scenario9TimerInterval);
+            scenario9TimerInterval = null;
+            if (waitingEl) waitingEl.style.display = 'none';
+            if (readyEl) readyEl.style.display = 'block';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+            // Desbloquear también el botón Siguiente
+            window._scenario9TimeReached = true;
+        }
+    }, 500);
+}
+
+export function isScenario9TimeReached() {
+    if (!scenario9StartTime) return false;
+    return (Date.now() - scenario9StartTime) >= SCENARIO9_MIN_TIME_MS;
+}
+
 // ESTA ES LA FUNCIÓN QUE MUESTRA LOS RESULTADOS EN EL ESCENARIO 9
 function showResults() {
     const resultsBody = document.getElementById('results-body');
@@ -35,6 +82,16 @@ function showResults() {
 
 // ESTA ES LA NUEVA FUNCIÓN PARA ENVIAR EL NUEVO CUESTIONARIO
 export async function submitTaxonomy() {
+    // 0. Comprobar que ha pasado el tiempo mínimo
+    if (!isScenario9TimeReached()) {
+        const errorEl = document.getElementById('questionnaire-error');
+        if (errorEl) {
+            errorEl.textContent = 'Por favor, tómate el tiempo necesario para leer y responder todas las preguntas.';
+            errorEl.style.display = 'block';
+        }
+        return;
+    }
+
     // 1. Apunta al ID del nuevo formulario
     const form = document.getElementById('taxonomy-questionnaire');
     const errorEl = document.getElementById('questionnaire-error');

@@ -211,17 +211,33 @@ try {
     }
 }
 
-// Nueva migración para participant_metrics
-try {
-    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_action TEXT;');
-    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_response_time INTEGER;');
-    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_postpone_count INTEGER;');
-    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_postpone_delay_mins INTEGER;');
-    console.log('✅ Columnas de actualización añadidas a participant_metrics.');
-} catch (err) {
-    if (!err.message.includes('duplicate column name')) {
-        console.warn('⚠️ Nota sobre migración de participant_metrics:', err.message);
+// Migración: columnas de actualización (taskbar events)
+const migrateColumn = (table, col, type) => {
+    try {
+        db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${type};`);
+    } catch (err) {
+        if (!err.message.includes('duplicate column name')) {
+            console.warn(`⚠️ Migración ${table}.${col}:`, err.message);
+        }
     }
-}
+};
+
+migrateColumn('participant_metrics', 'ue_update_action',              'TEXT');
+migrateColumn('participant_metrics', 'ue_update_response_time',       'INTEGER');
+migrateColumn('participant_metrics', 'ue_update_postpone_count',      'INTEGER');
+migrateColumn('participant_metrics', 'ue_update_postpone_delay_mins', 'INTEGER');
+
+// Migración: escenario 0 (políticas de uso)
+migrateColumn('participant_metrics', 's0_policy_acceptance_time_seconds', 'INTEGER');
+
+// Migración: notas (bloc de notas)
+migrateColumn('participant_metrics', 'notes_used',                    'INTEGER');
+migrateColumn('participant_metrics', 'notes_had_content_at_end',      'INTEGER');
+migrateColumn('participant_metrics', 'notes_cleared_before_end',      'INTEGER');
+migrateColumn('participant_metrics', 'notes_open_at_end',             'INTEGER');
+migrateColumn('participant_metrics', 'notes_file_saved',              'INTEGER');
+migrateColumn('participant_metrics', 'notes_file_deleted_before_end', 'INTEGER');
+
+console.log('✅ Migraciones de participant_metrics aplicadas.');
 
 export default db;
