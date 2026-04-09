@@ -195,6 +195,80 @@ function startScenarioTimer(scenarioNumber) {
 }
 
 // --- FUNCIONES GLOBALES ---
+/**
+ * Muestra una notificación personalizada premium en lugar del alert del sistema.
+ */
+window.showCustomNotification = function(title, message, type = 'success') {
+    return new Promise(resolve => {
+        const existing = document.getElementById('custom-notification-modal');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'custom-notification-modal';
+        overlay.className = 'popup-overlay active';
+        overlay.style.cssText = 'z-index: 20000; backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); font-family: "Segoe UI", system-ui, -apple-system, sans-serif;';
+
+        const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : 'ℹ');
+        const iconBg = type === 'success' ? '#e6f4ea' : (type === 'error' ? '#fdecea' : '#e8f0fe');
+        const iconColor = type === 'success' ? '#1e8e3e' : (type === 'error' ? '#d32f2f' : '#1a73e8');
+        const btnBg = type === 'error' ? '#d32f2f' : '#0078d4';
+        const btnHover = type === 'error' ? '#b71c1c' : '#005a9e';
+
+        overlay.innerHTML = `
+            <div class="popup-content" style="max-width: 400px; text-align: center; padding: 32px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); animation: snackbarIn 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.28); background: #fff;">
+                <div style="width: 56px; height: 56px; background: ${iconBg}; color: ${iconColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px auto; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                    ${icon}
+                </div>
+                <h3 style="margin: 0 0 12px 0; font-size: 20px; color: #1e293b; font-weight: 700; letter-spacing: -0.02em;">${title}</h3>
+                <p style="margin: 0 0 28px 0; color: #64748b; font-size: 15px; line-height: 1.6;">${message}</p>
+                <button id="custom-notification-close" style="width: 100%; border: none; background: ${btnBg}; color: #fff; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);">
+                    Entendido
+                </button>
+            </div>
+            <style>
+                @keyframes snackbarIn {
+                    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+                    to { transform: translateY(0) scale(1); opacity: 1; }
+                }
+                #custom-notification-close:hover {
+                    background: ${btnHover} !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important;
+                }
+                #custom-notification-close:active {
+                    transform: translateY(0);
+                }
+            </style>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const closeBtn = document.getElementById('custom-notification-close');
+        if (closeBtn) closeBtn.focus();
+        
+        const close = () => {
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.2s ease';
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.remove();
+                resolve();
+            }, 200);
+        };
+
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+        
+        const keyHandler = (e) => {
+            if (e.key === 'Escape' || e.key === 'Enter') {
+                close();
+                document.removeEventListener('keydown', keyHandler);
+            }
+        };
+        document.addEventListener('keydown', keyHandler);
+    });
+};
 
 function triggerTeamsIncident() {
     // Verificación ultra-segura: Memoria OR LocalStorage
@@ -362,7 +436,7 @@ function nextScenario() {
     if (currentScenario === 1) {
         const wifiStatus = window.misMetricas?.scenario1?.wifi_public;
         if (wifiStatus === undefined || wifiStatus === null) {
-            alert('⚠️ Debes conectarte a una red WiFi antes de continuar. Busca el icono de red (📡) en la barra de tareas.');
+            window.showCustomNotification('WiFi Requerido', '⚠️ Debes conectarte a una red WiFi antes de continuar. Busca el icono de red (📡) en la barra de tareas.', 'error');
             showWifiHighlight();
             return;
         }
@@ -370,7 +444,7 @@ function nextScenario() {
     // Email Gate: no se puede avanzar del escenario 3 sin leer todos los correos
     if (currentScenario === 3) {
         if (!areAllEmailsRead()) {
-            alert('📧 Debes leer todos los correos de tu bandeja de entrada antes de continuar.');
+            window.showCustomNotification('Correos Pendientes', '📧 Debes leer todos los correos de tu bandeja de entrada antes de continuar.', 'info');
             return;
         }
     }
@@ -452,7 +526,7 @@ async function acceptPolicyAndStart() {
     const clickTimeMs = Date.now();
     const pid = getParticipantId(); // Obtiene el P00x del localStorage
     if (!pid) {
-        alert("Por favor, introduce tu ID de participante antes de empezar.");
+        window.showCustomNotification('Falta ID', "Por favor, introduce tu ID de participante antes de empezar.", 'error');
         return;
     }
 
@@ -522,7 +596,7 @@ window.handleTeamsAlert = async function () {
 
     // 2. Validar que se haya introducido una contraseña
     if (!passInput || !passInput.value) {
-        alert("Por favor, introduce una contraseña.");
+        window.showCustomNotification('Contraseña Requerida', "Por favor, introduce una contraseña.", 'error');
         return;
     }
 

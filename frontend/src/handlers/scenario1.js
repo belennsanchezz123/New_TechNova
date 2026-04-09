@@ -118,7 +118,7 @@ function goNext(service) {
 export async function registerService(service) {
     const pid = getParticipantId();
     if (!pid) {
-        alert('Por favor, introduce el ID de Participante antes de empezar.');
+        window.showCustomNotification('ID de Participante', 'Por favor, introduce el ID de Participante antes de empezar.', 'error');
         return;
     }
 
@@ -128,7 +128,7 @@ export async function registerService(service) {
     const password = passInput.value;
 
     if (!username || !password) {
-        alert('Por favor ingresa usuario y contraseña');
+        window.showCustomNotification('Faltan datos', 'Por favor ingresa usuario y contraseña', 'error');
         return;
     }
 
@@ -142,7 +142,7 @@ export async function registerService(service) {
 
     if (!success || !session) {
         console.error('createRegistration error:', error);
-        alert('Error al crear la cuenta.');
+        window.showCustomNotification('Error de conexión', 'Hubo un problema al crear la cuenta. Por favor, inténtalo de nuevo.', 'error');
         return;
     }
 

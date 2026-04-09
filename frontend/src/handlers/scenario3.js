@@ -201,19 +201,23 @@ export async function reportEmail(id, type) {
     _phishingReportReasons[reasonKey] = reason;
     _syncPhishingReasonsMetric();
 
-    if (type === 'phishing' && (email.type === 'phishing-creds' || email.type === 'phishing-spam')) {
-        _reportedPhishingIds.add(id);
+    if (type === 'phishing') {
+        // Mark as reported in the UI regardless of whether it was actually phishing or a false positive
         email.reportedAsPhishing = true;
-        _updatePhishingPercentages();
-    } else if (type === 'phishing') {
-        _falsePositiveReportedIds.add(id);
-        metrics.scenario3.phishing_false_positives = _falsePositiveReportedIds.size;
+
+        if (email.type === 'phishing-creds' || email.type === 'phishing-spam') {
+            _reportedPhishingIds.add(id);
+            _updatePhishingPercentages();
+        } else {
+            _falsePositiveReportedIds.add(id);
+            metrics.scenario3.phishing_false_positives = _falsePositiveReportedIds.size;
+        }
     }
     // Note: reporting a legit email as phishing is a false positive but we don't penalize it
 
     console.log(`🚨 Phishing reported: ${_reportedPhishingIds.size}/${_getTotalPhishingCount()} (${metrics.scenario3.phishing_reported})`);
 
-    alert(`This email has been reported to Lynx Security. Thank you for helping keep our platform safe.`);
+    await window.showCustomNotification('Reporte Enviado', 'El correo ha sido reportado a Lynx Security. Gracias por ayudar a mantener nuestra plataforma segura.');
     document.getElementById('email-view').innerHTML = '<p>Select an email to read it.</p>';
     // Refresh inbox list so the reported state remains visible.
     _renderEmails();
@@ -438,7 +442,7 @@ export function sendComposedEmail() {
     const subject = document.getElementById('compose-subject')?.value;
 
     if (!to || !subject) {
-        alert('Por favor completa el destinatario y el asunto.');
+        window.showCustomNotification('Campos obligatorios', 'Por favor completa el destinatario y el asunto.', 'error');
         return;
     }
 
@@ -457,15 +461,15 @@ export function sendComposedEmail() {
         // Core metric: did they encrypt the file?
         metrics.scenario3.secure_data_transmission = usedEncryption ? 1 : 0;
 
-        alert(`📨 Documento enviado a ${to}.`);
+        window.showCustomNotification('Mensaje Enviado', `📨 El documento ha sido enviado correctamente a ${to}.`);
 
         // Save and transition to Scenario 4
         _saveS3Metrics();
-        setTimeout(() => window.startScenario(4), 1000);
+        setTimeout(() => window.startScenario(4), 1500);
 
     } else {
         // Generic send (e.g. replying to Laura without the sensitive doc)
-        alert(`Correo enviado a ${to}.`);
+        window.showCustomNotification('Mensaje Enviado', `El correo ha sido enviado a ${to}.`);
         composedEmailAttachments = [];
         document.getElementById('email-view').innerHTML = '<p>Selecciona un correo para leerlo.</p>';
     }
