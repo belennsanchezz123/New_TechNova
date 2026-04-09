@@ -60,7 +60,7 @@ import {
     allowDrop
 } from './handlers/scenario7.js';
 
-import { submitTaxonomy } from './handlers/scenario9.js';
+import { submitTaxonomy, initScenario9Timer, isScenario9TimeReached } from './handlers/scenario9.js';
 import { useAI, sendAIReport, handleAIInput, showMartaMessage } from './handlers/scenario5.js';
 import { startSession, completeSession } from './services/api.js';
 import { setParticipantId, getParticipantId } from './utils/participant.js';
@@ -103,7 +103,9 @@ import {
     toggleStartMenu,
     showRecycleBinItemContextMenu,
     showPermanentDeleteDialog,
-    permanentlyDeleteFromBin
+    permanentlyDeleteFromBin,
+    toggleNotesWindow,
+    captureNotesMetrics
 } from './handlers/taskbar-handler.js';
 
 // --- FUNCIONES TASKBAR ---
@@ -123,6 +125,7 @@ window.toggleStartMenu = toggleStartMenu;
 window.showRecycleBinItemContextMenu = showRecycleBinItemContextMenu;
 window.showPermanentDeleteDialog = showPermanentDeleteDialog;
 window.permanentlyDeleteFromBin = permanentlyDeleteFromBin;
+window.toggleNotesWindow = toggleNotesWindow;
 
 
 
@@ -360,6 +363,11 @@ function startScenario(scenarioNumber) {
         showFileExplorerHighlight();
     }
 
+    // --- LÓGICA ESCENARIO 9 (Cuestionario Final) ---
+    if (scenarioNumber === 9) {
+        initScenario9Timer();
+    }
+
     // --- LÓGICA ESCENARIO 5 (Laboratorio de IA / Nóminas) ---
     if (scenarioNumber === 5) {
         console.log("🤖 Iniciando Escenario 5 (Nóminas)...");
@@ -451,6 +459,13 @@ function nextScenario() {
     if (currentScenario === 3) {
         if (!areAllEmailsRead()) {
             window.showCustomNotification('Correos Pendientes', '📧 Debes leer todos los correos de tu bandeja de entrada antes de continuar.', 'info');
+            return;
+        }
+    }
+    // Questionnaire Gate: no se puede avanzar del escenario 9 sin cumplir el tiempo mínimo
+    if (currentScenario === 9) {
+        if (!isScenario9TimeReached()) {
+            window.showCustomNotification('Cuestionario en curso', '⏱️ Debes tomarte el tiempo necesario para completar el cuestionario antes de continuar.', 'info');
             return;
         }
     }
@@ -785,6 +800,7 @@ window.addEventListener('beforeunload', function(e) {
 });
 
 window.finalizeSession = async function() {
+    captureNotesMetrics();
     closeScenarioTimer();
     refreshTotalSimulationTimeMetric();
 

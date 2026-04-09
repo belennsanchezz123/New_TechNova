@@ -741,15 +741,25 @@ export function getScenarioHTML(scenarioNumber) {
                     
                     <div class="question-custom">
                         <label>¿Cuál es tu edad?</label>
-                        <input 
-                            type="number" 
-                            id="age-input" 
-                            name="q_0_1" 
-                            min="0" 
-                            max="120" 
-                            placeholder="Introduce tu edad" 
+                        <input
+                            type="number"
+                            id="age-input"
+                            name="q_0_1"
+                            min="0"
+                            max="120"
+                            placeholder="Introduce tu edad"
                             class="question-input"
                         >
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿Cuál es tu sexo?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_0" value="Hombre"> Hombre</label>
+                            <label><input type="radio" name="q_0_0" value="Mujer"> Mujer</label>
+                            <label><input type="radio" name="q_0_0" value="No binario"> No binario</label>
+                            <label><input type="radio" name="q_0_0" value="Prefiero no decirlo"> Prefiero no decirlo</label>
+                        </div>
                     </div>
 
                     <div class="question-custom">
@@ -918,7 +928,16 @@ export function getScenarioHTML(scenarioNumber) {
             10
         )}
                 <div style="margin-top: 30px;">
-                    <button type="button" onclick="window.submitTaxonomy()" class="primary-btn">Enviar Cuestionario</button>
+                    <div id="questionnaire-timer-box" style="margin-bottom: 16px; padding: 12px 18px; background: #fff3e0; border: 1px solid #ffb300; border-radius: 8px; display: inline-block;">
+                        <p id="questionnaire-timer-waiting" style="margin: 0; color: #e65100; font-weight: 600;">
+                            ⏱️ Tiempo mínimo restante: <span id="questionnaire-countdown">5:00</span>
+                        </p>
+                        <p id="questionnaire-timer-ready" style="display: none; margin: 0; color: #2e7d32; font-weight: 600;">
+                            ✅ Tiempo mínimo alcanzado. Puedes enviar el cuestionario.
+                        </p>
+                    </div>
+                    <br>
+                    <button id="questionnaire-submit-btn" type="button" onclick="window.submitTaxonomy()" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Enviar Cuestionario</button>
                     <p id="questionnaire-error" style="display: none; color: #d32f2f; margin-top: 10px;">Por favor, responde a todas las preguntas antes de enviar.</p>
                 </div>
             </form>
