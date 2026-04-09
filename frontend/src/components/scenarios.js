@@ -483,9 +483,16 @@ export function getScenarioHTML(scenarioNumber) {
     Escenario 4: Búsqueda y Descarga de Recursos
 </h2>
 
-<p>
-    <strong>Instrucción:</strong> Revisa las extensiones instaladas en tu navegador, luego usa el buscador para encontrar y descargar una <strong>plantilla de cronograma de proyectos</strong>.
-</p>
+<div style="background: #f0f7ff; border-left: 4px solid #0078d4; padding: 14px 18px; border-radius: 6px; margin-bottom: 12px;">
+    <p style="margin: 0 0 10px 0; line-height: 1.6;">
+        <strong>📋 Instrucción:</strong> Tu gerente te ha pedido que descargues una <strong>plantilla de cronograma de proyectos</strong> para organizar tu incorporación.
+    </p>
+    <ol style="margin: 0; padding-left: 20px; line-height: 1.8; color: #333;">
+        <li>Primero, <strong>revisa las extensiones</strong> instaladas en tu navegador (🧩) y decide si mantenerlas activas.</li>
+        <li>Luego, <strong>busca en Google</strong> escribiendo lo que necesites en la barra de búsqueda y pulsa <em>Enter</em> o haz clic en <em>"Buscar con Google"</em>.</li>
+        <li>Selecciona un resultado y <strong>descarga la plantilla</strong>.</li>
+    </ol>
+</div>
 
 <!-- Panel de extensiones del navegador -->
 <div class="browser-extensions-panel" id="browser-extensions-panel">

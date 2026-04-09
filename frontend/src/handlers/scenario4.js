@@ -763,18 +763,59 @@ window.downloadMap = function (source) {
         window.simulateDownload(3000, { name: 'Project_Manager_Pro_Setup.exe', type: 'malicious', size: '4.5 MB' });
 
         setTimeout(() => {
-            showDownloadFeedback('Project_Manager_Pro_Setup.exe', false);
-            alert('⚠️ Windows Defender ha detectado una amenaza:\n\n"Project_Manager_Pro_Setup.exe" contiene software potencialmente no deseado.\n\nSe ha bloqueado la ejecución.');
+            showDownloadFeedback('Project_Manager_Pro_Setup.exe', true);
+        }, 3200);
+
+        setTimeout(() => {
             finalizeAndSave(sid);
-        }, 3500);
+        }, 5000);
     }
 };
 
 window.handlePhishingSubmit = function () {
     metrics.scenario4.clicked_dangerous_link = 1;
-    alert('⚠️ ¡Cuidado! Has introducido tus credenciales en un sitio no verificado.\n\nEsto podría comprometer tu cuenta corporativa.');
-    const sid = getSessionId();
-    finalizeAndSave(sid);
+
+    // Simular descarga exitosa tras el login — no revelar que es phishing
+    const content = document.getElementById('browser-content');
+    if (content) {
+        content.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#f0f2f5;">
+                <div style="background:white; padding:30px 40px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center; max-width:380px;">
+                    <div class="phishing-spinner" style="width:40px; height:40px; border:4px solid #e0e0e0; border-top:4px solid #4285f4; border-radius:50%; margin:0 auto 20px; animation:spin 1s linear infinite;"></div>
+                    <p style="color:#333; font-size:14px; margin:0;">Iniciando sesión...</p>
+                </div>
+            </div>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        `;
+
+        // A los 1.5s, simular que se inicia la descarga
+        setTimeout(() => {
+            window.simulateDownload(1500, { name: 'Plantillas_Gantt_Premium.zip', type: 'malicious', size: '3.2 MB' });
+            content.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:#f0f2f5;">
+                    <div style="background:white; padding:30px 40px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1); text-align:center; max-width:380px;">
+                        <div style="font-size:48px; margin-bottom:15px;">✅</div>
+                        <h3 style="margin:0 0 8px; color:#333;">¡Descarga iniciada!</h3>
+                        <p style="color:#888; font-size:13px; margin:0 0 20px;">Tu plantilla se está descargando.</p>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+
+        // A los 3.2s, mostrar el toast de completado (igual que los otros enlaces)
+        setTimeout(() => {
+            showDownloadFeedback('Plantillas_Gantt_Premium.zip', true);
+        }, 3200);
+
+        // A los 5.0s, finalizar y avanzar de escenario (igual que los otros enlaces)
+        setTimeout(() => {
+            const sid = getSessionId();
+            finalizeAndSave(sid);
+        }, 5000);
+    } else {
+        const sid = getSessionId();
+        finalizeAndSave(sid);
+    }
 };
 
 // ══════════════════════════════════════════════════════════════════
