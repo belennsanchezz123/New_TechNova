@@ -467,13 +467,13 @@ export function getScenarioHTML(scenarioNumber) {
                     <h3 style="margin: 0 0 10px 0; color: #e65100;">
                         📋 Tarea adicional
                     </h3>
-                    <p style="margin: 0 0 8px 0; line-height: 1.6;">
-                        <strong>Instrucción:</strong> Laura Pérez (tu gerente) te ha pedido que le reenvíes un documento.
-                        Usa el botón <strong>"Nuevo Correo"</strong> para componer un mensaje a
-                        <strong>laura.perez@technova.com</strong> y adjunta el archivo solicitado.
+                    <p style="margin: 0 0 10px 0; line-height: 1.6;">
+                        <strong>Instrucción:</strong> Laura Pérez (tu gerente) te ha pedido que le reenvíes el documento
+                        <strong style="color: #e65100;">"Plan_de_Introduccion.docx"</strong>.
                     </p>
-                    <p style="margin: 0; font-size: 0.9em; color: #666; line-height: 1.4;">
-                        💡 Puedes adjuntar desde tu ordenador local (📎) o desde TechNova Drive (☁️).
+                    <p style="margin: 0 0 10px 0; line-height: 1.6;">
+                        Usa el botón <strong>"Nuevo Correo" (✏️)</strong> para componer un mensaje a
+                        <strong>laura.perez@technova.com</strong> y adjunta el archivo usando el botón <strong>📎</strong>.
                     </p>
                 </div>
             </div>
