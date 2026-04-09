@@ -153,6 +153,10 @@ const initDB = () => {
             -- ── Unexpected Events (cross-scenario) ───────────────────
             ue_accepted_fake_update         INTEGER,    -- 1=aceptó update falso, 0=rechazó
             ue_teams_password_reused        INTEGER,    -- 1=sí, 0=no
+            ue_update_action                TEXT,       -- 'Restart' | 'Postpone_15m' etc.
+            ue_update_response_time         INTEGER,    -- segundos hasta acción
+            ue_update_postpone_count        INTEGER,    -- nº de veces pospuesto
+            ue_update_postpone_delay_mins   INTEGER,    -- minutos elegidos
 
             -- ── Timestamps ───────────────────────────────────────────
             session_total_time_seconds      INTEGER,
@@ -204,6 +208,19 @@ try {
 } catch (err) {
     if (!err.message.includes('duplicate column name')) {
         console.warn('⚠️ Nota sobre migración de base de datos:', err.message);
+    }
+}
+
+// Nueva migración para participant_metrics
+try {
+    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_action TEXT;');
+    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_response_time INTEGER;');
+    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_postpone_count INTEGER;');
+    db.exec('ALTER TABLE participant_metrics ADD COLUMN ue_update_postpone_delay_mins INTEGER;');
+    console.log('✅ Columnas de actualización añadidas a participant_metrics.');
+} catch (err) {
+    if (!err.message.includes('duplicate column name')) {
+        console.warn('⚠️ Nota sobre migración de participant_metrics:', err.message);
     }
 }
 

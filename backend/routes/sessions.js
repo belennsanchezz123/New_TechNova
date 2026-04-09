@@ -313,6 +313,10 @@ export function setupSessionRoutes() {
                 // Unexpected
                 ue_accepted_fake_update:       toInt(m['unexpected.update_compliance_rate']),
                 ue_teams_password_reused:      toInt(m['unexpected.teams_password_reused']),
+                ue_update_action:              toText(m['taskbar.update_user_action']),
+                ue_update_response_time:       toInt2(m['taskbar.update_response_time_seconds']),
+                ue_update_postpone_count:      toInt2(m['taskbar.update_postpone_count']),
+                ue_update_postpone_delay_mins: toInt2(m['taskbar.update_postpone_delay_minutes']),
                 // Timestamps
                 session_total_time_seconds:   toInt2(m['simulation.total_time_seconds']),
                 session_started_at:            reg.created_at,

@@ -90,7 +90,9 @@ export const metrics = {
     },
     taskbar: {
         update_user_action:           null,  // TEXT: 'Restart' | 'Postpone_15m' | 'Postpone_1h' | 'Postpone_24h' | 'Ignored' | 'Dismissed'
-        update_response_time_seconds: null   // INT: segundos hasta la acción del usuario
+        update_response_time_seconds: null,  // INT: segundos hasta la acción del usuario
+        update_postpone_count:        0,     // INT: cuántas veces ha pospuesto
+        update_postpone_delay_minutes:null    // INT: minutos elegidos en el último posponer
     }
 };
 

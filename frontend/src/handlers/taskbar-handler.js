@@ -266,7 +266,7 @@ export function restartSystem() {
 
     // Simular progreso de reinicio por debajo de 1 minuto
     let progress = 0;
-    const duration = 45000; // 45 segundos en milisegundos
+    const duration = 5000; // 5 segundos en milisegundos (antes 45s)
     const interval = 100; // Actualizar cada 100ms
     const increment = (100 / duration) * interval;
 

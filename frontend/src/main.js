@@ -745,7 +745,14 @@ window.handleExtensionToggle = handleExtensionToggle;
 window.toggleExtensionsPanel = toggleExtensionsPanel;
 window.closeExtensionsPanel = closeExtensionsPanel;
 window.confirmExtensions = confirmExtensions;
-// window.handleUpdate = handleUpdate;
+window.handleUpdate = (action) => {
+    if (action === 'install') {
+        window.restartSystem();
+    } else {
+        window.postponeUpdate();
+    }
+    window.dismissUpdateNotification(action === 'install' ? 'Restart' : 'Postponed');
+};
 window.saveProfile = saveProfile;
 window.connectApp = connectApp;
 window.handleAppPerms = handleAppPerms;
