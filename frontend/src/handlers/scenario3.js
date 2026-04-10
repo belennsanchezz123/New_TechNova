@@ -229,9 +229,7 @@ export async function reportEmail(id, type) {
 
 const _baseFiles = [
     { filename: 'Plan_de_Introduccion.docx', icon: '📄', desc: 'Documento de Word • 128 KB', encrypted: false },
-    { filename: 'Lista_Participantes_Excursion.docx', icon: '📄', desc: 'Documento de Word • 45 KB', encrypted: false },
     { filename: 'Presupuesto_Interno_Q3.xlsx', icon: '📊', desc: 'Hoja de cálculo • 67 KB', encrypted: false },
-    { filename: 'Mapa_Ruta_Senderismo.pdf', icon: '📑', desc: 'PDF Document • 1.2 MB', encrypted: false },
 ];
 
 // Track which files have been encrypted (so we can add them to the list)
@@ -454,7 +452,7 @@ export function sendComposedEmail() {
     }
 
     // Check if a sensitive document is attached
-    const sensitiveFiles = ['Plan_de_Introduccion.docx', 'Presupuesto_Interno_Q3.xlsx', 'Lista_Participantes_Excursion.docx'];
+    const sensitiveFiles = ['Plan_de_Introduccion.docx', 'Presupuesto_Interno_Q3.xlsx'];
     const hasSensitiveDoc = composedEmailAttachments.some(att =>
         sensitiveFiles.includes(att.filename)
     );

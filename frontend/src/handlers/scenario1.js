@@ -8,6 +8,10 @@ import { getSessionId, setSessionId } from '../utils/session.js';
 export let isEventsRegistrationComplete = false;
 const passwords = [];
 const registrations = {};
+export function getRegisteredUsername(service) {
+    const u = registrations[service]?.username;
+    return u ? `${u}@technova.com` : null;
+}
 const DEFAULT_MAIL_PASSWORD = 'X9m!Q2v@T7k#L4r$Z8';
 // let isWifiLocked = false;
 
