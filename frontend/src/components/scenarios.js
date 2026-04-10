@@ -757,7 +757,6 @@ export function getScenarioHTML(scenarioNumber) {
                         <div class="radio-group-custom">
                             <label><input type="radio" name="q_0_0" value="Hombre"> Hombre</label>
                             <label><input type="radio" name="q_0_0" value="Mujer"> Mujer</label>
-                            <label><input type="radio" name="q_0_0" value="No binario"> No binario</label>
                             <label><input type="radio" name="q_0_0" value="Prefiero no decirlo"> Prefiero no decirlo</label>
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import { getSessionId } from '../utils/session.js';
 import { getParticipantId } from '../utils/participant.js';
 import { saveQuestionnaire, completeSession } from '../services/api.js';
 
-const SCENARIO9_MIN_TIME_MS = 5 * 60 * 1000; // 5 minutos mínimos
+const SCENARIO9_MIN_TIME_MS = 4 * 60 * 1000; // 4 minutos mínimos
 let scenario9StartTime = null;
 let scenario9TimerInterval = null;
 
