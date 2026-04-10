@@ -306,7 +306,10 @@ export function closeRegistrationComplete() {
 }
 
 export function toggleWifiMenu() {
-    // Ya no bloqueamos el menú de WiFi
+    // Bloqueamos el menú de WiFi si ya se ha conectado (solo una elección)
+    if (window.misMetricas?.scenario1?.wifi_public !== undefined && window.misMetricas?.scenario1?.wifi_public !== null) {
+        return;
+    }
 
     const menu = document.getElementById('wifi-menu');
     if (menu) {
@@ -319,7 +322,6 @@ export function toggleWifiMenu() {
 }
 
 export function connectWifi(type) {
-    // Ya no bloqueamos la conexión para permitir cambiar de red
 
     if (type === 'secure') {
         const popup = document.getElementById('popup-wifi-password');

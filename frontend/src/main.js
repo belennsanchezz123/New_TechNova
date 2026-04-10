@@ -459,22 +459,8 @@ function startScenario(scenarioNumber) {
 
 // --- WiFi Highlight (señalar el icono WiFi durante 10s) ---
 function showWifiHighlight() {
-    const wifiBtn = document.getElementById('wifi-icon-taskbar');
-    if (!wifiBtn) return;
-
-    // Crear el recuadro highlight
-    const highlight = document.createElement('div');
-    highlight.id = 'wifi-highlight-box';
-    highlight.className = 'wifi-highlight-box';
-    highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Clic aquí para cambiar de red en cualquier momento</span>';
-    wifiBtn.style.position = 'relative';
-    wifiBtn.appendChild(highlight);
-
-    // Auto-remover tras 10 segundos
-    setTimeout(() => {
-        const existing = document.getElementById('wifi-highlight-box');
-        if (existing) existing.remove();
-    }, 10000);
+    // Popup disabled per user request
+    return;
 }
 
 // --- File Explorer Highlight (señalar el icono 📁 durante 10s en el escenario 7) ---

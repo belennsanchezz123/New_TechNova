@@ -114,10 +114,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <h3>Redes WiFi disponibles</h3>
                     </div>
                     <p class="wifi-panel-description">
-                        Elige una red para conectarte a internet.<br>
-                        <span style="font-size: 0.9em; color: #666; display: inline-block; margin-top: 6px;">
-                            ℹ️ Podrás cambiar de red en cualquier momento haciendo clic en el icono de red (<span style="font-size:1.1em; color:#1a1a2e">🛜</span>) de la barra de tareas inferior.
-                        </span>
+                        Elige una red para conectarte a internet.
                     </p>
 
                     <div class="wifi-network-list">
