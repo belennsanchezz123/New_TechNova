@@ -32,10 +32,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/sessions', setupSessionRoutes());
 app.use('/api/breach', setupBreachRoutes());
 app.use('/api/ai', setupAIRoutes());
+app.use('/api/questionnaire', setupQuestionnaireRoutes());
+
 
 // ── Rutas protegidas (admin — requieren JWT) ───────────────────────
 app.use('/api/sessions', requireAdmin, setupAdminSessionRoutes());
-app.use('/api/questionnaire', requireAdmin, setupQuestionnaireRoutes());
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);

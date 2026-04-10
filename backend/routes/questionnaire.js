@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { requireAdmin } from '../utils/authMiddleware.js';
 
 const router = express.Router();
 
@@ -78,7 +79,7 @@ export function setupQuestionnaireRoutes() {
         }
     });
 
-    router.get('/all', async (req, res) => {
+    router.get('/all', requireAdmin, async (req, res) => {
         try {
             const responses = db.prepare(`
                 SELECT * FROM questionnaire_responses

@@ -520,9 +520,10 @@ function previousScenario() {
 }
 
 function nextScenario() {
-    // En modo normal (no debug) el botón Siguiente solo funciona en el escenario 0 (intro)
+    // En modo normal (no debug) el botón Siguiente solo funciona en el escenario 0 (intro) y 7 (escritorio limpio)
     // Para el resto de escenarios el avance lo disparan las acciones propias del escenario
-    if (!window.__isDebugMode && currentScenario !== 0) {
+    // El escenario 7 es de tarea libre (limpiar escritorio), el usuario decide cuándo ha terminado
+    if (!window.__isDebugMode && currentScenario !== 0 && currentScenario !== 7) {
         window.showCustomNotification('Completa el escenario', '📋 Debes completar las tareas del escenario actual antes de continuar.', 'info');
         return;
     }
