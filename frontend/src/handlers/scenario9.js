@@ -138,7 +138,7 @@ export async function submitTaxonomy() {
             answers: answers // El objeto con q_0_0, q_0_1, etc.
         });
 
-        alert('Cuestionario enviado. ¡Gracias por completar la simulación!');
+        await window.showDialog('¡Gracias por completar la simulación!', 'Cuestionario enviado', 'success');
         
         // Marcamos la sesión como completada en el backend
         if (sessionId) {
@@ -153,6 +153,6 @@ export async function submitTaxonomy() {
 
     } catch (err) {
         console.error('Error saving questionnaire:', err);
-        alert('Error al guardar el cuestionario.');
+        window.showDialog('Error al guardar el cuestionario. Inténtalo de nuevo.', 'Error', 'error');
     }
 }

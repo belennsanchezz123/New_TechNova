@@ -24,13 +24,13 @@ export async function useAI() {
     const chatLog = document.getElementById('ai-chat-log');
     const sid = getSessionId();
     if (!bodyField || !sid || !promptInput) {
-        alert('No se pudo iniciar la asistencia de IA (sesion no disponible).');
+        window.showDialog('No se pudo iniciar la asistencia de IA (sesión no disponible).', 'Error', 'error');
         return;
     }
 
     const promptText = promptInput.value.trim();
     if (!promptText) {
-        alert('Escribe primero tu mensaje para el asistente IA.');
+        window.showDialog('Escribe primero tu mensaje para el asistente IA.', 'Asistente IA', 'info');
         return;
     }
 
@@ -50,7 +50,7 @@ export async function useAI() {
         if (status) {
             status.innerHTML = "<span style='color:#b00020'>No se pudo generar el resumen con IA.</span>";
         }
-        alert(`Error IA: ${result?.error || 'desconocido'}`);
+        window.showDialog(`Error IA: ${result?.error || 'desconocido'}`, 'Error', 'error');
         return;
     }
 
@@ -108,7 +108,7 @@ export async function sendAIReport() {
             await saveMetrics(sid, metricsIA);
             console.log("✅ Métricas IA enviadas:", metricsIA);
         }
-        alert("✅ Informe enviado a RRHH.");
+        window.showDialog('Informe enviado correctamente a RRHH.', 'Enviado', 'success');
         if (window.startScenario) window.startScenario(6);
     } catch (err) {
         console.error("Error al guardar métricas IA:", err);

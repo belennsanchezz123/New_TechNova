@@ -90,7 +90,7 @@ export function openTempFolder() {
     console.log(`📂 openTempFolder llamado. Estado actual: ${currentTask}`);
     if (currentTask !== 'delete') {
         console.warn("⛔ Bloqueado: El usuario aún no ha terminado la tarea 'save'.");
-        alert('Primero debes terminar de trabajar con el Informe Final.');
+        window.showDialog('Primero debes terminar de trabajar con el Informe Final.', 'Acción no permitida', 'error');
         return;
     }
     console.log("✅ Abriendo carpeta de descargas con Drag & Drop...");
@@ -141,7 +141,7 @@ export function openTempFolder() {
 }
 
 export function openMyPC() {
-    alert('Acceso denegado por política de administrador local.');
+    window.showDialog('Acceso denegado por política de administrador local.', 'Acceso denegado', 'error');
 }
 
 export function openFilesExplorer() {
@@ -171,9 +171,9 @@ export function finalizeSave() {
     const container = document.getElementById('s7-window-container');
 
     if (isEncrypted) {
-        alert('🔒 Archivo cifrado y subido al servidor correctamente.');
+        window.showDialog('Archivo cifrado y subido al servidor correctamente.', 'Guardado', 'success');
     } else {
-        alert('⚠️ Archivo guardado sin cifrar. (Has incumplido la política de datos financieros).');
+        window.showDialog('Archivo guardado sin cifrar. Has incumplido la política de datos financieros.', 'Advertencia de seguridad', 'error');
     }
 
     container.innerHTML = ''; // Cerrar ventana
@@ -187,7 +187,7 @@ export function finalizeSave() {
             console.warn('Failed saving scenario6 encryption metric:', err);
         }
         setTimeout(() => {
-            alert('✅ Tarea 1 Completada.\n\nTAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de "Descargas".');
+            window.showDialog('TAREA 2: Encuentra y elimina el archivo temporal "Extracto_Bancario_TEMP.csv" que dejaste en la carpeta de Descargas.', 'Tarea 1 Completada ✓', 'success');
         }, 500);
     })();
 }
@@ -294,7 +294,7 @@ export function drop(ev) {
         if (element) {
             element.style.display = 'none'; // Lo ocultamos visualmente
         }
-        alert("⚠️ Has enviado el 'Informe Final' a la papelera.");
+        window.showDialog("Has enviado el 'Informe Final' a la papelera.", 'Archivo eliminado', 'info');
         // Métrica: borrado del informe final
         metrics.scenario6.deleted_final_report = true;
         (async () => {

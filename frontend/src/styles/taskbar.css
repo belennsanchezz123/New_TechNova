@@ -23,6 +23,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    padding-left: 80px;
 }
 
 .taskbar-start-btn,

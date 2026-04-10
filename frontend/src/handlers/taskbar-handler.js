@@ -432,11 +432,11 @@ function showDownloadsContextMenu(x, y, fileData) {
         if (action === 'open') {
             openDownloadedFile(fileData.type);
         } else if (action === 'openWith') {
-            alert(`Abrir con...\n\nSelecciona una app para abrir "${fileData.name}".`);
+            window.showDialog(`Selecciona una aplicación para abrir "${fileData.name}".`, 'Abrir con...', 'info');
         } else if (action === 'share') {
-            alert(`Compartir con...\n\n"${fileData.name}" listo para compartirse (simulación).`);
+            window.showDialog(`"${fileData.name}" está listo para compartirse.`, 'Compartir con...', 'info');
         } else if (action === 'copy') {
-            alert(`"${fileData.name}" copiado al portapapeles (simulación).`);
+            window.showDialog(`"${fileData.name}" copiado al portapapeles.`, 'Copiado', 'success');
         } else if (action === 'delete') {
             moveFileToRecycleBin(fileData);
 
@@ -465,10 +465,10 @@ function showDownloadsContextMenu(x, y, fileData) {
                 toggleDownloadsWindow();
             }
 
-            alert(`"${fileData.name}" enviado a la Papelera.`);
+            window.showDialog(`"${fileData.name}" enviado a la Papelera.`, 'Archivo eliminado', 'info');
         } else if (action === 'properties') {
             const fileTypeText = fileData.fileTypeLabel || (fileData.type === 'malicious' ? 'Aplicación (.exe)' : 'Documento Microsoft Word');
-            alert(`Propiedades\n\nNombre: ${fileData.name}\nTipo: ${fileTypeText}\nTamaño: ${fileData.size || '1.2 MB'}`);
+            window.showDialog(`Nombre: ${fileData.name}\nTipo: ${fileTypeText}\nTamaño: ${fileData.size || '1.2 MB'}`, 'Propiedades', 'info');
         }
 
         hideDownloadsContextMenu();
@@ -852,7 +852,7 @@ export function emptyRecycleBin() {
     }
 
     hideRecycleBinContextMenu();
-    alert('Papelera vaciada.');
+    window.showDialog('La papelera ha sido vaciada correctamente.', 'Papelera vaciada', 'success');
 }
 
 export function showRecycleBinContextMenu(event) {
@@ -903,9 +903,9 @@ export function showRecycleBinContextMenu(event) {
 // Abrir el archivo (Simulación)
 export function openDownloadedFile(type) {
     if (type === 'malicious') {
-        alert("❌ Error del Sistema:\n\nEl archivo 'Installer_Cracked.exe' está dañado o contiene software malintencionado.\n\nEl antivirus ha bloqueado su ejecución.");
+        window.showDialog("El archivo 'Installer_Cracked.exe' está dañado o contiene software malintencionado. El antivirus ha bloqueado su ejecución.", 'Error del Sistema', 'error');
     } else {
-        alert("📄 Abriendo documento en Word...\n\n(Simulación: El archivo se abre correctamente).");
+        window.showDialog('El archivo se ha abierto correctamente en Word.', 'Abriendo documento', 'info');
     }
 }
 
@@ -934,7 +934,7 @@ export function showRecycleBinItemContextMenu(event, index) {
         if (el.dataset.action === 'delete') {
             showPermanentDeleteDialog(item, index);
         } else if (el.dataset.action === 'properties') {
-            alert(`Propiedades\n\nNombre: ${item.name}\nTipo: ${item.type}\nTamaño: ${item.size}\nFecha de eliminación: ${item.deletedAt}`);
+            window.showDialog(`Nombre: ${item.name}\nTipo: ${item.type}\nTamaño: ${item.size}\nFecha de eliminación: ${item.deletedAt}`, 'Propiedades', 'info');
         }
         hideRecycleBinContextMenu();
     });

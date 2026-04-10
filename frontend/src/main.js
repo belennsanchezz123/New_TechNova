@@ -279,6 +279,12 @@ window.showCustomNotification = function(title, message, type = 'success') {
     });
 };
 
+// Wrapper para reemplazar alert() nativo con diálogos in-app
+// Uso: window.showDialog(mensaje, título, tipo)   tipo: 'info' | 'success' | 'error'
+window.showDialog = function(message, title = 'TechNova', type = 'info') {
+    return window.showCustomNotification(title, message, type);
+};
+
 function triggerTeamsIncident() {
     // Verificación ultra-segura: Memoria OR LocalStorage
     const sc1Completed = (typeof isEventsRegistrationComplete !== 'undefined' && isEventsRegistrationComplete === true);
@@ -413,13 +419,27 @@ function showFileExplorerHighlight() {
     const highlight = document.createElement('div');
     highlight.id = 'explorer-highlight-box';
     highlight.className = 'wifi-highlight-box';
+    highlight.style.position = 'fixed';
+    highlight.style.transform = 'none';
+    const btnRect = startBtn.getBoundingClientRect();
+    const btnCenter = Math.round(btnRect.left + btnRect.width / 2);
+    highlight.style.left = btnRect.left + 'px';
+    highlight.style.bottom = (window.innerHeight - btnRect.top + 8) + 'px';
     highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Abre el menú de inicio y selecciona Explorador</span>';
-    startBtn.style.position = 'relative';
-    startBtn.appendChild(highlight);
+    document.body.appendChild(highlight);
+
+    // Fijar la flecha al centro del botón (no al centro del tooltip)
+    const arrowStyle = document.createElement('style');
+    arrowStyle.id = 'explorer-arrow-style';
+    const arrowLeft = btnCenter - btnRect.left;
+    arrowStyle.textContent = `#explorer-highlight-box::after { left: ${arrowLeft}px; transform: translateX(-50%); }`;
+    document.head.appendChild(arrowStyle);
 
     setTimeout(() => {
         const existing = document.getElementById('explorer-highlight-box');
         if (existing) existing.remove();
+        const existingStyle = document.getElementById('explorer-arrow-style');
+        if (existingStyle) existingStyle.remove();
     }, 10000);
 }
 
@@ -809,7 +829,7 @@ window.finalizeSession = async function() {
     
     if (!sid) {
         console.error('❌ finalizeSession: no hay session_id en localStorage.');
-        alert('⚠️ No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.');
+        window.showDialog('No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.', 'Sesión no encontrada', 'error');
         return;
     }
     

@@ -731,7 +731,7 @@ export function getScenarioHTML(scenarioNumber) {
 <div id="desktop-window-container"></div>
         `,
         9: `
-            <h2>Escenario 9: Cuestionario Final</h2>
+            <h2>Escenario 8: Cuestionario Final</h2>
             <p><strong>Instrucciones:</strong> Para cada afirmación, selecciona la opción que mejor describe tu comportamiento habitual.</p>
             
             <form class="questionnaire-form" id="taxonomy-questionnaire">
