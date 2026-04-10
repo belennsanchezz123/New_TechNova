@@ -19,7 +19,8 @@ import {
     rejectDefaultMailPassword,
     holdPasswordVisibility,
     closeWifiPasswordPopup,
-    confirmWifiConnection
+    confirmWifiConnection,
+    getRegisteredUsername
 } from './handlers/scenario1.js';
 
 import { handleInterruption, initScenario2 } from './handlers/scenario2.js';
@@ -127,6 +128,71 @@ window.showPermanentDeleteDialog = showPermanentDeleteDialog;
 window.permanentlyDeleteFromBin = permanentlyDeleteFromBin;
 window.toggleNotesWindow = toggleNotesWindow;
 
+const serviceLabels = {
+    mail:   { name: 'TechNova Mail',  icon: '📧', color: '#0078d4' },
+    drive:  { name: 'TechNova Drive', icon: '☁️', color: '#0f9d58' },
+    events: { name: 'TechNova Teams', icon: '👥', color: '#6264a7' },
+};
+
+window.showTaskbarAccountPopup = function(service, anchorEl) {
+    // Cerrar si ya está abierto el mismo
+    const existing = document.getElementById('taskbar-account-popup');
+    if (existing) {
+        existing.remove();
+        if (existing.dataset.service === service) return;
+    }
+
+    const username = getRegisteredUsername(service);
+    const label = serviceLabels[service];
+
+    const popup = document.createElement('div');
+    popup.id = 'taskbar-account-popup';
+    popup.dataset.service = service;
+    popup.style.cssText = [
+        'position:fixed',
+        'z-index:15000',
+        'background:#fff',
+        'border:1px solid #e0e0e0',
+        'border-radius:10px',
+        'box-shadow:0 8px 24px rgba(0,0,0,0.18)',
+        'padding:16px 20px',
+        'min-width:220px',
+        'font-family:Segoe UI,sans-serif',
+        'pointer-events:auto',
+    ].join(';');
+
+    popup.innerHTML = username
+        ? `<div style="display:flex;align-items:center;gap:10px;">
+               <div style="width:40px;height:40px;border-radius:50%;background:${label.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${label.icon}</div>
+               <div>
+                   <div style="font-size:13px;font-weight:700;color:#1e293b;">${label.name}</div>
+                   <div style="font-size:12px;color:#64748b;margin-top:2px;">${username}</div>
+               </div>
+           </div>`
+        : `<div style="display:flex;align-items:center;gap:10px;">
+               <div style="width:40px;height:40px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${label.icon}</div>
+               <div>
+                   <div style="font-size:13px;font-weight:700;color:#1e293b;">${label.name}</div>
+                   <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Sin cuenta registrada</div>
+               </div>
+           </div>`;
+
+    document.body.appendChild(popup);
+
+    // Posicionar encima del icono
+    const rect = anchorEl.getBoundingClientRect();
+    popup.style.left = Math.max(8, rect.left + rect.width / 2 - popup.offsetWidth / 2) + 'px';
+    popup.style.top  = (rect.top - popup.offsetHeight - 10) + 'px';
+
+    // Cerrar al hacer clic fuera
+    const close = (e) => {
+        if (!popup.contains(e.target) && e.target !== anchorEl) {
+            popup.remove();
+            document.removeEventListener('click', close, true);
+        }
+    };
+    setTimeout(() => document.addEventListener('click', close, true), 0);
+};
 
 
 
@@ -279,6 +345,12 @@ window.showCustomNotification = function(title, message, type = 'success') {
     });
 };
 
+// Wrapper para reemplazar alert() nativo con diálogos in-app
+// Uso: window.showDialog(mensaje, título, tipo)   tipo: 'info' | 'success' | 'error'
+window.showDialog = function(message, title = 'TechNova', type = 'info') {
+    return window.showCustomNotification(title, message, type);
+};
+
 function triggerTeamsIncident() {
     // Verificación ultra-segura: Memoria OR LocalStorage
     const sc1Completed = (typeof isEventsRegistrationComplete !== 'undefined' && isEventsRegistrationComplete === true);
@@ -413,13 +485,27 @@ function showFileExplorerHighlight() {
     const highlight = document.createElement('div');
     highlight.id = 'explorer-highlight-box';
     highlight.className = 'wifi-highlight-box';
+    highlight.style.position = 'fixed';
+    highlight.style.transform = 'none';
+    const btnRect = startBtn.getBoundingClientRect();
+    const btnCenter = Math.round(btnRect.left + btnRect.width / 2);
+    highlight.style.left = btnRect.left + 'px';
+    highlight.style.bottom = (window.innerHeight - btnRect.top + 8) + 'px';
     highlight.innerHTML = '<span class="wifi-highlight-arrow">👆 Abre el menú de inicio y selecciona Explorador</span>';
-    startBtn.style.position = 'relative';
-    startBtn.appendChild(highlight);
+    document.body.appendChild(highlight);
+
+    // Fijar la flecha al centro del botón (no al centro del tooltip)
+    const arrowStyle = document.createElement('style');
+    arrowStyle.id = 'explorer-arrow-style';
+    const arrowLeft = btnCenter - btnRect.left;
+    arrowStyle.textContent = `#explorer-highlight-box::after { left: ${arrowLeft}px; transform: translateX(-50%); }`;
+    document.head.appendChild(arrowStyle);
 
     setTimeout(() => {
         const existing = document.getElementById('explorer-highlight-box');
         if (existing) existing.remove();
+        const existingStyle = document.getElementById('explorer-arrow-style');
+        if (existingStyle) existingStyle.remove();
     }, 10000);
 }
 
@@ -429,6 +515,8 @@ function updateNavigationButtons() {
     const currentNum = document.getElementById('current-num');
 
     if (prevBtn && nextBtn) {
+        // Botón anterior: solo visible en debug
+        prevBtn.style.visibility = window.__isDebugMode ? 'visible' : 'hidden';
         prevBtn.disabled = currentScenario <= 0;
         nextBtn.disabled = (currentScenario === 0) || (currentScenario >= TOTAL_SCENARIOS);
         nextBtn.style.visibility = (currentScenario === TOTAL_SCENARIOS - 1) ? 'hidden' : 'visible';
@@ -440,12 +528,19 @@ function updateNavigationButtons() {
 }
 
 function previousScenario() {
-    if (currentScenario > 0) {
+    if (window.__isDebugMode && currentScenario > 0) {
         startScenario(currentScenario - 1);
     }
 }
 
 function nextScenario() {
+    // En modo normal (no debug) el botón Siguiente solo funciona en el escenario 0 (intro)
+    // Para el resto de escenarios el avance lo disparan las acciones propias del escenario
+    if (!window.__isDebugMode && currentScenario !== 0) {
+        window.showCustomNotification('Completa el escenario', '📋 Debes completar las tareas del escenario actual antes de continuar.', 'info');
+        return;
+    }
+
     // WiFi Gate: no se puede avanzar del escenario 1 sin conectar WiFi
     if (currentScenario === 1) {
         const wifiStatus = window.misMetricas?.scenario1?.wifi_public;
@@ -809,7 +904,7 @@ window.finalizeSession = async function() {
     
     if (!sid) {
         console.error('❌ finalizeSession: no hay session_id en localStorage.');
-        alert('⚠️ No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.');
+        window.showDialog('No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.', 'Sesión no encontrada', 'error');
         return;
     }
     
@@ -897,6 +992,8 @@ initApp();
     }
 
     if (!isDebugQuery && !isDebugPath) return;
+
+    window.__isDebugMode = true;
 
     const SCENARIOS = [
         { n: 0,  label: '0 · Bienvenida' },

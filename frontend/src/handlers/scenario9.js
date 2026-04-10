@@ -3,7 +3,7 @@ import { getSessionId } from '../utils/session.js';
 import { getParticipantId } from '../utils/participant.js';
 import { saveQuestionnaire, completeSession } from '../services/api.js';
 
-const SCENARIO9_MIN_TIME_MS = 5 * 60 * 1000; // 5 minutos mínimos
+const SCENARIO9_MIN_TIME_MS = 4 * 60 * 1000; // 4 minutos mínimos
 let scenario9StartTime = null;
 let scenario9TimerInterval = null;
 
@@ -138,7 +138,7 @@ export async function submitTaxonomy() {
             answers: answers // El objeto con q_0_0, q_0_1, etc.
         });
 
-        alert('Cuestionario enviado. ¡Gracias por completar la simulación!');
+        await window.showDialog('¡Gracias por completar la simulación!', 'Cuestionario enviado', 'success');
         
         // Marcamos la sesión como completada en el backend
         if (sessionId) {
@@ -153,6 +153,6 @@ export async function submitTaxonomy() {
 
     } catch (err) {
         console.error('Error saving questionnaire:', err);
-        alert('Error al guardar el cuestionario.');
+        window.showDialog('Error al guardar el cuestionario. Inténtalo de nuevo.', 'Error', 'error');
     }
 }

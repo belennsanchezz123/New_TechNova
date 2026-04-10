@@ -230,6 +230,9 @@ migrateColumn('participant_metrics', 'ue_update_postpone_delay_mins', 'INTEGER')
 // Migración: escenario 0 (políticas de uso)
 migrateColumn('participant_metrics', 's0_policy_acceptance_time_seconds', 'INTEGER');
 
+// Migración: questionnaire_responses (answers_json añadido posteriormente)
+migrateColumn('questionnaire_responses', 'answers_json', 'TEXT');
+
 // Migración: notas (bloc de notas)
 migrateColumn('participant_metrics', 'notes_used',                    'INTEGER');
 migrateColumn('participant_metrics', 'notes_had_content_at_end',      'INTEGER');

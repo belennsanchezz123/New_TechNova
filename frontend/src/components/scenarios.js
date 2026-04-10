@@ -731,7 +731,7 @@ export function getScenarioHTML(scenarioNumber) {
 <div id="desktop-window-container"></div>
         `,
         9: `
-            <h2>Escenario 9: Cuestionario Final</h2>
+            <h2>Escenario 8: Cuestionario Final</h2>
             <p><strong>Instrucciones:</strong> Para cada afirmación, selecciona la opción que mejor describe tu comportamiento habitual.</p>
             
             <form class="questionnaire-form" id="taxonomy-questionnaire">
@@ -757,7 +757,6 @@ export function getScenarioHTML(scenarioNumber) {
                         <div class="radio-group-custom">
                             <label><input type="radio" name="q_0_0" value="Hombre"> Hombre</label>
                             <label><input type="radio" name="q_0_0" value="Mujer"> Mujer</label>
-                            <label><input type="radio" name="q_0_0" value="No binario"> No binario</label>
                             <label><input type="radio" name="q_0_0" value="Prefiero no decirlo"> Prefiero no decirlo</label>
                         </div>
                     </div>

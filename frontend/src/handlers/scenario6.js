@@ -8,7 +8,7 @@ export function saveProfile() {
     const fullName = fullNameInput?.value?.trim() || '';
 
     if (!fullName) {
-        alert('Debes completar Nombre Completo antes de guardar el perfil.');
+        window.showDialog('Debes completar el campo Nombre Completo antes de guardar el perfil.', 'Campo requerido', 'error');
         if (!fullName && fullNameInput) {
             fullNameInput.focus();
             return;

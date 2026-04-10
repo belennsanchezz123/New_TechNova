@@ -12,13 +12,13 @@ export function getTaskbarHTML() {
             </div>
 
             <div class="taskbar-center">
-                <div class="taskbar-app-icon active" title="TechNova Mail">
+                <div class="taskbar-app-icon active" id="taskbar-icon-mail" title="TechNova Mail" onclick="window.showTaskbarAccountPopup('mail', this)">
                     <span>📧</span>
                 </div>
-                <div class="taskbar-app-icon active" title="TechNova Drive">
+                <div class="taskbar-app-icon active" id="taskbar-icon-drive" title="TechNova Drive" onclick="window.showTaskbarAccountPopup('drive', this)">
                     <span>☁️</span>
                 </div>
-                <div class="taskbar-app-icon active" title="TechNova Teams">
+                <div class="taskbar-app-icon active" id="taskbar-icon-teams" title="TechNova Teams" onclick="window.showTaskbarAccountPopup('events', this)">
                     <span>👥</span>
                 </div>
             </div>

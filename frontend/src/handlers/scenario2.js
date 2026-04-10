@@ -97,7 +97,7 @@ function openDriveView() {
 
     // Añade el evento para que al hacer clic en el PDF, se avance de escenario
     document.getElementById('file-mapa').addEventListener('click', () => {
-        alert("Abriendo 'Bienvenida_Equipo_TechNova.docx'...");
+        window.showDialog("Abriendo 'Bienvenida_Equipo_TechNova.docx'...", 'Explorador de Archivos', 'info');
         (async () => {
             try {
                 const sid = getSessionId();
