@@ -14,8 +14,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Cargar .env desde backend/.env y tambien desde la raiz del proyecto.
-dotenv.config({ path: join(__dirname, '.env') });
-dotenv.config({ path: join(__dirname, '..', '.env') });
+dotenv.config({ path: join(__dirname, '.env'), override: true });
+dotenv.config({ path: join(__dirname, '..', '.env'), override: true });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
