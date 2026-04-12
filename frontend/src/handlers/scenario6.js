@@ -63,19 +63,19 @@ export function saveProfile() {
     // Guardamos una cadena descriptiva en lugar de solo un número
     // Ej: "2/4 (Teléfono Personal, Redes Sociales Externas)"
     if (count === 0) {
-        metrics.scenario5.personal_data_disclosure_rate = '0 (Minimización de datos correcta)';
+        metrics.scenario6.personal_data_disclosure_rate = '0 (Minimización de datos correcta)';
     } else {
-        metrics.scenario5.personal_data_disclosure_rate =
+        metrics.scenario6.personal_data_disclosure_rate =
             `${count}/${totalOptionalFields} Revelados: [${disclosedData.join(', ')}]`;
     }
 
-    console.log('Métrica de Privacidad:', metrics.scenario5.personal_data_disclosure_rate);
+    console.log('Métrica de Privacidad:', metrics.scenario6.personal_data_disclosure_rate);
 
     // Continuar con el flujo
     (async () => {
         try {
             const sid = getSessionId();
-            if (sid) await saveMetrics(sid, { 'scenario5.personal_data_disclosure_rate': metrics.scenario5.personal_data_disclosure_rate });
+            if (sid) await saveMetrics(sid, { 'scenario6.personal_data_disclosure_rate': metrics.scenario6.personal_data_disclosure_rate });
         } catch (err) {
             console.warn('Failed saving scenario5 metric:', err);
         }
@@ -89,12 +89,12 @@ export function connectApp() {
 }
 
 export function handleAppPerms(accepted) {
-    metrics.scenario5.third_party_app_authorization = accepted ? 'Accepted excessive permissions' : 'Denied excessive permissions';
+    metrics.scenario6.third_party_app_authorization = accepted ? 'Accepted excessive permissions' : 'Denied excessive permissions';
     document.getElementById('popup-app-perms').classList.remove('active');
     (async () => {
         try {
             const sid = getSessionId();
-            if (sid) await saveMetrics(sid, { 'scenario5.third_party_app_authorization': metrics.scenario5.third_party_app_authorization });
+            if (sid) await saveMetrics(sid, { 'scenario6.third_party_app_authorization': metrics.scenario6.third_party_app_authorization });
         } catch (err) {
             console.warn('Failed saving scenario5 app perms metric:', err);
         }

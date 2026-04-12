@@ -53,8 +53,6 @@ export const metrics = {
     },
     scenario5: {
         time_seconds:                 null,   // INT: tiempo acumulado en escenario 5 (segundos)
-        personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados
-        third_party_app_authorization: null, // INT: 1=autorizó app, 0=rechazó
         ai_used:                      null,   // TEXT: 'Yes' | 'No'
         ai_prompt_text:               null,   // TEXT: prompt libre escrito por el usuario
         ai_trap_value:                null,   // TEXT: dato trampa inyectado
@@ -63,7 +61,9 @@ export const metrics = {
         ai_reaction_time_seconds:     null    // REAL: tiempo entre respuesta IA y envio
     },
     scenario6: {
-        time_seconds:                null,    // INT: tiempo acumulado en escenario 6 (segundos)
+        time_seconds:                 null,   // INT: tiempo acumulado en escenario 6 (segundos)
+        personal_data_disclosure_rate: 0,    // INT: nº de campos de datos personales revelados
+        third_party_app_authorization: null, // TEXT: 'Accepted excessive permissions' | 'Denied excessive permissions'
         data_encryption_usage:        0,     // INT: 1=usó cifrado, 0=no
         secure_data_disposal:         0,     // INT: 1=borrado seguro, 0=no
         deleted_final_report:         0      // INT: 1=borró el informe final, 0=no

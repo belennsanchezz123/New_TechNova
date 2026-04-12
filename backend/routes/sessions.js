@@ -293,10 +293,10 @@ export function setupSessionRoutes() {
                 s4_dangerous_links_clicked_pct: toReal(m['scenario4.dangerous_links_clicked_pct']),
                 s4_time_seconds:               toInt2(m['scenario4.time_seconds']),
                 // S5
-                s5_personal_data_fields_shared: toInt2(m['scenario5.personal_data_disclosure_rate']),
-                s5_third_party_app_authorized:  toInt(m['scenario5.third_party_app_authorization']),
                 s5_time_seconds:               toInt2(m['scenario5.time_seconds']),
                 // S6
+                s5_personal_data_fields_shared: toInt2(m['scenario6.personal_data_disclosure_rate']),
+                s5_third_party_app_authorized:  toText(m['scenario6.third_party_app_authorization']),
                 s6_shared_birth_date:          null, // se actualiza desde el handler de perfil
                 s6_shared_phone:               null,
                 s6_shared_social_media:        null,
