@@ -701,10 +701,6 @@
             <h3>Sesiones Activas</h3>
             <div class="value" id="active-sessions">0</div>
           </div>
-          <div class="stat-card">
-            <h3>Consentimientos</h3>
-            <div class="value" id="consent-count">0</div>
-          </div>
         </div>
 
         <div class="sessions-container">
@@ -908,12 +904,11 @@
         const total = sessions.length;
         const completed = sessions.filter((s) => s.completed_at).length;
         const active = total - completed;
-        const consent = sessions.filter((s) => s.consent_email).length;
+        // const consent = sessions.filter((s) => s.consent_email).length;
 
         document.getElementById('total-sessions').textContent = total;
         document.getElementById('completed-sessions').textContent = completed;
         document.getElementById('active-sessions').textContent = active;
-        document.getElementById('consent-count').textContent = consent;
       }
 
       function displaySessions(sessions) {
