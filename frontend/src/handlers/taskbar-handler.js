@@ -77,7 +77,7 @@ export function showUpdateNotification() {
     if (sid) {
         saveMetrics(sid, {
             'taskbar.update_notification_appeared': 'Yes',
-            'taskbar.update_notification_timestamp': new Date().toISOString()
+            'taskbar.update_notification_timestamp': new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })
         }).catch(err => console.warn('Error saving notification metric:', err));
     }
 
