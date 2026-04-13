@@ -302,10 +302,10 @@ export function setupSessionRoutes() {
                 s6_shared_social_media:        null,
                 s6_shared_city:                null,
                 s6_time_seconds:               toInt2(m['scenario6.time_seconds']),
-                // S7
                 s7_used_encryption:            toInt(m['scenario6.data_encryption_usage']),
                 s7_secure_disposal_used:       toInt(m['scenario6.secure_data_disposal']),
                 s7_deleted_final_report:       toInt(m['scenario6.deleted_final_report']),
+                s7_malware_deleted:            toInt(m['scenario7.malware_deleted']),
                 s7_time_seconds:               toInt2(m['scenario7.time_seconds']),
                 // S9-S10
                 s9_time_seconds:               toInt2(m['scenario9.time_seconds']),

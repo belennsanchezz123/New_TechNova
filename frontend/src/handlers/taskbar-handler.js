@@ -440,12 +440,22 @@ function showDownloadsContextMenu(x, y, fileData) {
         } else if (action === 'delete') {
             moveFileToRecycleBin(fileData);
 
-            metrics.scenario7.document_deleted = 1;
-            const sid = getSessionId();
-            if (sid) {
-                saveMetrics(sid, {
-                    'scenario7.document_deleted': 1
-                }).catch(err => console.warn('Error saving scenario7 document deletion metric:', err));
+            if (fileData.type === 'malicious' || fileData.name === 'Project_Manager_Pro_Setup.exe') {
+                metrics.scenario7.malware_deleted = 1;
+                const sid = getSessionId();
+                if (sid) {
+                    saveMetrics(sid, {
+                        'scenario7.malware_deleted': 1
+                    }).catch(err => console.warn('Error saving malware deletion metric:', err));
+                }
+            } else {
+                metrics.scenario7.document_deleted = 1;
+                const sid = getSessionId();
+                if (sid) {
+                    saveMetrics(sid, {
+                        'scenario7.document_deleted': 1
+                    }).catch(err => console.warn('Error saving scenario7 document deletion metric:', err));
+                }
             }
 
             // Si es un archivo de notas, rastrear su eliminación

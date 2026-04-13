@@ -114,7 +114,7 @@ export function openTempFolder() {
                          draggable="true" 
                          ondragstart="window.drag(event)"
                          style="background: #fff3cd; border: 1px solid #ffeeba; cursor: grab;" 
-                         oncontextmenu="window.showContextMenu(event)">
+                         oncontextmenu="window.showContextMenu(event, 'file-temp-csv')">
                         <span class="file-icon">📊</span>
                         <span>Extracto_Bancario_TEMP.csv</span>
                         <span style="margin-left: auto; color: #666; font-size: 12px;">Hoy, 10:30 AM</span>
@@ -124,6 +124,19 @@ export function openTempFolder() {
                         <span class="file-icon">🖼️</span>
                         <span>logo_technova.png</span>
                     </div>
+                    
+                    ${(metrics.scenario4.clicked_dangerous_link === 1 && metrics.scenario7.malware_deleted !== 1) ? `
+                    <div class="file-list-item" 
+                         id="file-malware" 
+                         draggable="true" 
+                         ondragstart="window.drag(event)"
+                         style="background: #fce4ec; border: 1px solid #f5c6cb; cursor: grab;" 
+                         oncontextmenu="window.showContextMenu(event, 'file-malware')">
+                        <span class="file-icon">📦</span>
+                        <span>Project_Manager_Pro_Setup.exe</span>
+                        <span style="margin-left: auto; color: #d32f2f; font-size: 12px; font-weight: bold;">(Malware)</span>
+                    </div>
+                    ` : ''}
                     
                     <div id="recycle-bin-droppable"
                          ondrop="window.drop(event)"
@@ -192,7 +205,7 @@ export function finalizeSave() {
     })();
 }
 
-export function showContextMenu(e) {
+export function showContextMenu(e, targetId = 'file-temp-csv') {
     e.preventDefault();
     // Eliminar cualquier menú previo
     const existingMenu = document.querySelector('.context-menu-windows');
@@ -210,8 +223,8 @@ export function showContextMenu(e) {
 
     menu.innerHTML = `
         <div style="padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #eee;">Abrir</div>
-        <div style="padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #eee;" onclick="window.performDelete('trash')">🗑️ Eliminar (Papelera)</div>
-        <div style="padding: 8px 15px; cursor: pointer; color: #d32f2f; font-weight: bold;" onclick="window.performDelete('secure')">🛡️ TechNova Secure Shredder</div>
+        <div style="padding: 8px 15px; cursor: pointer; border-bottom: 1px solid #eee;" onclick="window.performDelete('trash', '${targetId}')">🗑️ Eliminar (Papelera)</div>
+        <div style="padding: 8px 15px; cursor: pointer; color: #d32f2f; font-weight: bold;" onclick="window.performDelete('secure', '${targetId}')">🛡️ TechNova Secure Shredder</div>
     `;
 
     document.body.appendChild(menu);
@@ -222,7 +235,27 @@ export function showContextMenu(e) {
     document.addEventListener('click', removeMenu, { once: true });
 }
 
-export function performDelete(method) {
+export function performDelete(method, targetId = 'file-temp-csv') {
+    if (targetId === 'file-malware') {
+        metrics.scenario7.malware_deleted = 1;
+        const fileIcon = document.getElementById('file-malware');
+        if (fileIcon) {
+            fileIcon.style.opacity = '0.5';
+            fileIcon.innerHTML = '<span>Eliminando...</span>';
+            setTimeout(() => fileIcon.remove(), 500);
+        }
+        (async () => {
+            try {
+                const sid = getSessionId();
+                if (sid) await saveMetrics(sid, { 'scenario7.malware_deleted': 1 });
+            } catch (err) {
+                console.warn('Failed saving malware_deleted metric:', err);
+            }
+        })();
+        window.showDialog("Has eliminado el malware descargado.", 'Archivo eliminado', 'info');
+        return; // No avanzamos el escenario, debe borrar el CSV principal
+    }
+
     // MÉTRICA 2: Eliminación Segura vs Insegura
     if (method === 'secure') {
         console.log("Métrica: Borrado Seguro");
@@ -242,9 +275,25 @@ export function performDelete(method) {
     (async () => {
         try {
             const sid = getSessionId();
-            if (sid) await saveMetrics(sid, { 'scenario6.secure_data_disposal': metrics.scenario6.secure_data_disposal });
+            if (sid) {
+                const updates = { 'scenario6.secure_data_disposal': metrics.scenario6.secure_data_disposal };
+                
+                if (metrics.scenario4.clicked_dangerous_link === 1) {
+                    // Si había descargado malware y no lo borró, registrarlo como no borrado
+                    if (metrics.scenario7.malware_deleted !== 1) {
+                        metrics.scenario7.malware_deleted = 0;
+                    }
+                } else {
+                    // Si no había descargado malware, mostramos que no aplica
+                    metrics.scenario7.malware_deleted = 'No aplica (no descargó)';
+                }
+                
+                updates['scenario7.malware_deleted'] = metrics.scenario7.malware_deleted;
+                
+                await saveMetrics(sid, updates);
+            }
         } catch (err) {
-            console.warn('Failed saving scenario6 deletion metric:', err);
+            console.warn('Failed saving tracking deletion metric:', err);
         }
         setTimeout(() => {
             const container = document.getElementById('s7-window-container');
@@ -286,7 +335,11 @@ export function drop(ev) {
 
     // CASO 1: Archivo temporal (CSV) de la carpeta Descargas
     if (data === "file-temp-csv") {
-        performDelete('trash');
+        performDelete('trash', data);
+    }
+    // CASO NUEVO: Malware
+    else if (data === "file-malware") {
+        performDelete('trash', data);
     }
     // CASO 2: Informe Final del Escritorio (NUEVO)
     else if (data === "desktop-final-report") {

@@ -71,7 +71,8 @@ export const metrics = {
     scenario7: {
         time_seconds:                null,   // INT: tiempo acumulado en escenario 7 (segundos)
         document_deleted:             0,     // INT: 1=eliminó documento sensible desde Descargas, 0=no
-        recycle_bin_emptied:          0      // INT: 1=vacío la papelera, 0=no
+        recycle_bin_emptied:          0,     // INT: 1=vacío la papelera, 0=no
+        malware_deleted:              null   // INT: 1=borró malware, 0=no borró, null=no descargó
     },
     scenario9: {
         time_seconds:                null,  // INT: tiempo acumulado en escenario 9 (segundos)
