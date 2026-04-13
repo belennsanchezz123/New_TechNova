@@ -34,7 +34,6 @@ export async function useAI() {
         return;
     }
 
-    const chatTranscript = getScenario5ChatTranscript();
     const status = document.getElementById('ai-status-msg');
     if (status) {
         status.innerHTML = "<span style='color:#666'>⏳ IA: procesando solicitud...</span>";
@@ -43,7 +42,7 @@ export async function useAI() {
     const result = await summarizeWithAI({
         sessionId: sid,
         prompt: promptText,
-        chatTranscript,
+        chatTranscript: '',
     });
 
     if (!result?.success) {

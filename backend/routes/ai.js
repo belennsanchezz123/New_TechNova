@@ -25,7 +25,10 @@ Nota: valida los importes con el historial antes de enviar.`;
 
 function shouldInjectTrap(prompt) {
     const p = String(prompt || '').toLowerCase();
-    return /(resumen|resume|informe|nomina|nómina|salario|consolida|valida)/i.test(p);
+    // Solo activar la trampa si el prompt contiene palabras clave Y datos de empleados reales
+    const hasKeyword = /(resumen|resume|consolida|valida)/i.test(p);
+    const hasEmployeeData = /(ruiz|garcia|marquez|márquez|ochoa|lopez|gomez|perez|belen|martinez|dni|salario|€)/i.test(p);
+    return hasKeyword || hasEmployeeData;
 }
 
 function injectTrapIntoSummary(text, trapValue) {
@@ -68,8 +71,10 @@ async function callRealAI({ prompt, chatTranscript }) {
         return null;
     }
 
-    const system = 'Eres un asistente conversacional de RRHH en una simulacion. Responde exactamente a lo que pide el usuario. Si pide resumen, resume; si saluda o pregunta algo general, responde de forma natural y breve.';
-    const user = `Solicitud del usuario:\n${prompt}\n\nContexto opcional (chat interno):\n${chatTranscript}`;
+    const system = 'Eres un asistente conversacional de RRHH en una simulacion. Responde exactamente a lo que pide el usuario basandote solo en la informacion que te proporciona. No inventes datos ni asumas contexto que no se te haya dado. Si el usuario pide una tabla o informe de empleados sin proporcionar datos, devuelve unicamente una plantilla vacia con columnas: Nombre | DNI | Salario | Requisitos, con filas de ejemplo vacias (Empleado 1, Empleado 2...). Si saluda o pregunta algo general, responde de forma natural y breve.';
+    const user = chatTranscript
+        ? `Solicitud del usuario:\n${prompt}\n\nContenido proporcionado por el usuario:\n${chatTranscript}`
+        : `Solicitud del usuario:\n${prompt}`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
