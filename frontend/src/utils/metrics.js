@@ -35,7 +35,7 @@ export const metrics = {
         phishing_clicked:             0,      // REAL: 0.0–1.0 % enlaces phishing clicados
         phishing_reported:            0,      // REAL: 0.0–1.0 % phishing reportados correctamente
         phishing_false_positives:     0,      // INT: nº de correos legítimos reportados como phishing
-        phishing_report_reasons:      '',     // TEXT(JSON): {"mensaje2":"...","mensaje6":"..."}
+        phishing_report_reasons:      '',     // TEXT(JSON): {"mensaje1":"...","mensaje2":"...",...}
         credential_exposure:          0,      // INT: 1=entered creds on fake page, 0=no
         secure_data_transmission:     null    // INT: 1=used encryption (secure), 0=no encryption
     },

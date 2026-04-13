@@ -109,7 +109,7 @@ const initDB = () => {
             s3_phishing_clicked             REAL,       -- 0.0–1.0 % enlaces phishing clicados
             s3_phishing_reported            REAL,       -- 0.0–1.0 % phishing reportados correctamente
             s3_phishing_false_positives     INTEGER,    -- nº de correos legítimos reportados como phishing
-            s3_phishing_report_reasons      TEXT,       -- JSON: {"mensaje2":"...","mensaje6":"..."}
+            s3_phishing_report_reasons      TEXT,       -- JSON: {"mensaje1":"...","mensaje2":"...",...}
             s3_credential_compromised       INTEGER,    -- 1=sí, 0=no
             s3_secure_data_transmission     TEXT,       -- 'Secure' | 'Insecure' | 'Not Set'
             s3_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 3

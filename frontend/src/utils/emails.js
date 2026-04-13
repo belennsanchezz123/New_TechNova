@@ -33,7 +33,7 @@ export const emails = [
       time: '8:45 AM'
     },
     {
-      id: 5,
+      id: 4,
       from: 'Comité Social TechNova',
       fromEmail: 'social@technova.com',
       subject: "Invitación: Evento 'Team Building'",
@@ -44,40 +44,40 @@ export const emails = [
       time: '8:15 AM'
     },
     {
-      id: 6,
+      id: 5,
       from: 'RRHH TechNova',
       fromEmail: 'rrhh-alert@technova-support.net',
       subject: 'HR Alerta: Tu Bono fue Denegado',
-    body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true, 6)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" title="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
+    body: 'AVISO CRÍTICO. Lamentamos informarle que su Bono de Incorporación no pudo ser procesado debido a información de cuenta incompleta o errónea. Esto podría retrasar su pago inicial. Para corregirlo inmediatamente y evitar la denegación del bono, debe completar el formulario seguro antes de las 14:00 horas.<br><br><span onclick="window.handlePhishingClick(true, 5)" data-preview-url="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" title="http://technova-support.net.bz/rrhh/bono-correccion?emp=new" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔗 ENLACE DE CORRECCIÓN</span>',
       read: false,
     reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '8:01 AM'
     },
     {
-      id: 7,
+      id: 6,
       from: 'Seguridad Microsoft 365',
       fromEmail: 'noreply@microsoft365-security.info',
       subject: 'Su sesión de Outlook ha expirado',
-    body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true, 7)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" title="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
+    body: 'Hemos detectado que su sesión de Microsoft 365 ha caducado y necesita ser renovada. Para seguir accediendo a su correo corporativo de TechNova sin interrupciones, por favor inicie sesión de nuevo usando el botón seguro de abajo.<br><br>Si no realiza esta acción en las próximas 2 horas, se suspenderá temporalmente su acceso al correo.<br><br><span onclick="window.handlePhishingClick(true, 6)" data-preview-url="http://microsoft365-security.info/auth/login?redirect=outlook" title="http://microsoft365-security.info/auth/login?redirect=outlook" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">🔐 RENOVAR SESIÓN DE OUTLOOK</span>',
       read: false,
     reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '7:55 AM'
     },
     {
-      id: 8,
+      id: 7,
             from: 'SharePoint Admin [EXTERNO]',
             fromEmail: 'sharepoint-admin@technova-docs-security.com',
             subject: '[Acción requerida] Documento compartido: "Nóminas Q1 2026"',
-        body: 'Se detectó actividad no habitual en tu acceso a documentos. Para evitar el bloqueo automático de tu cuenta, revisa ahora el archivo compartido en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br><b>Importante:</b> confirma tus credenciales corporativas para mantener el acceso activo.<br><br><span onclick="window.handlePhishingClick(true, 8)" data-preview-url="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" title="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace caduca en 10 minutos.</small>',
+        body: 'Se detectó actividad no habitual en tu acceso a documentos. Para evitar el bloqueo automático de tu cuenta, revisa ahora el archivo compartido en SharePoint: <b>"Nóminas_Q1_2026_TechNova.xlsx"</b>.<br><br><b>Importante:</b> confirma tus credenciales corporativas para mantener el acceso activo.<br><br><span onclick="window.handlePhishingClick(true, 7)" data-preview-url="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" title="http://shar3point-verif-login-security-alerts.xyz/tech-n0va/docs/nominas_q1_2026" style="color: #0078d4; font-weight: bold; cursor: pointer; text-decoration: underline;">📄 VER DOCUMENTO EN SHAREPOINT</span><br><br><small style="color:#888;">Este enlace caduca en 10 minutos.</small>',
       read: false,
     reportedAsPhishing: false,
       type: 'phishing-creds',
       time: '7:40 AM'
     },
     {
-      id: 9,
+      id: 8,
       from: 'Laura Pérez (Gerente)',
       fromEmail: 'laura.perez@technova.com',
       subject: 'Re: Tareas pendientes — necesito un documento',

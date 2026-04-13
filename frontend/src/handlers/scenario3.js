@@ -10,7 +10,7 @@ export function openEmail(id) {
     _originalOpenEmail(id);
 
     // Show Phase 2 when the user reads Laura's email asking for the document
-    if (id === 9) {
+    if (id === 8) {
         const phase2 = document.getElementById('email-phase-2');
         if (phase2 && phase2.style.display === 'none') {
             phase2.style.display = 'block';
@@ -37,7 +37,11 @@ const _clickedPhishingIds = new Set();
 const _reportedPhishingIds = new Set();
 const _falsePositiveReportedIds = new Set();
 const _phishingReportReasons = {
+    mensaje1: '',
     mensaje2: '',
+    mensaje3: '',
+    mensaje4: '',
+    mensaje5: '',
     mensaje6: '',
     mensaje7: '',
     mensaje8: ''
