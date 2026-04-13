@@ -894,6 +894,15 @@ window.finalizeSession = async function() {
         window.showDialog('No se encontró sesión activa. Si estás en modo debug, usa el botón ⏹ del panel de debug.', 'Sesión no encontrada', 'error');
         return;
     }
+
+    if (metrics.scenario7 && metrics.scenario7.malware_deleted === null) {
+        metrics.scenario7.malware_deleted = (metrics.scenario4 && metrics.scenario4.clicked_dangerous_link === 1) ? 0 : 'No aplica (no descargado)';
+        try {
+            await saveMetrics(sid, { 'scenario7.malware_deleted': metrics.scenario7.malware_deleted });
+        } catch(e) {
+            console.warn('Error saving fallback malware_deleted:', e);
+        }
+    }
     
     try {
         const result = await completeSession(sid);

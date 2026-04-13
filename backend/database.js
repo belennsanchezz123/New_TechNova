@@ -142,6 +142,7 @@ const initDB = () => {
             s7_used_encryption              INTEGER,    -- 1=sí, 0=no
             s7_secure_disposal_used         INTEGER,    -- 1=sí, 0=no
             s7_deleted_final_report         INTEGER,    -- 1=sí, 0=no
+            s7_malware_deleted              INTEGER,    -- 1=borró malware, 0=no borró, NULL=no descargó
             s7_time_seconds                 INTEGER,    -- tiempo acumulado en escenario 7
 
             -- ── Escenario 9: Cuestionario final ───────────────────────
@@ -232,6 +233,9 @@ migrateColumn('participant_metrics', 's0_policy_acceptance_time_seconds', 'INTEG
 
 // Migración: questionnaire_responses (answers_json añadido posteriormente)
 migrateColumn('questionnaire_responses', 'answers_json', 'TEXT');
+
+// Migración: escenario 7 (malware)
+migrateColumn('participant_metrics', 's7_malware_deleted', 'INTEGER');
 
 // Migración: notas (bloc de notas)
 migrateColumn('participant_metrics', 'notes_used',                    'INTEGER');
