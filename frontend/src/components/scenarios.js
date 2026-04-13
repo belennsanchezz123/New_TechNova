@@ -560,18 +560,13 @@ export function getScenarioHTML(scenarioNumber) {
                 <div style="flex: 1.2; background: #fff; padding: 15px; border: 1px solid #ddd; border-top: 5px solid #6264a7; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                     <h3 style="font-size: 1em; color: #6264a7; margin-top:0;">💬 Chat: Operaciones RRHH</h3>
                     <div id="raw-chat-data" style="height: 380px; overflow-y: auto; font-size: 0.82em; background: #fdfdfd; padding: 10px; border: 1px solid #eee; line-height: 1.4; color: #333;">
-                        <p><strong>Marta (10:15):</strong> Chicos, ¿tenemos lo de TechNova? ¡El jefe me pide los cambios del Q4 en 5 minutos!</p>
-                        <p><strong>Juan (10:16):</strong> Voy... Carlos Ruiz (TN-4482) dice que ok a los 55.000€ pero que solo si le damos turno de mañana (8 a 15). Ah, y el bonus del 10% no se toca.</p>
-                        <p><strong>Elena (10:17):</strong> ¡Oye! Maria Garcia (TN-2231) me acaba de llamar gritando. Dice que quiere 45.000€, que ahora cobra 42k y no le llega.</p>
-                        <p><strong>Juan (10:18):</strong> Esperad, Lucía Márquez (TN-9921) cobra 48.000€. Me mandó un mail diciendo que o teletrabaja los viernes o acepta la oferta de la competencia.</p>
-                        <p><strong>Marta (10:19):</strong> Juan, ¿qué pasa con Javier Ochoa (TN-1102)?</p>
-                        <p><strong>Juan (10:20):</strong> Javier está insoportable. Cobra 32.000€ y exige subir a 35k hoy mismo o se va. Sinceramente, me tiene harto con sus amenazas.</p>
-                        <p><strong>Elena (10:21):</strong> Marta, apunta también: Sergio Lopez (TN-5542) sigue con 60k + 5% bonus, sin cambios. Y Elena Gomez (TN-7712) 38k, pero pide remoto 100%.</p>
-                        <p><strong>Juan (10:22):</strong> Ah, se me olvidaba Carlos Ruiz... corregid lo de antes, el bonus no es el 10%, es el 12% que me lo acaba de confirmar por WhatsApp.</p>
-                        <p><strong>Marta (10:23):</strong> ¡Uf, qué lío! David Perez (TN-3341) sube a 50k (estaba en 45k) por el ascenso. Ana Belen (TN-8823) 52k sin cambios.</p>
-                        <p><strong>Elena (10:24):</strong> Pedro Juan (TN-1234) cobra 30k. Laura Martinez (TN-5678) 40k. No tienen cambios estos dos.</p>
-                        <p><strong>Juan (10:25):</strong> Marta, ¿le has dicho lo de Javier Ochoa? Si no le subimos los 3k se pira.</p>
-                        <p><strong>Marta (10:26):</strong> ¡No tengo tiempo! Pásalo todo al informe y lo que salga, que entro en la reunión!</p>
+                        <p><strong>Marta (10:15):</strong> ¡El jefe quiere los cambios de Q4 ya! ¿Alguien tiene el resumen?</p>
+                        <p><strong>Juan (10:16):</strong> Carlos Ruiz (DNI: 47821365K) acepta 55.000€ si le damos turno mañana (8-15). Bonus: 12%.</p>
+                        <p><strong>Elena (10:17):</strong> Maria Garcia (DNI: 52934871P) pide subida a 45.000€, ahora cobra 42k.</p>
+                        <p><strong>Juan (10:18):</strong> Lucía Márquez (DNI: 38471629M) cobra 48.000€. Quiere teletrabajo los viernes o se va.</p>
+                        <p><strong>Elena (10:19):</strong> Javier Ochoa (DNI: 61748293R) exige subir de 32k a 35k. Sergio Lopez (DNI: 29384756T) sin cambios, 60k + 5% bonus. Elena Gomez (DNI: 74629183W) pide remoto 100%, cobra 38k.</p>
+                        <p><strong>Marta (10:21):</strong> David Perez (DNI: 83726451N) asciende, sube a 50k. Ana Belen (DNI: 19283746S) 52k sin cambios. Pedro Juan (DNI: 46372819F) 30k y Laura Martinez (DNI: 57291836Z) 40k, sin cambios.</p>
+                        <p><strong>Marta (10:23):</strong> ¡Entro a la reunión! Pasadlo todo al informe, rápido.</p>
                     </div>
                 </div>
 

@@ -6,17 +6,17 @@ function buildTrapSummary() {
     const trapValue = '200.000€';
     const trapLabel = 'salary_lucia_marquez';
 
-    const summary = `RESUMEN DE VALIDACION Q4 (TechNova):
-- Carlos Ruiz (TN-4482): 55.000€ + 12% bonus. Turno de manana (8-15).
-- Lucia Marquez (TN-9921): Salario ${trapValue}. Solicitud de teletrabajo en revision.
-- Javier Ochoa (TN-1102): Salario 32.000€. Pide subida a 35.000€.
-- Maria Garcia (TN-2231): Ajuste a 45.000€ (desde 42.000€).
-- Sergio Lopez (TN-5542): 60.000€ + 5% bonus (sin cambios).
-- Elena Gomez (TN-7712): Remoto 100% pendiente.
-- David Perez (TN-3341): Ascenso a 50.000€.
-- Ana Belen (TN-8823): 52.000€ (sin cambios).
-- Pedro Juan (TN-1234): 30.000€ (sin cambios).
-- Laura Martinez (TN-5678): 40.000€ (sin cambios).
+    const summary = `RESUMEN Q4 (TechNova):
+- Carlos Ruiz (DNI: 47821365K): 55.000€ + 12% bonus. Turno mañana (8-15).
+- Lucia Marquez (DNI: 38471629M): Salario ${trapValue}. Teletrabajo viernes pendiente.
+- Javier Ochoa (DNI: 61748293R): 32.000€. Solicita subida a 35.000€.
+- Maria Garcia (DNI: 52934871P): Ajuste a 45.000€ (desde 42.000€).
+- Sergio Lopez (DNI: 29384756T): 60.000€ + 5% bonus (sin cambios).
+- Elena Gomez (DNI: 74629183W): 38.000€. Remoto 100% pendiente.
+- David Perez (DNI: 83726451N): Ascenso a 50.000€.
+- Ana Belen (DNI: 19283746S): 52.000€ (sin cambios).
+- Pedro Juan (DNI: 46372819F): 30.000€ (sin cambios).
+- Laura Martinez (DNI: 57291836Z): 40.000€ (sin cambios).
 
 Nota: valida los importes con el historial antes de enviar.`;
 
@@ -46,14 +46,18 @@ function injectTrapIntoSummary(text, trapValue) {
     });
 
     if (luciaLineIndex >= 0) {
-        const prefixMatch = lines[luciaLineIndex].match(/^\s*([-*]\s+|\d+\.\s+)?/);
-        const prefix = prefixMatch ? prefixMatch[0] : '- ';
-        lines[luciaLineIndex] = `${prefix}Lucia Marquez (TN-9921): Salario ${trapValue}. Solicitud de teletrabajo en revision.`;
+        // Reemplazar solo el valor salarial, preservando el formato que la IA devolvió
+        const originalLine = lines[luciaLineIndex];
+        const replaced = originalLine.replace(/[\d.,]+\s*€/, trapValue);
+        // Si no había ningún € que reemplazar, añadir el valor al final de la línea
+        lines[luciaLineIndex] = replaced.includes(trapValue)
+            ? replaced
+            : originalLine.trimEnd() + ` Salario ${trapValue}.`;
         return lines.join('\n');
     }
 
-    // Si no existe, anadir el dato trampa al final del resumen.
-    return `${safeText}\n- Lucia Marquez (TN-9921): Salario ${trapValue}. Solicitud de teletrabajo en revision.`;
+    // Si Lucia no aparece en la respuesta, añadirla al final sin forzar TN-9921
+    return `${safeText}\n- Lucia Marquez: Salario ${trapValue}. Solicitud de teletrabajo en revision.`;
 }
 
 async function callRealAI({ prompt, chatTranscript }) {
