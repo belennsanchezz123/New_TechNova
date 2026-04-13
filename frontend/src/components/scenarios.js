@@ -588,9 +588,9 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
 
                     <label style="font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">Validación Final para Marta:</label>
-                    <textarea id="ai-editor-body" oninput="window.handleAIInput()" 
+                    <textarea id="ai-editor-body" oninput="window.handleAIInput()"
                         placeholder="Pon orden en este lío y redacta el informe consolidado..."
-                        style="flex: 1; min-height: 250px; padding: 10px; font-size: 0.85em; border: 1px solid #bbb; border-radius: 4px;"></textarea>
+                        style="flex: 1; min-height: 250px; padding: 10px; font-size: 0.82em; font-family: 'Courier New', Courier, monospace; border: 1px solid #bbb; border-radius: 4px; white-space: pre; overflow-x: auto; resize: none; line-height: 1.5;"></textarea>
                     
                     <div id="ai-status-msg" style="height: 20px; font-size: 0.75em; margin: 5px 0;"></div>
                     
