@@ -362,24 +362,20 @@ function _renderFileList() {
         const defaultBorder = f.encrypted ? '#4CAF50' : '#e0e0e0';
         const encFlag = f.encrypted ? 'true' : 'false';
 
-        // Badge + encrypt button for unencrypted files; "Cifrado" badge for encrypted
+        // Badge for encrypted files; nothing for unencrypted (use right-click to encrypt)
         let actionArea = '';
         if (f.encrypted) {
             actionArea = '<span style="font-size: 11px; color: #2e7d32; margin-left: auto; flex-shrink: 0; background: #c8e6c9; padding: 2px 8px; border-radius: 10px;">✓ Cifrado</span>';
-        } else {
-            actionArea = `<button onclick="event.stopPropagation(); window._encryptFile('${f.filename}')"
-                style="margin-left: auto; flex-shrink: 0; background: none; border: 1px solid #b0bec5; color: #546e7a; border-radius: 8px; padding: 4px 10px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;"
-                onmouseover="this.style.background='#e3f2fd'; this.style.borderColor='#1a73e8'; this.style.color='#1a73e8';"
-                onmouseout="this.style.background='none'; this.style.borderColor='#b0bec5'; this.style.color='#546e7a';"
-                title="Cifrar este archivo antes de adjuntarlo">
-                <span style="font-size: 14px;">🔒</span> Cifrar
-            </button>`;
         }
 
+        const ctxMenu = !f.encrypted
+            ? ' oncontextmenu="event.preventDefault(); event.stopPropagation(); window._showFileContextMenu(event, \'' + f.filename + '\')"'
+            : '';
         return '<div style="padding: 12px 14px; ' + borderStyle + ' margin: 6px 0; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: all 0.15s;"'
             + ' onmouseover="this.style.background=\'' + hoverBg + '\'; this.style.borderColor=\'' + hoverBorder + '\'"'
             + ' onmouseout="this.style.background=\'' + defaultBg + '\'; this.style.borderColor=\'' + defaultBorder + '\'"'
-            + ' onclick="window.selectAttachment(\'' + f.filename + '\', ' + encFlag + ')">'
+            + ' onclick="window.selectAttachment(\'' + f.filename + '\', ' + encFlag + ')"'
+            + ctxMenu + '>'
             + '<span style="font-size: 26px;">' + f.icon + '</span>'
             + '<div style="min-width: 0;">'
             + '<div style="font-weight: 600; font-size: 14px; color: #1a1a2e;">' + f.filename + (f.encrypted ? '.enc' : '') + '</div>'
@@ -416,7 +412,7 @@ function _openExplorer() {
         + '<div data-file-list style="margin: 8px 0; max-height: 300px; overflow-y: auto;">'
         + _renderFileList()
         + '</div>'
-        + '<div style="font-size: 11px; color: #888; margin-top: 10px; text-align: center; background: #f8f9fa; padding: 8px; border-radius: 6px;">📎 Haz clic en un archivo para adjuntarlo · 🔒 Usa el botón <strong>Cifrar</strong> para protegerlo antes de enviarlo</div>'
+        + '<div style="font-size: 11px; color: #888; margin-top: 10px; text-align: center; background: #f8f9fa; padding: 8px; border-radius: 6px;">📎 Haz clic en un archivo para adjuntarlo · 🖱️ Clic derecho sobre un archivo para ver más opciones</div>'
         + '<button onclick="window.closeFileExplorer()" style="margin-top: 10px; width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 14px; color: #555;">Cancelar</button>'
         + '</div>';
 
