@@ -1,154 +1,162 @@
-# TechNova Platform Evaluation
+# TechNova — Simulacion de Ciberseguridad
 
-Simulación de evaluación de seguridad de la plataforma LYNX con arquitectura Frontend/Backend separada.
+Simulacion interactiva de entorno laboral para medir comportamientos de ciberseguridad en empleados nuevos. Desarrollada como parte de un estudio academico en la Universidad de Murcia.
 
-## Estructura del Proyecto
+---
 
-```
-project/
-├── backend/           # Servidor Node.js/Express
-│   ├── server.js      # Punto de entrada del backend
-│   └── package.json
-│
-├── frontend/          # Aplicación Vite
-│   ├── src/
-│   │   ├── components/    # Componentes HTML reutilizables
-│   │   ├── handlers/      # Manejadores de eventos por escenario
-│   │   ├── styles/        # Estilos CSS organizados
-│   │   ├── utils/         # Utilidades y lógica compartida
-│   │   └── main.js        # Punto de entrada principal
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-│
-├── .env               # Variables de entorno
-├── .gitignore
-└── package.json       # Scripts raíz del proyecto
-```
+## Descripcion
 
-## Instalación
+TechNova simula el primer dia de trabajo de un empleado en una empresa ficticia. A lo largo de la simulacion, el participante se enfrenta a escenarios reales de seguridad: configuracion de cuentas, correos de phishing, uso de un asistente IA con datos sensibles, gestion de perfil publico, limpieza de archivos y un evento inesperado de actualizacion del sistema.
 
-1. Instalar dependencias en ambos proyectos:
+Todas las acciones del participante se registran como metricas y son accesibles desde el panel de administracion.
+
+---
+
+## Requisitos
+
+- Node.js >= 18
+- npm
+- API key de OpenAI (para el escenario 5)
+
+---
+
+## Instalacion y arranque
 
 ```bash
+# Instalar dependencias (frontend + backend)
 npm run install:all
-```
 
-O instalar manualmente:
-
-```bash
-cd frontend && npm install
-cd ../backend && npm install
-```
-
-## Desarrollo
-
-### Ejecutar Todo (Frontend + Backend)
-
-Con un solo comando puedes iniciar tanto el frontend como el backend simultáneamente:
-
-```bash
+# Arrancar frontend y backend simultaneamente
 npm start
 ```
 
-Esto ejecutará:
-
-- **Frontend** (Vite): `http://localhost:5173`
-- **Backend** (Express): `http://localhost:3000`
-
-### Ejecutar Frontend (Vite)
+O por separado:
 
 ```bash
-npm run dev
-# O desde la carpeta frontend:
+# Backend (puerto 3000)
+cd backend && npm start
+
+# Frontend (puerto 5173)
 cd frontend && npm run dev
 ```
 
-### Ejecutar Backend
+### Configuracion del backend
 
-```bash
-npm run backend
-# O desde la carpeta backend:
-cd backend && npm start
+Crear `backend/.env` con:
+
+```
+OPENAI_API_KEY=tu_api_key_de_openai
+OPENAI_MODEL=gpt-4o-mini
 ```
 
-## Construcción
+Sin la API key el escenario 5 usa respuestas de fallback controladas.
 
-Para crear una versión de producción del frontend:
+---
 
-```bash
-npm run build
-# O desde la carpeta frontend:
-cd frontend && npm run build
+## Acceso
+
+| URL | Descripcion |
+|-----|-------------|
+| `http://localhost:5173` | Simulacion para participantes |
+| `http://localhost:5173/admin.html` | Panel de administracion |
+| `http://localhost:5173/?debug=true` | Modo debug (saltar escenarios) |
+
+---
+
+## Estructura del proyecto
+
+```
+TechNova/
+├── backend/
+│   ├── routes/
+│   │   ├── ai.js            # Escenario IA: OpenAI, trampa salarial, metricas
+│   │   ├── sessions.js      # Gestion de sesiones y guardado de metricas
+│   │   ├── breach.js        # Verificacion de contrasenas comprometidas (HaveIBeenPwned)
+│   │   ├── questionnaire.js # Cuestionario post-simulacion
+│   │   └── auth.js          # Autenticacion admin
+│   ├── database.js          # Esquema y migraciones SQLite
+│   └── server.js            # Servidor Express
+├── frontend/
+│   ├── src/
+│   │   ├── handlers/        # Logica de cada escenario
+│   │   │   ├── scenario1.js   # Cuentas y seguridad
+│   │   │   ├── scenario2.js   # Bloqueo de pantalla
+│   │   │   ├── scenario3.js   # Phishing en correos
+│   │   │   ├── scenario4.js   # Navegacion web
+│   │   │   ├── scenario5.js   # Asistente IA para RRHH
+│   │   │   ├── scenario6.js   # Perfil profesional
+│   │   │   ├── scenario7.js   # Limpieza de archivos
+│   │   │   ├── scenario9.js   # Cuestionario
+│   │   │   └── taskbar-handler.js  # Evento inesperado (actualizacion)
+│   │   ├── components/      # HTML de escenarios y taskbar
+│   │   ├── utils/
+│   │   │   ├── metrics.js   # Definicion de todas las metricas
+│   │   │   ├── emails.js    # Correos del escenario de phishing
+│   │   │   └── validation.js
+│   │   └── services/api.js  # Llamadas al backend
+│   └── admin.html           # Panel de administracion
+├── docs/
+│   └── METRICS.md           # Documentacion completa de metricas
+└── TEST_DATABASE.md         # Guia para verificar la base de datos
 ```
 
-## Características
+---
 
-- **Frontend modular**: Código organizado en componentes, handlers, utils y estilos separados
-- **Backend con Express**: Servidor API REST con endpoints para gestión de sesiones y métricas
-- **Integración Supabase**: Base de datos configurada para almacenar sesiones y métricas de usuarios
-- **Registro automático**: Cada sesión de usuario se guarda automáticamente en la base de datos
-- **Dashboard de administración**: Panel para visualizar todas las sesiones y métricas registradas
-- **CSS organizado**: Estilos divididos por responsabilidad (layout, components, email, browser)
-- **Manejadores por escenario**: Lógica de cada escenario en archivos separados para mejor mantenibilidad
+## Escenarios
 
-## Visualización de Métricas de Usuarios
+| # | Nombre en Admin | Descripcion |
+|---|-----------------|-------------|
+| 1 | Cuentas y Seguridad | Configuracion de correo, Drive y calendario corporativo. Mide fortaleza de contrasenas, reutilizacion, MFA y uso de red WiFi |
+| 2 | Interrupciones & Elementos Externos | El participante debe decidir si bloquea la pantalla al alejarse del equipo |
+| 3 | Email y Comunicaciones | Bandeja con correos legítimos y de phishing. Mide deteccion, reporte y exposicion de credenciales |
+| 4 | Navegacion Web | Navegador simulado con sitios seguros, sospechosos y maliciosos. Mide cookies, extensiones y enlaces peligrosos |
+| 5 | Uso del Asistente IA para RRHH | Chat de RRHH con asistente IA. Mide si el participante pasa datos sensibles a la IA y si detecta el dato trampa |
+| 6 | Configuracion del Perfil Profesional | Formulario de perfil publico y autorizacion de app de terceros. Mide datos personales revelados |
+| 7 | Limpieza y Gestion de Archivos | Escritorio con archivos sensibles. Mide borrado seguro y vaciado de papelera |
+| 9 | Realizacion del Cuestionario | Cuestionario post-simulacion con tiempo minimo de 4 minutos |
 
-### Dashboard de Administración
+Adicionalmente, durante la simulacion aparece un **evento inesperado**: notificacion de actualizacion falsa del sistema (Windows Update) en la barra de tareas.
 
-Para ver las métricas registradas de cada usuario, abre el dashboard de administración:
+---
 
-1. Asegúrate de que el backend esté ejecutándose:
+## Modo Debug
 
-```bash
-npm run backend
-```
+Accede con `?debug=true`. Permite:
+- Saltar a cualquier escenario sin completar los anteriores
+- Ver el escenario actual en el panel lateral
+- Finalizar la sesion desde el panel
 
-2. Abre el archivo `frontend/admin.html` en tu navegador o usa un servidor local:
+Las sesiones de debug usan el ID de participante `P001-DEBUG` y quedan registradas en la base de datos como cualquier otra sesion.
 
-```bash
-cd frontend
-python -m http.server 8080
-# Luego abre: http://localhost:8080/admin.html
-```
+---
 
-El dashboard muestra:
+## Panel de Administracion
 
-- **Estadísticas generales**: Total de sesiones, completadas, activas y consentimientos
-- **Lista de sesiones**: Tabla con todas las sesiones registradas
-- **Detalles por sesión**: Click en "Ver Métricas" para ver todas las métricas de un usuario específico
+Requiere login con credenciales de administrador. Muestra:
 
-### Base de Datos (Supabase)
+- Estadísticas generales: sesiones totales, completadas, activas
+- Lista de todas las sesiones con metricas detalladas
+- Metricas agrupadas por escenario con nombres descriptivos
+- Timestamps en hora local española (CEST/CET)
 
-Ejecutar el comando npx supabase db pull cada vez que creemos/modifiquemos una tabla en la app.
-Las métricas se almacenan en dos tablas:
+---
 
-- `user_sessions`: Información general de cada sesión (ID, usuario, fechas, email de consentimiento)
-- `session_metrics`: Métricas individuales por escenario (contraseñas, phishing, cookies, etc.)
+## API Endpoints principales
 
-### API Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/api/sessions/start` | Inicia una nueva sesion |
+| POST | `/api/sessions/metrics` | Guarda metricas de una sesion |
+| POST | `/api/sessions/complete` | Marca sesion como completada |
+| GET | `/api/sessions/all` | Lista todas las sesiones (admin) |
+| GET | `/api/sessions/:id/metrics` | Metricas de una sesion |
+| POST | `/api/ai/summarize` | Llamada al asistente IA |
+| POST | `/api/ai/finalize` | Finaliza interaccion IA y registra trampa |
+| POST | `/api/breach/check` | Verifica si una contrasena esta comprometida |
 
-El backend expone los siguientes endpoints:
+---
 
-- `POST /api/sessions/start` - Inicia una nueva sesión
-- `POST /api/sessions/metrics` - Guarda las métricas de una sesión
-- `POST /api/sessions/complete` - Marca una sesión como completada
-- `GET /api/sessions/all` - Obtiene todas las sesiones
-- `GET /api/sessions/:sessionId/metrics` - Obtiene métricas de una sesión específica
+## Documentacion adicional
 
-## Estructura de Archivos Frontend
-
-- `components/scenarios.js` - Plantillas HTML de cada escenario
-- `components/popups.js` - HTML de ventanas emergentes
-- `handlers/scenario[1-7].js` - Lógica de eventos de cada escenario
-- `services/api.js` - Comunicación con el backend
-- `utils/metrics.js` - Sistema de métricas y resultados
-- `utils/emails.js` - Gestión de emails de simulación
-- `utils/validation.js` - Funciones de validación
-- `styles/` - CSS dividido en módulos temáticos
-- `admin.html` - Dashboard de administración
-
-## Estructura de Archivos Backend
-
-- `server.js` - Servidor Express principal
-- `routes/sessions.js` - Rutas para gestión de sesiones y métricas
+- [Metricas completas](docs/METRICS.md) — descripcion de todas las metricas por escenario
+- [Verificar base de datos](TEST_DATABASE.md) — como consultar los datos SQLite

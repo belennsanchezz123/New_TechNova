@@ -36,7 +36,8 @@ export const metrics = {
         phishing_reported:            0,      // REAL: 0.0–1.0 % phishing reportados correctamente
         phishing_false_positives:     0,      // INT: nº de correos legítimos reportados como phishing
         phishing_report_reasons:      '',     // TEXT(JSON): {"mensaje1":"...","mensaje2":"...",...}
-        credential_exposure:          0,      // INT: 1=entered creds on fake page, 0=no
+        credential_exposure:          0,      // INT: nº de veces que introdujo credenciales en phishing
+        real_password_exposed:        0,      // INT: 1=la contraseña era la real corporativa, 0=inventada o no introdujo
         secure_data_transmission:     null    // INT: 1=used encryption (secure), 0=no encryption
     },
     scenario4: {
@@ -90,10 +91,11 @@ export const metrics = {
         teams_password_reused:        null   // INT: 1=reutilizó contraseña en Teams, 0=no
     },
     taskbar: {
-        update_user_action:           null,  // TEXT: 'Restart' | 'Postpone_15m' | 'Postpone_1h' | 'Postpone_24h' | 'Ignored' | 'Dismissed'
+        update_user_action:           null,  // TEXT: 'Restart' | 'Postpone_5m' | 'Postpone_10m' | 'Postpone_15m' | 'Ignored' | 'Dismissed'
         update_response_time_seconds: null,  // INT: segundos hasta la acción del usuario
-        update_postpone_count:        0,     // INT: cuántas veces ha pospuesto
-        update_postpone_delay_minutes:null    // INT: minutos elegidos en el último posponer
+        update_postpone_count:        0,     // INT: cuántas veces ha pospuesto en total
+        update_postpone_delay_minutes:null,  // INT: minutos elegidos en el último posponer
+        update_postpone_history:      null   // TEXT(JSON): historial de posponer [{time, delayMinutes}, ...]
     },
     notes: {
         notes_used:                    null,  // INT: 1=escribió algo en el bloc, 0=no lo usó nunca

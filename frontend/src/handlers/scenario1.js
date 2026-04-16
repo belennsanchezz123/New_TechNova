@@ -152,6 +152,9 @@ export async function registerService(service) {
 
     const sid = session.sessionId || session.id;
     passwords.push(password);
+    const stored = JSON.parse(sessionStorage.getItem('corporate_passwords') || '[]');
+    stored.push(password);
+    sessionStorage.setItem('corporate_passwords', JSON.stringify(stored));
 
     registrations[service] = {
         id: sid,
