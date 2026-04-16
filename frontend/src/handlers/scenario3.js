@@ -67,6 +67,74 @@ function _updatePhishingPercentages() {
 
 // ── Phishing handling ─────────────────────────────────────────────
 
+function _promptFakeSurvey() {
+    return new Promise(resolve => {
+        const existing = document.getElementById('fake-survey-modal');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'fake-survey-modal';
+        overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 12000;';
+
+        overlay.innerHTML = `
+            <div style="background: #fff; width: 92%; max-width: 500px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.3); overflow: hidden;">
+                <div style="background: #002b5c; padding: 16px 20px; display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #fff; font-size: 16px; font-weight: bold;">📋 Great Place To Work — Encuesta 2026</span>
+                </div>
+                <div style="padding: 20px; font-size: 14px; color: #333;">
+                    <p style="margin: 0 0 16px 0; color: #555;">TechNova · Encuesta de clima laboral · Anónima</p>
+
+                    <p style="margin: 0 0 10px 0; color: #555; font-size: 13px;">Para acceder a la encuesta verifica tu identidad corporativa:</p>
+                    <input id="survey-email-input" type="email" placeholder="Correo corporativo" style="width: 100%; box-sizing: border-box; border: 1px solid #ccd3dd; border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 8px;" />
+                    <input id="survey-password-input" type="password" placeholder="Contraseña" autocomplete="off" style="width: 100%; box-sizing: border-box; border: 1px solid #ccd3dd; border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 4px;" />
+                    <div id="survey-error" style="display:none; color:#b42318; font-size:12px; margin-bottom:16px;">Por favor completa todos los campos.</div>
+
+                    <hr style="border: none; border-top: 1px solid #eee; margin-bottom: 16px;">
+
+                    <div style="margin-bottom: 16px;">
+                        <p style="font-weight: bold; margin: 0 0 8px 0;">1. ¿Recomendarías TechNova como lugar de trabajo?</p>
+                        <label style="display:block; margin-bottom:4px;"><input type="radio" name="q1" value="si"> Sí, totalmente</label>
+                        <label style="display:block; margin-bottom:4px;"><input type="radio" name="q1" value="quizas"> Quizás</label>
+                        <label style="display:block;"><input type="radio" name="q1" value="no"> No</label>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <p style="font-weight: bold; margin: 0 0 8px 0;">2. ¿Cómo valorarías el ambiente de trabajo?</p>
+                        <label style="display:block; margin-bottom:4px;"><input type="radio" name="q2" value="excelente"> Excelente</label>
+                        <label style="display:block; margin-bottom:4px;"><input type="radio" name="q2" value="bueno"> Bueno</label>
+                        <label style="display:block;"><input type="radio" name="q2" value="mejorable"> Mejorable</label>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-weight: bold; margin: 0 0 8px 0;">3. ¿Te sientes valorado/a en tu puesto?</p>
+                        <label style="display:block; margin-bottom:4px;"><input type="radio" name="q3" value="si"> Sí</label>
+                        <label style="display:block;"><input type="radio" name="q3" value="no"> No</label>
+                    </div>
+                </div>
+                <div style="padding: 0 20px 20px 20px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button id="survey-cancel-btn" style="border: 1px solid #d5dbe5; background: #fff; color: #4a5568; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 14px;">Cancelar</button>
+                    <button id="survey-submit-btn" style="border: none; background: #002b5c; color: #fff; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 14px; font-weight: bold;">Enviar respuestas</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const cleanupAndResolve = (value) => { overlay.remove(); resolve(value); };
+
+        document.getElementById('survey-cancel-btn').addEventListener('click', () => cleanupAndResolve(null));
+        document.getElementById('survey-submit-btn').addEventListener('click', () => {
+            const email = document.getElementById('survey-email-input').value.trim();
+            const password = document.getElementById('survey-password-input').value.trim();
+            if (!email || !password) {
+                document.getElementById('survey-error').style.display = 'block';
+                return;
+            }
+            cleanupAndResolve(password);
+        });
+    });
+}
+
 function _promptMaskedPassword(message) {
     return new Promise(resolve => {
         const existing = document.getElementById('phishing-password-modal');
@@ -78,7 +146,7 @@ function _promptMaskedPassword(message) {
 
         overlay.innerHTML = `
             <div style="background: #fff; width: 90%; max-width: 420px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); padding: 18px;">
-                <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a1a2e;">Lynx Security</h3>
+                <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a1a2e;">TechNova Security</h3>
                 <p style="margin: 0 0 14px 0; color: #555; font-size: 14px; line-height: 1.4;">${message}</p>
                 <input id="phishing-password-input" type="password" autocomplete="off" placeholder="Introduce tu contraseña" style="width: 100%; box-sizing: border-box; border: 1px solid #ccd3dd; border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px;" />
                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
@@ -114,15 +182,43 @@ function _promptMaskedPassword(message) {
     });
 }
 
+function _showPhishingConfirmation() {
+    const existing = document.getElementById('phishing-confirm-modal');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'phishing-confirm-modal';
+    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 12000;';
+    overlay.innerHTML = `
+        <div style="background: #fff; width: 90%; max-width: 400px; border-radius: 12px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); padding: 24px; text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 12px;">✅</div>
+            <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1a1a2e;">Verificación recibida</h3>
+            <p style="margin: 0 0 16px 0; color: #555; font-size: 14px; line-height: 1.5;">Estamos analizando tu solicitud. Recibirás un correo de confirmación en los próximos minutos.</p>
+            <button id="phishing-confirm-ok" style="border: none; background: #0078d4; color: #fff; border-radius: 8px; padding: 9px 20px; cursor: pointer; font-size: 14px;">Aceptar</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('phishing-confirm-ok').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
 export async function handlePhishingClick(isCredPhish, emailId) {
     // Registrar este correo como clicado
     if (emailId) _clickedPhishingIds.add(emailId);
     _updatePhishingPercentages();
 
     if (isCredPhish) {
-        const enteredCreds = await _promptMaskedPassword('Please re-enter your password to verify your identity.');
+        const enteredCreds = emailId === 7
+            ? await _promptFakeSurvey()
+            : await _promptMaskedPassword('Please re-enter your password to verify your identity.');
         if (enteredCreds) {
-            metrics.scenario3.credential_exposure = 1;
+            const storedPasswords = JSON.parse(sessionStorage.getItem('corporate_passwords') || '[]');
+            const usedRealPassword = storedPasswords.includes(enteredCreds) ? 1 : 0;
+            metrics.scenario3.credential_exposure = (metrics.scenario3.credential_exposure || 0) + 1;
+            if (usedRealPassword && !metrics.scenario3.real_password_exposed) {
+                metrics.scenario3.real_password_exposed = 1;
+            }
+            _showPhishingConfirmation();
         }
     }
 
@@ -266,24 +362,20 @@ function _renderFileList() {
         const defaultBorder = f.encrypted ? '#4CAF50' : '#e0e0e0';
         const encFlag = f.encrypted ? 'true' : 'false';
 
-        // Badge + encrypt button for unencrypted files; "Cifrado" badge for encrypted
+        // Badge for encrypted files; nothing for unencrypted (use right-click to encrypt)
         let actionArea = '';
         if (f.encrypted) {
             actionArea = '<span style="font-size: 11px; color: #2e7d32; margin-left: auto; flex-shrink: 0; background: #c8e6c9; padding: 2px 8px; border-radius: 10px;">✓ Cifrado</span>';
-        } else {
-            actionArea = `<button onclick="event.stopPropagation(); window._encryptFile('${f.filename}')"
-                style="margin-left: auto; flex-shrink: 0; background: none; border: 1px solid #b0bec5; color: #546e7a; border-radius: 8px; padding: 4px 10px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;"
-                onmouseover="this.style.background='#e3f2fd'; this.style.borderColor='#1a73e8'; this.style.color='#1a73e8';"
-                onmouseout="this.style.background='none'; this.style.borderColor='#b0bec5'; this.style.color='#546e7a';"
-                title="Cifrar este archivo antes de adjuntarlo">
-                <span style="font-size: 14px;">🔒</span> Cifrar
-            </button>`;
         }
 
+        const ctxMenu = !f.encrypted
+            ? ' oncontextmenu="event.preventDefault(); event.stopPropagation(); window._showFileContextMenu(event, \'' + f.filename + '\')"'
+            : '';
         return '<div style="padding: 12px 14px; ' + borderStyle + ' margin: 6px 0; cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 12px; transition: all 0.15s;"'
             + ' onmouseover="this.style.background=\'' + hoverBg + '\'; this.style.borderColor=\'' + hoverBorder + '\'"'
             + ' onmouseout="this.style.background=\'' + defaultBg + '\'; this.style.borderColor=\'' + defaultBorder + '\'"'
-            + ' onclick="window.selectAttachment(\'' + f.filename + '\', ' + encFlag + ')">'
+            + ' onclick="window.selectAttachment(\'' + f.filename + '\', ' + encFlag + ')"'
+            + ctxMenu + '>'
             + '<span style="font-size: 26px;">' + f.icon + '</span>'
             + '<div style="min-width: 0;">'
             + '<div style="font-weight: 600; font-size: 14px; color: #1a1a2e;">' + f.filename + (f.encrypted ? '.enc' : '') + '</div>'
@@ -320,7 +412,7 @@ function _openExplorer() {
         + '<div data-file-list style="margin: 8px 0; max-height: 300px; overflow-y: auto;">'
         + _renderFileList()
         + '</div>'
-        + '<div style="font-size: 11px; color: #888; margin-top: 10px; text-align: center; background: #f8f9fa; padding: 8px; border-radius: 6px;">📎 Haz clic en un archivo para adjuntarlo · 🔒 Usa el botón <strong>Cifrar</strong> para protegerlo antes de enviarlo</div>'
+        + '<div style="font-size: 11px; color: #888; margin-top: 10px; text-align: center; background: #f8f9fa; padding: 8px; border-radius: 6px;">📎 Haz clic en un archivo para adjuntarlo · 🖱️ Clic derecho sobre un archivo para ver más opciones</div>'
         + '<button onclick="window.closeFileExplorer()" style="margin-top: 10px; width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 14px; color: #555;">Cancelar</button>'
         + '</div>';
 

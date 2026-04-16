@@ -180,15 +180,22 @@ export function postponeUpdate(delayMs = 180000, delayLabel = '3 minutos') {
     const postponeOptions = document.getElementById('update-postpone-options');
 
     let postponeAction = 'Postpone_Custom';
-    if (delayMs === 900000) postponeAction = 'Postpone_15m';
-    if (delayMs === 3600000) postponeAction = 'Postpone_1h';
-    if (delayMs === 86400000) postponeAction = 'Postpone_24h';
+    if (delayMs === 300000)  postponeAction = 'Postpone_5m';
+    if (delayMs === 600000)  postponeAction = 'Postpone_10m';
+    if (delayMs === 900000)  postponeAction = 'Postpone_15m';
 
     if (!notification) return;
 
     updateNotificationState.postponed = true;
     updateNotificationState.postponeCount++;
     updateNotificationState.responseTime = Date.now() - updateNotificationState.showTime;
+
+    // Registrar entrada en el historial de posponer
+    if (!updateNotificationState.postponeHistory) updateNotificationState.postponeHistory = [];
+    updateNotificationState.postponeHistory.push({
+        time: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),
+        delayMinutes: Math.round(delayMs / 60000)
+    });
 
     // Ocultar notificación e icono de la taskbar
     notification.classList.add('hidden');
@@ -210,11 +217,15 @@ export function postponeUpdate(delayMs = 180000, delayLabel = '3 minutos') {
         metrics.taskbar.update_user_action = postponeAction;
         metrics.taskbar.update_response_time_seconds = responseTimeSeconds;
 
+        const historyJson = JSON.stringify(updateNotificationState.postponeHistory || []);
+        metrics.taskbar.update_postpone_history = historyJson;
+
         saveMetrics(sid, {
             'taskbar.update_user_action': postponeAction,
             'taskbar.update_response_time_seconds': responseTimeSeconds,
             'taskbar.update_postpone_count': updateNotificationState.postponeCount,
-            'taskbar.update_postpone_delay_minutes': Math.round(delayMs / 60000)
+            'taskbar.update_postpone_delay_minutes': Math.round(delayMs / 60000),
+            'taskbar.update_postpone_history': historyJson
         }).catch(err => console.warn('Error saving postpone metric:', err));
     }
 
