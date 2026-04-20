@@ -14,13 +14,29 @@ Todas las acciones del participante se registran como metricas y son accesibles 
 
 ## Requisitos
 
-- Node.js >= 18
+- Node.js >= 22
 - npm
 - API key de OpenAI (para el escenario 5)
 
 ---
 
 ## Instalacion y arranque
+
+### Inicio recomendado (cada terminal nueva)
+
+```bash
+cd /home/bsanchez/TechNova
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+nvm use
+npm start
+```
+
+Notas:
+- `npm start` es el comando principal para levantar frontend y backend a la vez.
+- `export NVM_DIR="$HOME/.nvm"` le dice a la shell donde esta instalado `nvm`.
+- `. "$NVM_DIR/nvm.sh"` carga `nvm` en la sesion actual para poder usar `nvm use`.
+- Si ya tienes `nvm` cargado en tu `.bashrc` o `.zshrc`, normalmente no necesitas repetir `export` y `source` manualmente.
 
 ```bash
 # Instalar dependencias (frontend + backend)
