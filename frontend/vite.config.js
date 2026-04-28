@@ -7,8 +7,9 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
   server: {
-    host: '0.0.0.0',
+    host: 'localhost',
     port: 5173,
+    https: true,
     open: true,
     proxy: {
       '/api': {
