@@ -7,9 +7,9 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
   server: {
-    host: 'localhost',
+    host: '10.208.102.30',
     port: 5173,
-    https: true,
+    https: false,
     open: true,
     allowedHosts: ['technova.inf.um.es'],
     proxy: {
