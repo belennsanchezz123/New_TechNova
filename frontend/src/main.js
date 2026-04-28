@@ -968,7 +968,77 @@ window.openUpdateNotificationFromTaskbar = openUpdateNotificationFromTaskbar;
 window.showPostponeOptions = showPostponeOptions;
 window.closePostponeOptions = closePostponeOptions;
 
-initApp();
+// ═══════════════════════════════════════════════════════════════════
+//  🔐  LOGIN GATE  — muestra overlay hasta que el usuario se autentique
+// ═══════════════════════════════════════════════════════════════════
+(function setupUserLogin() {
+    const overlay = document.getElementById('user-login-overlay');
+
+    // Sin overlay en la página (otro HTML): arrancar directo
+    if (!overlay) {
+        initApp();
+        return;
+    }
+
+    const token = sessionStorage.getItem('lynx_user_token');
+    if (token) {
+        // Ya autenticado: ocultar overlay y arrancar
+        overlay.classList.add('hidden');
+        initApp();
+        return;
+    }
+
+    // No autenticado: overlay visible, app no se inicializa todavía
+    const form    = document.getElementById('user-login-form');
+    const btn     = document.getElementById('user-login-btn');
+    const errorEl = document.getElementById('user-login-error');
+    const passwordInput = document.getElementById('user-login-password');
+    const toggleBtn = document.getElementById('toggle-password-btn');
+
+    // Toggle password visibility
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            toggleBtn.textContent = isPassword ? '👁️‍🗨️' : '👁️';
+        });
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('user-login-username').value.trim();
+        const password = document.getElementById('user-login-password').value;
+
+        btn.disabled = true;
+        btn.textContent = 'Verificando...';
+        errorEl.style.display = 'none';
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            const data = await response.json();
+
+            if (data.success && data.token) {
+                sessionStorage.setItem('lynx_user_token', data.token);
+                overlay.classList.add('hidden');
+                initApp();
+            } else {
+                errorEl.textContent = data.error || 'Credenciales incorrectas. Inténtalo de nuevo.';
+                errorEl.style.display = 'block';
+            }
+        } catch {
+            errorEl.textContent = 'Error de conexión con el servidor.';
+            errorEl.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Acceder';
+        }
+    });
+})();
 
 // ═══════════════════════════════════════════════════════════════════
 //  🛠️  PANEL DE DEBUG  (solo visible con ?debug=true en la URL)

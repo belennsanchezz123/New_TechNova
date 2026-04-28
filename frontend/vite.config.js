@@ -11,6 +11,7 @@ export default defineConfig({
     port: 5173,
     https: true,
     open: true,
+    allowedHosts: ['technova.inf.um.es'],
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

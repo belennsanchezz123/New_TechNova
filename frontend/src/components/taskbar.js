@@ -126,9 +126,9 @@ export function getTaskbarHTML() {
                 <p><strong>¿Cuánto tiempo quieres posponer?</strong></p>
             </div>
             <div class="postpone-options-grid">
+                <button class="btn-postpone-choice" onclick="window.postponeUpdate(300000, '5 minutos')">En 5 min</button>
+                <button class="btn-postpone-choice" onclick="window.postponeUpdate(600000, '10 minutos')">En 10 min</button>
                 <button class="btn-postpone-choice" onclick="window.postponeUpdate(900000, '15 minutos')">En 15 min</button>
-                <button class="btn-postpone-choice" onclick="window.postponeUpdate(3600000, '1 hora')">En 1 hora</button>
-                <button class="btn-postpone-choice" onclick="window.postponeUpdate(86400000, '24 horas')">En 24 horas</button>
             </div>
             <div class="notification-actions">
                 <button class="btn-ignore" onclick="window.closePostponeOptions()">Cancelar</button>
