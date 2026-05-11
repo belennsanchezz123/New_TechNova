@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { setupSessionRoutes, setupAdminSessionRoutes } from './routes/sessions.js';
-import { setupBreachRoutes } from './routes/breach.js';
 import { setupQuestionnaireRoutes } from './routes/questionnaire.js';
 import { setupAIRoutes } from './routes/ai.js';
 import authRouter from './routes/auth.js';
@@ -30,7 +29,6 @@ app.get('/api/health', (req, res) => {
 // ── Rutas públicas (participantes) ─────────────────────────────────
 app.use('/api/auth', authRouter);
 app.use('/api/sessions', setupSessionRoutes());
-app.use('/api/breach', setupBreachRoutes());
 app.use('/api/ai', setupAIRoutes());
 app.use('/api/questionnaire', setupQuestionnaireRoutes());
 

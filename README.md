@@ -87,7 +87,6 @@ TechNova/
 │   ├── routes/
 │   │   ├── ai.js            # Escenario IA: OpenAI, trampa salarial, metricas
 │   │   ├── sessions.js      # Gestion de sesiones y guardado de metricas
-│   │   ├── breach.js        # Verificacion de contrasenas comprometidas (HaveIBeenPwned)
 │   │   ├── questionnaire.js # Cuestionario post-simulacion
 │   │   └── auth.js          # Autenticacion admin
 │   ├── database.js          # Esquema y migraciones SQLite
@@ -168,7 +167,6 @@ Requiere login con credenciales de administrador. Muestra:
 | GET | `/api/sessions/:id/metrics` | Metricas de una sesion |
 | POST | `/api/ai/summarize` | Llamada al asistente IA |
 | POST | `/api/ai/finalize` | Finaliza interaccion IA y registra trampa |
-| POST | `/api/breach/check` | Verifica si una contrasena esta comprometida |
 
 ---
 

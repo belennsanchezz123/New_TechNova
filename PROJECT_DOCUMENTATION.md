@@ -64,7 +64,6 @@ El servidor Express configura:
 import express from 'express';
 import cors from 'cors';
 import { setupSessionRoutes } from './routes/sessions.js';
-import { setupBreachRoutes } from './routes/breach.js';
 import { setupQuestionnaireRoutes } from './routes/questionnaire.js';
 
 const app = express();
@@ -72,7 +71,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/sessions', setupSessionRoutes());
-app.use('/api/breach', setupBreachRoutes());
 app.use('/api/questionnaire', setupQuestionnaireRoutes());
 ```
 
@@ -151,16 +149,6 @@ CREATE TABLE session_metrics (
   "created": true
 }
 ```
-
-#### 2. Breach Checker (`/api/breach`)
-
-| Método | Endpoint   | Descripción                             |
-| ------ | ---------- | --------------------------------------- |
-| `POST` | `/check`   | Verifica email contra Have I Been Pwned |
-| `GET`  | `/history` | Historial de verificaciones             |
-
-> [!NOTE]
-> Si no hay `HIBP_API_KEY` configurada, devuelve datos simulados para desarrollo.
 
 #### 3. Questionnaire (`/api/questionnaire`)
 
@@ -408,11 +396,7 @@ El archivo `.env` en la raíz contiene:
 
 ```env
 PORT=3000                    # Puerto del backend
-HIBP_API_KEY=your_key_here   # API key de Have I Been Pwned
 ```
-
-> [!IMPORTANT]
-> Sin `HIBP_API_KEY`, el endpoint `/api/breach/check` usa datos simulados.
 
 ---
 

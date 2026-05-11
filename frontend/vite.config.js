@@ -27,7 +27,6 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         admin: resolve(__dirname, 'admin.html'),
-        breachDemo: resolve(__dirname, 'breach-demo.html'),
         breachResults: resolve(__dirname, 'breach-results.html')
       }
     }
