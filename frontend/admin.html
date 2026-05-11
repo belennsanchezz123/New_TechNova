@@ -331,9 +331,12 @@
         background: #f1f5f9;
       }
 
-      .view-btn {
-        background: rgba(79, 70, 229, 0.1);
-        color: var(--primary);
+      .view-btn,
+      .delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
         border: none;
         padding: 8px 16px;
         border-radius: 8px;
@@ -343,8 +346,24 @@
         transition: all 0.2s ease;
       }
 
+      .view-btn {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--primary);
+      }
+
       .view-btn:hover {
         background: var(--primary);
+        color: white;
+      }
+
+      .delete-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        margin-left: 0.5rem;
+      }
+
+      .delete-btn:hover {
+        background: #dc2626;
         color: white;
       }
 
@@ -953,6 +972,9 @@
                                     <button class="view-btn" onclick="window.viewParticipantMetrics('${session.participant_id}', '${session.id}')">
                                         Ver Detalles
                                     </button>
+                                    <button class="delete-btn" onclick="window.deleteParticipantData('${session.participant_id}')">
+                                        Borrar participante
+                                    </button>
                                 </td>
                             </tr>
                             `;
@@ -1193,7 +1215,38 @@
           )
             return;
           console.error('Error clearing data:', error);
-          alert('Error de conexión al intentar borrar los datos.');
+        }
+      };
+
+      window.deleteParticipantData = async function (participantId) {
+        if (
+          !confirm(
+            `⚠️ ¿Eliminar permanentemente todos los datos del participante ${participantId}?`
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await authFetch(`${API_URL}/sessions/${participantId}`, {
+            method: 'DELETE',
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            alert(`✅ Datos del participante ${participantId} eliminados correctamente.`);
+            loadSessions();
+          } else {
+            alert('❌ Error al borrar participante: ' + data.error);
+          }
+        } catch (error) {
+          if (
+            error.message === 'No autenticado' ||
+            error.message === 'Sesión expirada'
+          )
+            return;
+          console.error('Error deleting participant:', error);
+          alert('Error al eliminar participante. Revisa la consola.');
         }
       };
 
