@@ -31,19 +31,6 @@ const initDB = () => {
         CREATE INDEX IF NOT EXISTS idx_username_service ON registrations(username, service);
         CREATE INDEX IF NOT EXISTS idx_participant ON registrations(participant_id);
 
-        CREATE TABLE IF NOT EXISTS breach_checks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            participant_id TEXT NOT NULL UNIQUE,
-            breach_count INTEGER DEFAULT 0,
-            paste_count INTEGER DEFAULT 0,
-            breaches_data TEXT,
-            checked_at TEXT DEFAULT (datetime('now'))
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_breach_email ON breach_checks(email);
-        CREATE INDEX IF NOT EXISTS idx_breach_participant ON breach_checks(participant_id);
-
         CREATE TABLE IF NOT EXISTS questionnaire_responses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             participant_id TEXT NOT NULL UNIQUE,

@@ -407,10 +407,9 @@ export function setupAdminSessionRoutes() {
             const exporter = getExporter(format);
 
             const rows = db.prepare(`
-                SELECT pm.*, qr.answers_json, bc.breach_count AS s8_breach_count_confirmed
+                SELECT pm.*, qr.answers_json
                 FROM participant_metrics pm
                 LEFT JOIN questionnaire_responses qr ON qr.participant_id = pm.participant_id
-                LEFT JOIN breach_checks bc ON bc.participant_id = pm.participant_id
                 ORDER BY pm.recorded_at DESC
             `).all();
 
@@ -521,6 +520,7 @@ export function setupAdminSessionRoutes() {
                 db.prepare('DELETE FROM session_metrics').run();
                 db.prepare('DELETE FROM participant_metrics').run();
                 db.prepare('DELETE FROM questionnaire_responses').run();
+                db.prepare('DELETE FROM ai_interactions').run();
                 db.prepare('DELETE FROM registrations').run();
             })();
             res.json({ success: true, message: 'Todos los datos han sido eliminados' });
@@ -560,7 +560,6 @@ export function setupAdminSessionRoutes() {
                 }
                 db.prepare('DELETE FROM participant_metrics WHERE participant_id = ?').run(participantId);
                 db.prepare('DELETE FROM questionnaire_responses WHERE participant_id = ?').run(participantId);
-                db.prepare('DELETE FROM breach_checks WHERE participant_id = ?').run(participantId);
                 db.prepare('DELETE FROM ai_interactions WHERE participant_id = ?').run(participantId);
                 db.prepare('DELETE FROM registrations WHERE participant_id = ?').run(participantId);
             })();
