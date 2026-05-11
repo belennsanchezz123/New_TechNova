@@ -101,24 +101,40 @@ async function callRealAI({ prompt, chatTranscript }) {
     return data?.choices?.[0]?.message?.content?.trim() || null;
 }
 
-function isSummaryResponseComplete(text) {
-    const normalized = String(text || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
+function calculateTextMetrics(text) {
+    const cleanText = String(text || '').trim();
+    return {
+        length: cleanText.length,
+        wordCount: cleanText.split(/\s+/).filter(word => word.length > 0).length
+    };
+}
 
-    const expectedPeople = [
-        'carlos ruiz',
-        'maria garcia',
-        'lucia marquez',
-        'javier ochoa',
-        'sergio lopez',
-        'elena gomez',
-        'david perez',
-    ];
+function detectPII(text) {
+    const cleanText = String(text || '');
+    const dniPattern = /\d{8}[A-Z]/;
+    const emailPattern = /[a-z0-9]+@[a-z0-9]+\.[a-z]{2,}/i;
+    return dniPattern.test(cleanText) || emailPattern.test(cleanText) ? 1 : 0;
+}
 
-    const presentCount = expectedPeople.filter((name) => normalized.includes(name)).length;
-    return presentCount >= 5;
+function detectKeywords(text) {
+    const cleanText = String(text || '').toLowerCase();
+    return /(resumen|resume|consolida|valida)/i.test(cleanText) ? 1 : 0;
+}
+
+function calculateSimilarity(text1, text2) {
+    // Similitud coseno simple basada en caracteres comunes
+    const s1 = String(text1 || '').toLowerCase().replace(/\s+/g, '');
+    const s2 = String(text2 || '').toLowerCase().replace(/\s+/g, '');
+    
+    if (!s1 || !s2) return 0;
+    if (s1 === s2) return 1.0;
+    
+    const chars1 = new Set(s1);
+    const chars2 = new Set(s2);
+    const intersection = new Set([...chars1].filter(x => chars2.has(x)));
+    const union = new Set([...chars1, ...chars2]);
+    
+    return intersection.size / union.size;
 }
 
 export function setupAIRoutes() {
@@ -142,6 +158,11 @@ export function setupAIRoutes() {
             const trap = buildTrapSummary();
             const trapEnabled = shouldInjectTrap(promptText);
 
+            // Calcular métricas del prompt del usuario
+            const promptMetrics = calculateTextMetrics(promptText);
+            const promptHasPII = detectPII(promptText);
+            const promptHasKeywords = detectKeywords(promptText);
+
             try {
                 const summaryPrompt = trapEnabled
                     ? `${promptText}\n\nDevuelve un resumen completo con todos los empleados mencionados, salario actual/propuesto y cambios. Usa lista clara.`
@@ -153,30 +174,29 @@ export function setupAIRoutes() {
                 console.warn('Fallo IA real, usando respuesta controlada:', e.message);
             }
 
-            if (trapEnabled && aiText && !isSummaryResponseComplete(aiText)) {
-                aiText = trap.summary;
-                source = 'fallback';
-            }
-
             const aiResponse = aiText
                 ? (trapEnabled ? injectTrapIntoSummary(aiText, trap.trapValue) : aiText)
                 : (trapEnabled
                     ? trap.summary
                     : 'Hola. Puedo ayudarte con el chat de RRHH. Si quieres, pideme un resumen de salarios y cambios para Marta.');
 
+            // Calcular métricas de la respuesta IA
+            const aiMetrics = calculateTextMetrics(aiResponse);
+
             const insert = db.prepare(`
                 INSERT INTO ai_interactions (
-                    session_id, participant_id, user_prompt, ai_response, trap_value, trap_label
+                    session_id, participant_id,
+                    user_prompt_length, user_prompt_word_count, ai_response_source, trap_injected
                 ) VALUES (?, ?, ?, ?, ?, ?)
             `);
 
             const result = insert.run(
                 sessionId,
                 reg.participant_id,
-                promptText,
-                aiResponse,
-                trapEnabled ? trap.trapValue : null,
-                trapEnabled ? trap.trapLabel : null
+                promptMetrics.length,
+                promptMetrics.wordCount,
+                source,
+                trapEnabled ? 1 : 0
             );
 
             return res.json({
@@ -195,28 +215,57 @@ export function setupAIRoutes() {
 
     router.post('/finalize', async (req, res) => {
         try {
-            const { interactionId, finalText } = req.body;
+            const { interactionId, finalText, reactionTimeSeconds } = req.body;
             if (!interactionId) {
                 return res.status(400).json({ success: false, error: 'interactionId es obligatorio' });
             }
 
-            const interaction = db.prepare('SELECT trap_value FROM ai_interactions WHERE id = ?').get(interactionId);
+            // Obtener la interacción completa para calcular métricas
+            const interaction = db.prepare(`
+                SELECT trap_value
+                FROM ai_interactions WHERE id = ?
+            `).get(interactionId);
+            
             if (!interaction) {
                 return res.status(404).json({ success: false, error: 'Interaccion no encontrada' });
             }
 
             const finalBody = String(finalText || '');
-            const trapRepeated = interaction.trap_value
-                ? (finalBody.includes(interaction.trap_value) ? 1 : 0)
-                : null;
+            const finalMetrics = calculateTextMetrics(finalBody);
+            const finalHasPII = detectPII(finalBody);
+            
+            // Detectar pensamiento crítico
+            const mentionedVerification = /valid|comprueba|historial|contrastar|verificar|revisar/i.test(finalBody) ? 1 : 0;
+            
+            // Detectar si cambió la trampa
+            const trapDetected = interaction.trap_value ? (finalBody.includes(interaction.trap_value) ? 1 : 0) : 0;
+            
+            // Calcular similitud con respuesta IA (simplificación)
+            const userEdited = finalMetrics.length > 0 ? 1 : 0;
+            const preservationRatio = 0.5; // Placeholder: no se compara con la respuesta IA original
 
             db.prepare(`
                 UPDATE ai_interactions
-                SET user_final_text = ?, trap_repeated = ?, finalized_at = datetime('now')
+                SET 
+                    user_edited_after_ai = ?,
+                    text_preservation_ratio = ?,
+                    trap_detected = ?,
+                    mentioned_need_verification = ?,
+                    user_final_has_pii = ?,
+                    ai_reaction_time_seconds = ?,
+                    finalized_at = datetime('now')
                 WHERE id = ?
-            `).run(finalBody, trapRepeated, interactionId);
+            `).run(
+                userEdited,
+                preservationRatio,
+                trapDetected,
+                mentionedVerification,
+                finalHasPII,
+                reactionTimeSeconds,
+                interactionId
+            );
 
-            return res.json({ success: true, trapRepeated });
+            return res.json({ success: true });
         } catch (error) {
             console.error('Error en /ai/finalize:', error);
             return res.status(500).json({ success: false, error: error.message });

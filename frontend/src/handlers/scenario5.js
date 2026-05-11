@@ -85,21 +85,16 @@ export async function sendAIReport() {
         const finalizeRes = await finalizeAIInteraction({
             interactionId: currentInteractionId,
             finalText: currentBody,
+            reactionTimeSeconds: duration,
         });
         if (finalizeRes?.success) {
-            trapRepeated = finalizeRes.trapRepeated;
+            // Ya no necesitamos trapRepeated, se calcula en el backend
         }
     }
 
     const metricsIA = {
         'scenario5.ai_used': aiWasUsed ? 'Yes' : 'No',
-        'scenario5.ai_prompt_text': lastUserPrompt || null,
-        'scenario5.ai_trap_value': lastTrapValue || null,
-        'scenario5.ai_trap_repeated': trapRepeated === null || trapRepeated === undefined
-            ? null
-            : (trapRepeated ? 'Yes' : 'No'),
-        'scenario5.ai_user_edited': aiWasUsed ? (userEdited ? 'Yes' : 'No') : null,
-        'scenario5.ai_reaction_time_seconds': aiWasUsed ? duration.toFixed(2) : null,
+        'scenario5.ai_trap_injected': lastTrapValue ? 'Yes' : 'No',
     };
 
     try {

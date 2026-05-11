@@ -353,11 +353,7 @@ Las métricas se guardan con el formato: `escenario.nombre_metrica`
 | `scenario5.personal_data_disclosure_rate` | `INT` | Nº de campos de datos personales revelados |
 | `scenario5.third_party_app_authorization` | `INT (0/1)` | `1` = autorizó aplicación, `0` = rechazó |
 | `scenario5.ai_used` | `TEXT` | 'Yes' o 'No' |
-| `scenario5.ai_prompt_text` | `TEXT` | Prompt libre escrito por el usuario |
-| `scenario5.ai_trap_value` | `TEXT` | Dato trampa inyectado |
-| `scenario5.ai_trap_repeated` | `TEXT` | 'Yes' o 'No' (si repite el dato trampa) |
-| `scenario5.ai_user_edited` | `TEXT` | 'Yes' o 'No' (si el usuario edita la respuesta IA) |
-| `scenario5.ai_reaction_time_seconds` | `REAL` | Tiempo entre respuesta de IA y envío |
+| `scenario5.ai_trap_injected` | `TEXT` | 'Yes' o 'No' (si se activó la trampa) |
 | `scenario6.time_seconds` | `INT` | Tiempo acumulado en escenario 6 (segundos) |
 | `scenario6.data_encryption_usage` | `INT (0/1)` | `1` = usó cifrado, `0` = no |
 | `scenario6.secure_data_disposal` | `INT (0/1)` | `1` = borrado seguro, `0` = no |
@@ -375,9 +371,95 @@ Las métricas se guardan con el formato: `escenario.nombre_metrica`
 | `unexpected.update_compliance_rate` | `INT (0/1)` | `1` = aceptó actualización falsa, `0` = rechazó |
 | `unexpected.teams_password_reused` | `INT (0/1)` | `1` = reutilizó contraseña en Teams, `0` = no |
 | `taskbar.update_user_action` | `TEXT` | Respuesta dada (e.g. 'Restart', 'Ignored', 'Dismissed') |
-| `taskbar.update_response_time_seconds` | `INT` | Segundos hasta la acción del usuario |
-
 ---
+
+## 🤖 Métricas Detalladas de IA (Escenario 5)
+
+Además de las métricas básicas, el escenario 5 registra métricas detalladas en la tabla `ai_interactions` para análisis de pensamiento crítico y privacidad. Estas métricas **no guardan textos personales**, solo indicadores derivados.
+
+### Tabla: `ai_interactions`
+
+| Columna | Tipo | Descripción | Cómo se calcula |
+|---------|------|-------------|-----------------|
+| `user_prompt_length` | `INTEGER` | Caracteres en el prompt inicial | `String(prompt).length` |
+| `user_prompt_word_count` | `INTEGER` | Palabras en el prompt inicial | `String(prompt).split(/\s+/).length` |
+| `ai_response_source` | `TEXT` | Fuente de la respuesta IA | `'openai'` si API real funcionó, `'fallback'` si no |
+| `trap_injected` | `INT (0/1)` | Si se activó la trampa salarial | `1` si prompt contiene palabras clave (resumen/consolida/valida) |
+| `user_edited_after_ai` | `INT (0/1)` | Si el usuario editó la respuesta IA | `1` si hay texto final diferente, `0` si copió exactamente |
+| `text_preservation_ratio` | `REAL` | Similitud entre respuesta IA y texto final (0.0-1.0) | Ratio de caracteres comunes (simplificado) |
+| `trap_detected` | `INT (0/1)` | Si detectó el valor sospechoso (200.000€) | `1` si el texto final menciona el valor trampa |
+| `mentioned_need_verification` | `INT (0/1)` | Si pidió validar contra historial | `1` si contiene palabras como "validar", "comprobar", "historial" |
+| `user_final_has_pii` | `INT (0/1)` | Si el texto final contiene datos personales | `1` si detecta DNI (8 dígitos + letra) o emails |
+| `ai_reaction_time_seconds` | `REAL` | Tiempo entre respuesta IA y envío final | `(finalized_at - created_at)` en segundos |
+
+### Interpretación de métricas críticas
+
+- **`trap_detected = 1` + `mentioned_need_verification = 1`**: Participante crítico que detectó inconsistencia y pidió validación
+- **`user_edited_after_ai = 0` + `text_preservation_ratio = 1.0`**: Copió ciegamente la respuesta IA sin pensar
+- **`user_final_has_pii = 1`**: Posible violación de privacidad (compartió datos personales)
+- **`ai_reaction_time_seconds < 10`**: Decisión impulsiva, poco análisis
+
+### ⚠️ **Nota sobre duplicación eliminada**
+
+Anteriormente había una métrica duplicada `scenario5.ai_source` que guardaba lo mismo que `ai_response_source` en la tabla `ai_interactions`. Se eliminó para evitar redundancia. La fuente de IA (OpenAI vs Fallback) se guarda únicamente en la tabla `ai_interactions.ai_response_source`.
+
+```javascript
+// Ejemplo de cálculo manual de puntuación crítica (0-100)
+function calculateCriticalThinkingScore(metrics) {
+  let score = 0;
+  
+  // +25 puntos si detectó la trampa Y pidió verificación
+  if (metrics.trap_detected && metrics.mentioned_need_verification) {
+    score += 25;
+  }
+  
+  // +20 puntos si editó la respuesta IA
+  if (metrics.user_edited_after_ai) {
+    score += 20;
+  }
+  
+  // +15 puntos si tomó tiempo para pensar (>30 segundos)
+  if (metrics.ai_reaction_time_seconds > 30) {
+    score += 15;
+  }
+  
+  // +10 puntos si no copió ciegamente
+  if (metrics.text_preservation_ratio < 0.8) {
+    score += 10;
+  }
+  
+  // Penalización: -20 puntos si compartió PII
+  if (metrics.user_final_has_pii) {
+    score -= 20;
+  }
+  
+  return Math.max(0, Math.min(100, score)); // 0-100
+}
+```
+
+### Ejemplo de análisis
+
+```javascript
+// Participante crítico (puntuación alta calculada: 70/100)
+{
+  trap_detected: 1,           // ✅ Detectó 200.000€
+  mentioned_need_verification: 1, // ✅ Pidió validar (+25)
+  user_edited_after_ai: 1,    // ✅ Editó la respuesta (+20)
+  ai_reaction_time_seconds: 45.2, // ✅ Tomó tiempo (+15)
+  text_preservation_ratio: 0.4,   // ✅ Cambió mucho (+10)
+  user_final_has_pii: 0       // ✅ No compartió PII
+}
+
+// Participante ingenuo (puntuación baja calculada: 0/100)  
+{
+  trap_detected: 1,           // ✅ Mencionó el valor (pero no lo cuestionó)
+  mentioned_need_verification: 0, // ❌ No pidió validar
+  user_edited_after_ai: 0,    // ❌ Copió exactamente
+  ai_reaction_time_seconds: 8.1,  // ❌ Decisión rápida
+  text_preservation_ratio: 1.0,   // ❌ Copió 100%
+  user_final_has_pii: 1       // ❌ Compartió PII (-20)
+}
+```
 
 ## 📁 Archivos HTML Principales
 

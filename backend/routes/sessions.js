@@ -487,6 +487,40 @@ export function setupAdminSessionRoutes() {
         }
     });
 
+    // RUTA PARA ELIMINAR DATOS DE UN PARTICIPANTE (Admin)
+    router.delete('/:participantId', async (req, res) => {
+        try {
+            const { participantId } = req.params;
+            if (!participantId) {
+                return res.status(400).json({ success: false, error: 'Falta participantId' });
+            }
+
+            const registration = db.prepare('SELECT id FROM registrations WHERE participant_id = ?').get(participantId);
+            if (!registration) {
+                return res.status(404).json({ success: false, error: 'Participant no encontrado' });
+            }
+
+            const sessionIds = db.prepare('SELECT id FROM registrations WHERE participant_id = ?').all(participantId).map(row => row.id);
+            const sessionIdsPlaceholders = sessionIds.length ? sessionIds.map(() => '?').join(', ') : null;
+
+            db.transaction(() => {
+                if (sessionIdsPlaceholders) {
+                    db.prepare(`DELETE FROM session_metrics WHERE session_id IN (${sessionIdsPlaceholders})`).run(...sessionIds);
+                }
+                db.prepare('DELETE FROM participant_metrics WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM questionnaire_responses WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM breach_checks WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM ai_interactions WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM registrations WHERE participant_id = ?').run(participantId);
+            })();
+
+            res.json({ success: true, message: `Datos del participante ${participantId} eliminados` });
+        } catch (error) {
+            console.error('Error eliminando participante:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
     // RUTA PARA ELIMINAR TODO (Admin)
     router.delete('/clear-all', async (req, res) => {
         try {

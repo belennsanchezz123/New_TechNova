@@ -184,14 +184,22 @@ const initDB = () => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             session_id INTEGER NOT NULL,
             participant_id TEXT,
-            user_prompt TEXT,
-            ai_response TEXT,
-            trap_value TEXT,
-            trap_label TEXT,
-            user_final_text TEXT,
-            trap_repeated INTEGER,
+            
+            -- ── MÉTRICAS SIMPLIFICADAS ────────────────────────────────
+            user_prompt_length INTEGER,           -- caracteres del prompt inicial
+            user_prompt_word_count INTEGER,       -- palabras en el prompt
+            ai_response_source TEXT,              -- 'openai' o 'fallback'
+            trap_injected INT,                    -- 1=trampa activada, 0=no
+            user_edited_after_ai INT,             -- 1=editó el texto, 0=lo envió sin cambios
+            text_preservation_ratio REAL,         -- 0.0-1.0 similitud entre original y final
+            trap_detected INT,                    -- 1=detectó la trampa, 0=no
+            mentioned_need_verification INT,      -- 1=pidió validar contra historial, 0=no
+            user_final_has_pii INT,               -- 1=contiene PII en el texto final, 0=no
+            ai_reaction_time_seconds REAL,        -- tiempo entre uso de IA y envío final
+            
             created_at TEXT DEFAULT (datetime('now')),
             finalized_at TEXT,
+            
             FOREIGN KEY(session_id) REFERENCES registrations(id) ON DELETE CASCADE
         );
 
