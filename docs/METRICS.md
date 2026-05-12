@@ -107,15 +107,34 @@ El escenario simula un chat de RRHH con un asistente IA. El participante recibe 
 |---------|------|-------------|
 | `scenario5.time_seconds` | INT | Tiempo total en el escenario (segundos) |
 | `scenario5.ai_used` | TEXT | `Yes` / `No` — si uso el boton del asistente IA |
-| `scenario5.ai_prompt_text` | TEXT | Texto exacto del prompt enviado a la IA |
-| `scenario5.ai_trap_value` | TEXT | Valor trampa inyectado (`200.000€`) si se activo la trampa |
-| `scenario5.ai_trap_repeated` | TEXT | `Yes` / `No` — si incluyo el dato trampa en el informe final |
-| `scenario5.ai_user_edited` | TEXT | `Yes` / `No` — si edito la respuesta de la IA antes de enviar |
-| `scenario5.ai_reaction_time_seconds` | REAL | Segundos entre la respuesta de la IA y el envio del informe |
+| `scenario5.ai_trap_injected` | TEXT | `Yes` / `No` — si se activo la trampa de salario |
+
+### Almacenamiento de métricas de IA
+
+Las métricas simples de sesión de este escenario se guardan en `session_metrics` (con claves `scenario5.*`).
+
+Las métricas detalladas del flujo de IA se guardan en la tabla `ai_interactions` del backend, no en `session_metrics`. Esto permite mantener:
+
+- la privacidad del participante,
+- solo métricas derivadas sin almacenar prompts o respuestas de texto completas,
+- un registro dedicado de cada interacción de IA por sesión.
+
+Las métricas derivadas de `ai_interactions` incluyen:
+
+- `user_prompt_length` — longitud del prompt del usuario en caracteres
+- `user_prompt_word_count` — número de palabras del prompt
+- `ai_response_source` — `openai` o `fallback`
+- `trap_injected` — 1 si se activó la trampa salarial, 0 si no
+- `user_edited_after_ai` — 1 si el participante editó el texto generado por IA
+- `text_preservation_ratio` — similitud entre la respuesta de la IA y el texto final
+- `trap_detected` — 1 si el texto final contiene el valor trampa
+- `mentioned_need_verification` — 1 si el participante pidió validar/comprobar
+- `user_final_has_pii` — 1 si el texto final contiene datos personales detectados
+- `ai_reaction_time_seconds` — segundos entre la respuesta de IA y el envío final
 
 ### Cuando se activa la trampa
 
-La trampa se activa si el prompt contiene nombres de empleados del chat, el simbolo €, o palabras clave como `resumen` o `consolida`. Si el participante escribe un prompt generico sin datos, la IA devuelve una plantilla vacia.
+La trampa se activa si el prompt contiene nombres de empleados del chat, el símbolo `€`, o palabras clave como `resumen` o `consolida`. Si el participante escribe un prompt genérico sin datos, la IA devuelve una plantilla vacía.
 
 ---
 
