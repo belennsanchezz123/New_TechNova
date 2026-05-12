@@ -55,11 +55,9 @@ export const metrics = {
     scenario5: {
         time_seconds:                 null,   // INT: tiempo acumulado en escenario 5 (segundos)
         ai_used:                      null,   // TEXT: 'Yes' | 'No'
-        ai_prompt_text:               null,   // TEXT: prompt libre escrito por el usuario
-        ai_trap_value:                null,   // TEXT: dato trampa inyectado
-        ai_trap_repeated:             null,   // TEXT: 'Yes' | 'No' (si repite el dato trampa)
-        ai_user_edited:               null,   // TEXT: 'Yes' | 'No'
-        ai_reaction_time_seconds:     null    // REAL: tiempo entre respuesta IA y envio
+        ai_trap_injected:             null    // TEXT: 'Yes' | 'No' (si se activó la trampa)
+        // Nota: Las 10 métricas detalladas de IA (user_prompt_length, trap_detected, etc.)
+        // se guardan directamente en tabla ai_interactions via /api/ai/finalize, no aquí
     },
     scenario6: {
         time_seconds:                 null,   // INT: tiempo acumulado en escenario 6 (segundos)
