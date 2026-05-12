@@ -1,8 +1,15 @@
 import express from 'express';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import db from '../database.js';
 import { getExporter, getAvailableFormats } from '../utils/exporters/ExporterFactory.js';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const DELETION_LOG_PATH = join(__dirname, '..', 'deletion.log');
 
 // ══════════════════════════════════════════════════════════════════════
 // RUTAS PÚBLICAS — usadas por los participantes (NO requieren JWT)
@@ -278,7 +285,11 @@ export function setupSessionRoutes() {
                 s3_phishing_reported:          toReal(m['scenario3.phishing_reported']),
                 s3_phishing_false_positives:   toInt2(m['scenario3.phishing_false_positives']),
                 s3_phishing_report_reasons:    toText(m['scenario3.phishing_report_reasons']),
-                s3_credential_compromised:     toInt(m['scenario3.credential_exposure'] ?? m['scenario3.credential_compromise']),
+                s3_credential_compromised:     toInt(
+                    m['scenario3.credential_exposure'] !== undefined && m['scenario3.credential_exposure'] !== null
+                        ? m['scenario3.credential_exposure']
+                        : m['scenario3.credential_compromise']
+                ),
                 s3_secure_data_transmission:   toInt(m['scenario3.secure_data_transmission']),
                 s3_time_seconds:               toInt2(m['scenario3.time_seconds']),
                 // S4
@@ -396,10 +407,9 @@ export function setupAdminSessionRoutes() {
             const exporter = getExporter(format);
 
             const rows = db.prepare(`
-                SELECT pm.*, qr.answers_json, bc.breach_count AS s8_breach_count_confirmed
+                SELECT pm.*, qr.answers_json
                 FROM participant_metrics pm
                 LEFT JOIN questionnaire_responses qr ON qr.participant_id = pm.participant_id
-                LEFT JOIN breach_checks bc ON bc.participant_id = pm.participant_id
                 ORDER BY pm.recorded_at DESC
             `).all();
 
@@ -490,14 +500,73 @@ export function setupAdminSessionRoutes() {
     // RUTA PARA ELIMINAR TODO (Admin)
     router.delete('/clear-all', async (req, res) => {
         try {
+            const counts = db.prepare(`
+                SELECT 
+                    COUNT(*) AS sessions, 
+                    COUNT(DISTINCT participant_id) AS participants 
+                FROM registrations
+            `).get();
+
+            const timestamp = new Date().toISOString();
+            const logEntry = `DELETE ALL | ${timestamp} | sessions=${counts.sessions} | participants=${counts.participants}\n`;
+            try {
+                fs.appendFileSync(DELETION_LOG_PATH, logEntry);
+            } catch (err) {
+                console.error('Error writing deletion log:', err);
+            }
+            console.log(logEntry.trim());
+
             db.transaction(() => {
                 db.prepare('DELETE FROM session_metrics').run();
                 db.prepare('DELETE FROM participant_metrics').run();
                 db.prepare('DELETE FROM questionnaire_responses').run();
+                db.prepare('DELETE FROM ai_interactions').run();
                 db.prepare('DELETE FROM registrations').run();
             })();
             res.json({ success: true, message: 'Todos los datos han sido eliminados' });
         } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // RUTA PARA ELIMINAR DATOS DE UN PARTICIPANTE (Admin)
+    router.delete('/:participantId', async (req, res) => {
+        try {
+            const { participantId } = req.params;
+            if (!participantId) {
+                return res.status(400).json({ success: false, error: 'Falta participantId' });
+            }
+
+            const registration = db.prepare('SELECT id FROM registrations WHERE participant_id = ?').get(participantId);
+            if (!registration) {
+                return res.status(404).json({ success: false, error: 'Participant no encontrado' });
+            }
+
+            const sessionIds = db.prepare('SELECT id FROM registrations WHERE participant_id = ?').all(participantId).map(row => row.id);
+            const sessionIdsPlaceholders = sessionIds.length ? sessionIds.map(() => '?').join(', ') : null;
+
+            const timestamp = new Date().toISOString();
+            const logEntry = `DELETE PARTICIPANT | ${timestamp} | participantId=${participantId} | sessionIds=[${sessionIds.join(',')}]\n`;
+            try {
+                fs.appendFileSync(DELETION_LOG_PATH, logEntry);
+            } catch (err) {
+                console.error('Error writing deletion log:', err);
+            }
+            console.log(logEntry.trim());
+
+            db.transaction(() => {
+                if (sessionIdsPlaceholders) {
+                    db.prepare(`DELETE FROM session_metrics WHERE session_id IN (${sessionIdsPlaceholders})`).run(...sessionIds);
+                }
+                db.prepare('DELETE FROM participant_metrics WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM questionnaire_responses WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM ai_interactions WHERE participant_id = ?').run(participantId);
+                db.prepare('DELETE FROM registrations WHERE participant_id = ?').run(participantId);
+            })();
+
+            res.json({ success: true, message: `Datos del participante ${participantId} eliminados` });
+        } catch (error) {
+            console.error('Error eliminando participante:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });

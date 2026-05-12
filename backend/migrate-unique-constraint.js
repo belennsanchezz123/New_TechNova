@@ -49,38 +49,6 @@ try {
         CREATE INDEX idx_participant ON registrations(participant_id);
     `);
 
-    // Migrar tabla breach_checks
-    console.log('📋 Migrando tabla breach_checks...');
-    db.exec(`
-        -- Crear nueva tabla con constraint
-        CREATE TABLE breach_checks_new (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            participant_id TEXT NOT NULL UNIQUE,
-            breach_count INTEGER DEFAULT 0,
-            paste_count INTEGER DEFAULT 0,
-            breaches_data TEXT,
-            checked_at TEXT DEFAULT (datetime('now'))
-        );
-
-        -- Copiar datos (elimina duplicados, mantiene el más reciente)
-        INSERT INTO breach_checks_new
-        SELECT * FROM breach_checks
-        WHERE id IN (
-            SELECT MAX(id)
-            FROM breach_checks
-            GROUP BY participant_id
-        );
-
-        -- Eliminar tabla antigua y renombrar
-        DROP TABLE breach_checks;
-        ALTER TABLE breach_checks_new RENAME TO breach_checks;
-
-        -- Recrear índices
-        CREATE INDEX idx_breach_email ON breach_checks(email);
-        CREATE INDEX idx_breach_participant ON breach_checks(participant_id);
-    `);
-
     db.exec('COMMIT');
 
     console.log('\n✅ Migración completada exitosamente!');

@@ -12,13 +12,9 @@ const ts = Date.now();
 const metricsRows = db.prepare(`
     SELECT
         pm.*,
-        qr.answers_json,
-        bc.breach_count   AS s8_breach_count_confirmed,
-        bc.paste_count    AS s8_paste_count,
-        bc.checked_at     AS s8_checked_at
+        qr.answers_json
     FROM participant_metrics pm
     LEFT JOIN questionnaire_responses qr ON qr.participant_id = pm.participant_id
-    LEFT JOIN breach_checks           bc ON bc.participant_id = pm.participant_id
     ORDER BY pm.recorded_at DESC
 `).all();
 
@@ -43,7 +39,6 @@ if (metricsRows.length > 0) {
 
 // ── 2. JSON completo (todas las tablas) ──────────────────────────────────────
 const registrations        = db.prepare('SELECT * FROM registrations        ORDER BY created_at  DESC').all();
-const breachChecks         = db.prepare('SELECT * FROM breach_checks         ORDER BY checked_at  DESC').all();
 const questionnaireResp    = db.prepare('SELECT * FROM questionnaire_responses ORDER BY submitted_at DESC').all();
 const sessionMetrics       = db.prepare('SELECT * FROM session_metrics       ORDER BY recorded_at DESC').all();
 const participantMetrics   = db.prepare('SELECT * FROM participant_metrics   ORDER BY recorded_at DESC').all();
@@ -52,11 +47,9 @@ const exportData = {
     export_date:           new Date().toISOString(),
     total_participants:    participantMetrics.length,
     total_registrations:   registrations.length,
-    total_breach_checks:   breachChecks.length,
     participant_metrics:   participantMetrics,
     questionnaire_responses: questionnaireResp,
     registrations,
-    breach_checks:         breachChecks,
     session_metrics_log:   sessionMetrics,
 };
 
@@ -67,6 +60,5 @@ console.log(`\n📊 Resumen:`);
 console.log(`   - ${participantMetrics.length}  filas en participant_metrics (tabla ancha)`);
 console.log(`   - ${registrations.length}  registros de sesión`);
 console.log(`   - ${questionnaireResp.length}  cuestionarios`);
-console.log(`   - ${breachChecks.length}  breach checks`);
 
 db.close();

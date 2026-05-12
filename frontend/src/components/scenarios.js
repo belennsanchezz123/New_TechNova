@@ -754,14 +754,47 @@ export function getScenarioHTML(scenarioNumber) {
                     </div>
 
                     <div class="question-custom">
-                        <label>¿Cuál es tu facultad?</label>
-                        <input 
-                            type="text" 
-                            id="faculty-input" 
-                            name="q_0_2" 
-                            placeholder="Escribe aquí tu facultad" 
-                            class="question-input"
-                        >
+                         <label>¿Cuál es tu facultad o escuela?</label>
+                        <select id="faculty-input" name="q_0_2" class="question-input">
+                            <option value="">-- Selecciona tu facultad --</option>
+                            <option value="Facultad de Bellas Artes">Facultad de Bellas Artes</option>
+                            <option value="Facultad de Biología">Facultad de Biología</option>
+                            <option value="Facultad de Ciencias del Deporte">Facultad de Ciencias del Deporte</option>
+                            <option value="Facultad de Ciencias del Trabajo">Facultad de Ciencias del Trabajo</option>
+                            <option value="Facultad de Comunicación y Documentación">Facultad de Comunicación y Documentación</option>
+                            <option value="Facultad de Derecho">Facultad de Derecho</option>
+                            <option value="Facultad de Economía y Empresa">Facultad de Economía y Empresa</option>
+                            <option value="Facultad de Educación">Facultad de Educación</option>
+                            <option value="Facultad de Enfermería">Facultad de Enfermería</option>
+                            <option value="Facultad de Filosofía">Facultad de Filosofía</option>
+                            <option value="Facultad de Geografía e Historia">Facultad de Geografía e Historia</option>
+                            <option value="Facultad de Informática">Facultad de Informática</option>
+                            <option value="Facultad de Letras">Facultad de Letras</option>
+                            <option value="Facultad de Matemáticas">Facultad de Matemáticas</option>
+                            <option value="Facultad de Medicina">Facultad de Medicina</option>
+                            <option value="Facultad de Óptica y Optometría">Facultad de Óptica y Optometría</option>
+                            <option value="Facultad de Psicología">Facultad de Psicología</option>
+                            <option value="Facultad de Química">Facultad de Química</option>
+                            <option value="Facultad de Trabajo Social">Facultad de Trabajo Social</option>
+                            <option value="Facultad de Turismo">Facultad de Turismo</option>
+                            <option value="Facultad de Veterinaria">Facultad de Veterinaria</option>
+                            <option value="Otra / No estudiante UMU">Otra / No estudiante UMU</option>
+                        </select>
+                    </div>
+
+                    <div class="question-custom">
+                        <label>¿En qué curso o vinculación te encuentras actualmente?</label>
+                        <div class="radio-group-custom">
+                            <label><input type="radio" name="q_0_7" value="1º curso"> 1º curso</label>
+                            <label><input type="radio" name="q_0_7" value="2º curso"> 2º curso</label>
+                            <label><input type="radio" name="q_0_7" value="3º curso"> 3º curso</label>
+                            <label><input type="radio" name="q_0_7" value="4º curso"> 4º curso</label>
+                            <label><input type="radio" name="q_0_7" value="5º curso"> 5º curso</label>
+                            <label><input type="radio" name="q_0_7" value="6º curso"> 6º curso</label>
+                            <label><input type="radio" name="q_0_7" value="Máster"> Máster</label>
+                            <label><input type="radio" name="q_0_7" value="Doctorado"> Doctorado</label>
+                            <label><input type="radio" name="q_0_7" value="PDI / PAS"> PDI / PAS</label>
+                        </div>
                     </div>
 
                     <div class="question-custom">

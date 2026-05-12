@@ -107,7 +107,7 @@ export async function submitTaxonomy() {
     }
 
     // 3. Determina el total de preguntas dinámicamente (evita desajustes cuando editemos el formulario)
-    const inputEls = form.querySelectorAll('input[name^="q_"]');
+    const inputEls = form.querySelectorAll('input[name^="q_"], select[name^="q_"]');
     const questionNames = new Set(Array.from(inputEls).map(i => i.name));
     const totalQuestions = questionNames.size;
 
