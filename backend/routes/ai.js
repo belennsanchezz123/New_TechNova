@@ -222,7 +222,7 @@ export function setupAIRoutes() {
 
             // Obtener la interacción completa para calcular métricas
             const interaction = db.prepare(`
-                SELECT trap_value
+                SELECT trap_injected
                 FROM ai_interactions WHERE id = ?
             `).get(interactionId);
             
@@ -238,7 +238,8 @@ export function setupAIRoutes() {
             const mentionedVerification = /valid|comprueba|historial|contrastar|verificar|revisar/i.test(finalBody) ? 1 : 0;
             
             // Detectar si cambió la trampa
-            const trapDetected = interaction.trap_value ? (finalBody.includes(interaction.trap_value) ? 1 : 0) : 0;
+            const trapValue = '200.000€';
+            const trapDetected = interaction.trap_injected ? (finalBody.includes(trapValue) ? 1 : 0) : 0;
             
             // Calcular similitud con respuesta IA (simplificación)
             const userEdited = finalMetrics.length > 0 ? 1 : 0;

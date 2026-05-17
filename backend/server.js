@@ -17,7 +17,7 @@ dotenv.config({ path: join(__dirname, '.env'), override: true });
 dotenv.config({ path: join(__dirname, '..', '.env'), override: true });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());

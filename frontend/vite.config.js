@@ -12,9 +12,15 @@ export default defineConfig({
     https: false,
     open: true,
     allowedHosts: ['technova.inf.um.es'],
+     // Añadir esto:
+  hmr: {
+    host: 'technova.inf.um.es',  // el host que ve el navegador
+    protocol: 'ws',              // forzar ws:// en vez de wss://
+    port: 5173,
+  },
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3001',
         changeOrigin: true,
       },
     },

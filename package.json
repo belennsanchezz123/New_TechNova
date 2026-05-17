@@ -8,7 +8,7 @@
   },
   "scripts": {
     "check:node": "node scripts/check-node.js",
-    "start": "npm run check:node && concurrently -n \"FRONTEND,BACKEND\" -c \"cyan,green\" \"npm run dev --prefix frontend\" \"npm start --prefix backend\"",
+    "start": "npm run check:node && concurrently --kill-others -n \"FRONTEND,BACKEND\" -c \"cyan,green\" \"npm run dev --prefix frontend\" \"npm start --prefix backend\"",
     "dev": "npm run check:node && npm run dev --prefix frontend",
     "build": "npm run check:node && npm run build --prefix frontend",
     "install:all": "npm run check:node && npm install --prefix frontend && npm install --prefix backend",
