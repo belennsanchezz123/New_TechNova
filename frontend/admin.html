@@ -1370,16 +1370,16 @@
           const rows = interactions
             .map((it) => {
               const trapClass =
-                it.trap_repeated === 1
+                it.trap_detected === 1
                   ? 'color:#b71c1c; font-weight:700;'
-                  : it.trap_repeated === 0
+                  : it.trap_detected === 0
                     ? 'color:#1b5e20; font-weight:700;'
                     : 'color:#666;';
 
               const trapText =
-                it.trap_repeated === 1
+                it.trap_detected === 1
                   ? 'Repitio trampa'
-                  : it.trap_repeated === 0
+                  : it.trap_detected === 0
                     ? 'Corrigio trampa'
                     : 'Sin evaluar';
 
@@ -1389,8 +1389,8 @@
                   <td>${it.session_id || '-'}</td>
                   <td>${it.participant_id || '-'}</td>
                   <td>${formatLocalDate(it.created_at)}</td>
-                  <td><small>${(it.user_prompt || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small></td>
-                  <td><small>${(it.trap_value || '-').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small></td>
+                  <td><small>${it.user_prompt_length || 0} chars / ${it.user_prompt_word_count || 0} palabras</small></td>
+                  <td><small>${it.trap_injected ? '200.000€' : '-'}</small></td>
                   <td><span style="${trapClass}">${trapText}</span></td>
                 </tr>
               `;

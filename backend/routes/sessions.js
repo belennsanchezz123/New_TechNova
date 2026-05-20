@@ -450,25 +450,29 @@ export function setupAdminSessionRoutes() {
             const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
             const rows = db.prepare(`
-                SELECT
-                    ai.id,
-                    ai.session_id,
-                    ai.participant_id,
-                    ai.user_prompt,
-                    ai.ai_response,
-                    ai.trap_value,
-                    ai.trap_label,
-                    ai.user_final_text,
-                    ai.trap_repeated,
-                    ai.created_at,
-                    ai.finalized_at,
-                    r.created_at AS session_started_at,
-                    r.completed_at AS session_completed_at
-                FROM ai_interactions ai
-                LEFT JOIN registrations r ON r.id = ai.session_id
-                ${whereClause}
-                ORDER BY ai.created_at DESC
-            `).all(...params);
+    SELECT
+        ai.id,
+        ai.session_id,
+        ai.participant_id,
+        ai.user_prompt_length,
+        ai.user_prompt_word_count,
+        ai.ai_response_source,
+        ai.trap_injected,
+        ai.user_edited_after_ai,
+        ai.text_preservation_ratio,
+        ai.trap_detected,
+        ai.mentioned_need_verification,
+        ai.user_final_has_pii,
+        ai.ai_reaction_time_seconds,
+        ai.created_at,
+        ai.finalized_at,
+        r.created_at AS session_started_at,
+        r.completed_at AS session_completed_at
+    FROM ai_interactions ai
+    LEFT JOIN registrations r ON r.id = ai.session_id
+    ${whereClause}
+    ORDER BY ai.created_at DESC
+`).all(...params);
 
             res.json({ success: true, interactions: rows });
         } catch (error) {
