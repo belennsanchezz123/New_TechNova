@@ -191,7 +191,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="mail-user" placeholder="">
                         <label for="mail-pass">Contraseña:</label>
                         <div class="sc1-pass-container">
-                            <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña" class="sc1-pass-input" style="-webkit-text-security: disc;">
+                            <input type="text" id="mail-pass" value="" autocomplete="off" placeholder="Acepta o crea tu contraseña" class="sc1-pass-input" style="-webkit-text-security: disc;" oncopy="event.clipboardData.setData('text/plain', this.value); event.preventDefault();">
                             <button
                                 onmousedown="window.holdPasswordVisibility('mail-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('mail-pass', false)"
@@ -244,7 +244,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="drive-user" placeholder="">
                         <label for="drive-pass">Contraseña:</label>
                         <div class="sc1-pass-container">
-                            <input type="text" id="drive-pass" class="sc1-pass-input" style="-webkit-text-security: disc;">
+                            <input type="text" id="drive-pass" class="sc1-pass-input" style="-webkit-text-security: disc;" oncopy="event.clipboardData.setData('text/plain', this.value); event.preventDefault();">
                             <button
                                 onmousedown="window.holdPasswordVisibility('drive-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('drive-pass', false)"
@@ -287,7 +287,7 @@ export function getScenarioHTML(scenarioNumber) {
                         <input type="text" id="events-user" placeholder="">
                         <label for="events-pass">Contraseña:</label>
                         <div class="sc1-pass-container">
-                            <input type="text" id="events-pass" class="sc1-pass-input" style="-webkit-text-security: disc;">
+                            <input type="text" id="events-pass" class="sc1-pass-input" style="-webkit-text-security: disc;" oncopy="event.clipboardData.setData('text/plain', this.value); event.preventDefault();">
                             <button
                                 onmousedown="window.holdPasswordVisibility('events-pass', true)"
                                 onmouseup="window.holdPasswordVisibility('events-pass', false)"
