@@ -913,5 +913,8 @@ window.performSearch = function () {
         return;
     }
 
+    const existingHint = document.getElementById('search-hint');
+    if (existingHint) existingHint.remove();
+
     loadPage('search-results');
 };
