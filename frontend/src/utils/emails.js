@@ -1,3 +1,4 @@
+import { getRegisteredUsername } from '../handlers/scenario1.js';
 export const emails = [
     {
       id: 1,
@@ -190,7 +191,7 @@ export function openEmail(id) {
                 </div>
             </div>
             <div class="email-view-separator"></div>
-            <div class="email-view-body">${email.body}</div>
+            <div class="email-view-body">${email.body.replace(/\bAlex\b/g, getRegisteredUsername('mail') || 'Alex')}</div>
             <div id="email-url-preview-bar" style="
                 display: none;
                 position: fixed;
