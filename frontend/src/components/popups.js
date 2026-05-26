@@ -308,6 +308,16 @@ export function getPopupsHTML() {
                     No está permitido almacenar archivos confidenciales en servicios no autorizados.
                 </li>
             </ul>
+            <h4 style="margin-top: 18px; margin-bottom: 8px;">
+                📝 Bloc de Notas:
+            </h4>
+
+            <ul style="padding-left: 24px; margin-top: 0;">
+                <li style="margin-left: 10px;">
+                    Tienes disponible un bloc de notas en la barra de tareas. Puedes usarlo libremente para anotar cualquier información que consideres útil durante la sesión.
+                </li>
+            </ul>
+
         </div>
 
         <div style="text-align: center;">
