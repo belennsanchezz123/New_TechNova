@@ -340,6 +340,15 @@ function renderOfficialSite() {
                         style="background:#0078d4; color:white; border:none; padding:12px 24px; border-radius:6px; cursor:pointer; font-size:14px;">
                     📥 Descargar Plantilla Oficial
                 </button>
+                <div id="official-download-progress" style="display:none; margin-top:16px;">
+                    <div style="font-size:13px; color:#555; margin-bottom:6px;">
+                        📄 Cronograma_Proyecto_TechNova_2026.docx — 245 KB
+                    </div>
+                    <div style="background:#e0e0e0; border-radius:4px; height:10px; overflow:hidden;">
+                        <div id="official-progress-bar" style="height:100%; width:0%; background:#0078d4; transition:width 0.1s linear;"></div>
+                    </div>
+                    <div id="official-progress-label" style="font-size:12px; color:#888; margin-top:4px;">0%</div>
+                </div>
             </div>
             <div id="cookie-banner-official" class="cookie-banner-container" style="display:none;"></div>
         </div>
@@ -742,19 +751,39 @@ window.downloadMap = function (source) {
     const sid = getSessionId();
 
     if (source === 'official') {
-        // Descarga segura
-        window.simulateDownload(3000, { name: 'Cronograma_Proyecto_TechNova_2026.docx', type: 'safe', size: '245 KB' });
-        console.log('📥 Descarga segura desde sitio oficial');
+    // Descarga segura
+    window.simulateDownload(3000, { name: 'Cronograma_Proyecto_TechNova_2026.docx', type: 'safe', size: '245 KB' });
+    console.log('📥 Descarga segura desde sitio oficial');
 
-        setTimeout(() => {
-            showDownloadFeedback('Cronograma_Proyecto_TechNova_2026.docx', true);
-        }, 3200);
+    // Mostrar y animar la barra de progreso
+    const progressContainer = document.getElementById('official-download-progress');
+    const progressBar = document.getElementById('official-progress-bar');
+    const progressLabel = document.getElementById('official-progress-label');
 
-        // Al descargar del oficial → el escenario se puede completar
-        setTimeout(() => {
-            finalizeAndSave(sid);
-        }, 5000);
+    if (progressContainer) {
+        progressContainer.style.display = 'block';
+        let pct = 0;
+        const interval = setInterval(() => {
+            pct += 2;
+            if (pct >= 100) {
+                pct = 100;
+                clearInterval(interval);
+                progressLabel.textContent = '✅ Descarga completada';
+            } else {
+                progressLabel.textContent = pct + '%';
+            }
+            progressBar.style.width = pct + '%';
+        }, 60);
+    }
 
+    setTimeout(() => {
+        showDownloadFeedback('Cronograma_Proyecto_TechNova_2026.docx', true);
+    }, 3200);
+
+    // Al descargar del oficial → el escenario se puede completar
+    setTimeout(() => {
+        finalizeAndSave(sid);
+    }, 5000);
     } else if (source === 'malicious') {
         // Descarga maliciosa (.exe)
         dangerousClicked = Math.max(dangerousClicked, 1); // asegurar al menos 1
