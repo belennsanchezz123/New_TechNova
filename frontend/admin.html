@@ -1042,10 +1042,7 @@
             ${
               metrics && metrics.length > 0
                 ? metrics
-    .filter(m => !(
-        m.scenario === 'scenario5' &&
-        ['ai_used', 'ai_trap_injected', 'time_seconds'].includes(m.metric_name)
-    ))
+.filter(m => m.scenario !== 'scenario5')
     .map(
                       (m) => `
                 <div class="metric-row">

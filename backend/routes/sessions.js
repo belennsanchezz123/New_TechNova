@@ -450,28 +450,25 @@ export function setupAdminSessionRoutes() {
             const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
             const rows = db.prepare(`
-    SELECT
-        ai.id,
-        ai.session_id,
-        ai.participant_id,
-        ai.user_prompt_length,
-        ai.user_prompt_word_count,
-        ai.ai_response_source,
-        ai.trap_injected,
-        ai.user_edited_after_ai,
-        ai.text_preservation_ratio,
-        ai.trap_detected,
-        ai.mentioned_need_verification,
-        ai.user_final_has_pii,
-        ai.ai_reaction_time_seconds,
-        ai.created_at,
-        ai.finalized_at,
-        r.created_at AS session_started_at,
-        r.completed_at AS session_completed_at
+SELECT
+    ai.id,
+    ai.session_id,
+    ai.participant_id,
+    ai.user_prompt_length,
+    ai.user_prompt_word_count,
+    ai.ai_response_source,
+    ai.trap_injected,
+    ai.trap_detected,
+    ai.ai_reaction_time_seconds,
+    ai.created_at,
+    ai.finalized_at,
+    r.created_at AS session_started_at,
+    r.completed_at AS session_completed_at,
+    sm.metric_value AS s5_time_seconds
     FROM ai_interactions ai
-     LEFT JOIN registrations r ON r.id = ai.session_id
-    LEFT JOIN session_metrics sm 
-        ON sm.session_id = ai.session_id 
+    LEFT JOIN registrations r ON r.id = ai.session_id
+    LEFT JOIN session_metrics sm
+        ON sm.session_id = ai.session_id
         AND sm.metric_name = 'scenario5.time_seconds'
     ${whereClause}
     ORDER BY ai.created_at DESC
