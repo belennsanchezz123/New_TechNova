@@ -251,7 +251,7 @@ export function getPopupsHTML() {
                     </div>
                 </div>
 
-                <button onclick="window.closeRegistrationComplete()" style="margin-top: 20px;">Continue</button>
+                <button onclick="window.closeRegistrationComplete()" style="margin-top: 20px;">Continuar</button>
             </div>
         </div>
 

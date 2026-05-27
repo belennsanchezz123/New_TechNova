@@ -331,6 +331,11 @@ export function toggleWifiMenu() {
 export function connectWifi(type) {
 
     if (type === 'secure') {
+        window.showCustomNotification(
+            'Red corporativa',
+            '🔒 Para obtener la contraseña de la red corporativa, contacta con tu responsable o con el equipo de IT.',
+            'info'
+        );
         const popup = document.getElementById('popup-wifi-password');
         const input = document.getElementById('wifi-password-input');
         if (popup && input) {
@@ -340,7 +345,6 @@ export function connectWifi(type) {
             input.style.borderColor = '#b0b0b0';
             const prevErr = document.getElementById('wifi-password-error');
             if (prevErr) prevErr.remove();
-            // Limpiar error al escribir
             input.oninput = () => {
                 input.style.borderColor = '#b0b0b0';
                 const err = document.getElementById('wifi-password-error');
