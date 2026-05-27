@@ -1042,7 +1042,11 @@
             ${
               metrics && metrics.length > 0
                 ? metrics
-                    .map(
+    .filter(m => !(
+        m.scenario === 'scenario5' &&
+        ['ai_used', 'ai_trap_injected', 'time_seconds'].includes(m.metric_name)
+    ))
+    .map(
                       (m) => `
                 <div class="metric-row">
                     <div class="metric-category">${formatScenarioName(m.scenario)}</div>
@@ -1416,8 +1420,10 @@
             </div>
           `;
 
-          document.getElementById('session-details').innerHTML =
-            `<h2>Interacciones IA (${interactions.length})</h2>`;
+          const timeVal = interactions[0]?.s5_time_seconds;
+const timeLabel = timeVal ? ` — Tiempo en escenario: <strong>${timeVal}s</strong>` : '';
+document.getElementById('session-details').innerHTML =
+    `<h2>Interacciones IA (${interactions.length})</h2><p${timeLabel}</p>`;
           document.getElementById('metrics-details').innerHTML = html;
           document.getElementById('metrics-modal').classList.add('active');
         } catch (error) {

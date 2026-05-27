@@ -469,7 +469,10 @@ export function setupAdminSessionRoutes() {
         r.created_at AS session_started_at,
         r.completed_at AS session_completed_at
     FROM ai_interactions ai
-    LEFT JOIN registrations r ON r.id = ai.session_id
+     LEFT JOIN registrations r ON r.id = ai.session_id
+    LEFT JOIN session_metrics sm 
+        ON sm.session_id = ai.session_id 
+        AND sm.metric_name = 'scenario5.time_seconds'
     ${whereClause}
     ORDER BY ai.created_at DESC
 `).all(...params);
