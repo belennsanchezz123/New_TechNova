@@ -1423,7 +1423,7 @@
           const timeVal = interactions[0]?.s5_time_seconds;
 const timeLabel = timeVal ? ` — Tiempo en escenario: <strong>${timeVal}s</strong>` : '';
 document.getElementById('session-details').innerHTML =
-    `<h2>Interacciones IA (${interactions.length})</h2><p${timeLabel}</p>`;
+    `<h2>Interacciones IA (${interactions.length})</h2><p>${timeLabel}</p>`;
           document.getElementById('metrics-details').innerHTML = html;
           document.getElementById('metrics-modal').classList.add('active');
         } catch (error) {

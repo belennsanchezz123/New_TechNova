@@ -167,7 +167,7 @@ function getMFAStep0HTML() {
     return `
         <div style="text-align: center; padding: 30px 10px;">
             <p style="font-size: 1.3em; color: #1a1a2e; margin-bottom: 40px; line-height: 1.5; font-weight: 500;">
-                ¿Quieres activar el MFA (Autenticación Multifactor) para tus cuentas en TechNova?fix: 
+                ¿Quieres activar el MFA (Autenticación Multifactor) para tus cuentas en TechNova? 
             </p>
             
             <div class="mfa-actions" style="justify-content: center; gap: 20px;">
