@@ -203,7 +203,7 @@ export function getScenarioHTML(scenarioNumber) {
                                 title="Mantener pulsado para ver"
                                 class="sc1-eye-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
                         </div>
-                        <div style="margin-top: 10px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; background: #f8fbff;">
+                        <div id="mail-pass-suggestion-box" style="margin-top: 10px; padding: 10px; border: 1px solid #d0d7de; border-radius: 8px; background: #f8fbff;">
                             <div style="font-size: 13px; color: #2d3748; margin-bottom: 8px;">
                                 🔐 Contraseña sugerida por generador:
                             </div>

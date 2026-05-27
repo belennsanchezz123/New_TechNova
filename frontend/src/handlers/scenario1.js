@@ -31,6 +31,10 @@ export function rejectDefaultMailPassword() {
     if (passInput.value === DEFAULT_MAIL_PASSWORD) {
         passInput.value = '';
     }
+
+    const suggestionBox = document.getElementById('mail-pass-suggestion-box');
+    if (suggestionBox) suggestionBox.style.display = 'none';
+
     passInput.focus();
 }
 
