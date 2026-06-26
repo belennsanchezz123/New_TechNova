@@ -1366,7 +1366,11 @@
         const { responses, questionKeys } = window._taxonomyData || {};
         if (!responses || responses.length === 0) return;
 
-        const escape = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+        const escape = (v) => {
+          let s = String(v ?? '');
+          if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+          return `"${s.replace(/"/g, '""')}"`;
+        };
 
         const headers = ['participant_id', 'submitted_at', ...questionKeys];
         const rows = responses.map((r) => {
