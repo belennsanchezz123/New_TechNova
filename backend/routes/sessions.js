@@ -469,7 +469,8 @@ SELECT
     LEFT JOIN registrations r ON r.id = ai.session_id
     LEFT JOIN session_metrics sm
         ON sm.session_id = ai.session_id
-        AND sm.metric_name = 'scenario5.time_seconds'
+        AND sm.scenario = 'scenario5'
+        AND sm.metric_name = 'time_seconds'
     ${whereClause}
     ORDER BY ai.created_at DESC
 `).all(...params);
@@ -480,6 +481,47 @@ SELECT
             res.status(500).json({ success: false, error: error.message });
         }
     });
+
+    // RUTA PARA EXPORTAR INTERACCIONES IA
+router.get('/ai/interactions/export', async (req, res) => {
+    try {
+        const format = req.query.format || 'csv';
+        const exporter = getExporter(format);
+
+        const rows = db.prepare(`
+            SELECT
+                ai.id,
+                ai.session_id,
+                ai.participant_id,
+                ai.user_prompt_length,
+                ai.user_prompt_word_count,
+                ai.trap_injected,
+                ai.trap_detected,
+                ai.ai_reaction_time_seconds,
+                ai.created_at,
+                sm.metric_value AS s5_time_seconds
+            FROM ai_interactions ai
+            LEFT JOIN session_metrics sm
+                ON sm.session_id = ai.session_id
+                AND sm.scenario = 'scenario5'
+                AND sm.metric_name = 'time_seconds'
+            ORDER BY ai.created_at DESC
+        `).all();
+
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'No hay interacciones' });
+        }
+
+        const output = exporter.format(rows);
+        const filename = `technova_ai_interactions_${new Date().toISOString().slice(0, 10)}.${exporter.getExtension()}`;
+
+        res.setHeader('Content-Type', exporter.getMimeType());
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(output);
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
     // RUTA PARA VER MÉTRICAS POR ID
     router.get('/:sessionId/metrics', async (req, res) => {
