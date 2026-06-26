@@ -1304,6 +1304,13 @@
           const data = await response.json();
 
           if (data.success) {
+            // Collect all unique question keys for CSV columns
+            const allKeys = new Set();
+            data.responses.forEach((r) => {
+              Object.keys(JSON.parse(r.answers_json || '{}')).forEach(k => allKeys.add(k));
+            });
+            const questionKeys = [...allKeys].sort();
+
             let html = `
                 <div style="overflow-x:auto;">
                     <table style="width:100%; font-size: 0.8em;">
@@ -1333,9 +1340,17 @@
             html += `</tbody></table></div>`;
 
             document.getElementById('session-details').innerHTML =
-              '<h2>Respuestas de Taxonomía</h2>';
+              `<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <h2 style="margin:0;">Respuestas de Taxonomía</h2>
+                <button onclick="window._downloadTaxonomyCSV()" style="background:#1a73e8; color:#fff; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-size:14px; font-weight:600;">
+                  ⬇️ Descargar CSV
+                </button>
+              </div>`;
             document.getElementById('metrics-details').innerHTML = html;
             document.getElementById('metrics-modal').classList.add('active');
+
+            // Store data for CSV export
+            window._taxonomyData = { responses: data.responses, questionKeys };
           }
         } catch (error) {
           if (
@@ -1346,6 +1361,38 @@
           alert('Error al cargar los cuestionarios');
           console.error(error);
         }
+      };
+
+      window._downloadTaxonomyCSV = function () {
+        const { responses, questionKeys } = window._taxonomyData || {};
+        if (!responses || responses.length === 0) return;
+
+        const escape = (v) => {
+          let s = String(v ?? '');
+          if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+          return `"${s.replace(/"/g, '""')}"`;
+        };
+
+        const headers = ['participant_id', 'submitted_at', ...questionKeys];
+        const rows = responses.map((r) => {
+          const answers = JSON.parse(r.answers_json || '{}');
+          return [
+            escape(r.participant_id),
+            escape(formatLocalDate(r.submitted_at)),
+            ...questionKeys.map(k => escape(answers[k] ?? ''))
+          ].join(',');
+        });
+
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `taxonomia_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
       };
 
       window.viewAIInteractions = async function () {
