@@ -694,10 +694,15 @@
           </button>
           <button
             class="btn-action btn-success"
-            onclick="window.viewAIInteractions()"
-          >
-            🤖 Ver Interacciones IA
+            onclick="window.viewAIInteractions()">
+           🤖 Ver Interacciones IA
           </button>
+          <button onclick="window.exportAIInteractions('csv')" class="btn-action btn-export">
+          ⬇ CSV IA
+        </button>
+        <button onclick="window.exportAIInteractions('json')" class="btn-action btn-export">
+        ⬇ JSON IA
+        </button>
           <button
             class="btn-action btn-danger"
             onclick="window.clearAllData()"
@@ -1250,7 +1255,26 @@
           alert('Error al eliminar participante. Revisa la consola.');
         }
       };
-
+window.exportAIInteractions = async function (format = 'csv') {
+    try {
+        const response = await authFetch(
+            `${API_URL}/sessions/ai/interactions/export?format=${encodeURIComponent(format)}`
+        );
+        if (response.status === 404) {
+            alert('ℹ️ No hay interacciones de IA para exportar.');
+            return;
+        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `technova_ai_interactions_${new Date().toISOString().slice(0, 10)}.${format}`;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exportando interacciones IA:', error);
+    }
+};
       window.exportMetrics = async function (format = 'csv') {
         const btn = document.getElementById('btn-export');
         const originalText = btn.innerHTML;
