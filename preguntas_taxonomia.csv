@@ -1,0 +1,52 @@
+Identificador,Pregunta
+q_0_0,¿Cuál es tu sexo?
+q_0_1,¿Cuál es tu edad?
+q_0_3,¿Con qué frecuencia usas un ordenador para trabajar o estudiar?
+q_0_4,¿Cómo calificarías tu nivel de habilidad con la tecnología?
+q_0_5,¿Has recibido alguna vez formación formal en ciberseguridad?
+q_0_6,¿En cuántas redes sociales tienes un perfil activo?
+q_1_0,No cambio mis contraseñas a menos que sea obligatorio.
+q_1_1,Utilizo contraseñas distintas para cada cuenta.
+q_1_2,Creo contraseñas que superan los requisitos mínimos.
+q_1_3,No incluyo caracteres especiales si no son obligatorios.
+q_1_4,Uso contraseñas simples como el nombre o fecha de nacimiento.
+q_1_5,Uso la misma contraseña para varias cuentas.
+q_1_6,Uso verificación en dos pasos (OTP / SMS / etc.).
+q_1_7,Guardo mis contraseñas en el navegador.
+q_1_8,¿Utilizas autenticación multifactor (MFA)?
+q_1_9,¿Compruebas si tus contraseñas han sido comprometidas?
+q_2_0,Bloqueo manualmente mi equipo al alejarme.
+q_2_1,Uso contraseña para desbloquear portátil/tablet.
+q_2_2,Uso Wi-Fi pública gratuita.
+q_2_3,Escaneo los dispositivos externos (USB / discos) antes de usarlos.
+q_3_0,Abro enlaces sin verificar a dónde dirigen.
+q_3_1,Paso el ratón sobre enlaces antes de hacer clic.
+q_3_2,Reconozco sitios por su apariencia y no por la URL.
+q_3_3,Envío datos sin verificar que la conexión sea segura.
+q_3_4,¿Reportas mensajes sospechosos?
+q_4_0,Introduzco datos de pago en sitios sin certificado.
+q_4_1,Descargo archivos sin verificar su autenticidad.
+q_4_2,Hago clic en anuncios emergentes en sitios web.
+q_4_3,Descargo contenido solo desde sitios oficiales.
+q_5_0,Acepto solicitudes de amistad solo por reconocer la foto.
+q_5_1,Comparto mi ubicación actual en redes sociales.
+q_5_2,Muestro información personal en mis perfiles.
+q_5_3,Reenvío publicaciones sin confirmar su veracidad.
+q_5_4,¿Verificas qué datos personales están públicos en internet?
+q_6_0,Abro archivos sin importar la extensión.
+q_6_1,¿Cifras tus archivos sensibles?
+q_6_2,¿Eliminas datos antes de desechar un dispositivo?
+q_7_0,Instalo actualizaciones cuando el sistema me lo indica.
+q_7_1,Verifico que mis programas estén actualizados.
+q_7_2,Verifico que el antivirus se actualice.
+q_7_3,¿Mantienes el software de tu equipo actualizado?
+q_7_4,¿Usas antivirus y firewall activados?
+q_8_0,¿Reportas incidentes de seguridad?
+q_8_1,¿Reportas dispositivos perdidos o robados?
+q_8_2,¿Reportas mensajes o personas sin autorización?
+q_9_0,¿Lees y aceptas las políticas de seguridad de tu organización?
+q_9_1,¿Solicitas ayuda ante dudas de seguridad?
+q_9_2,¿Participas en programas de concienciación en ciberseguridad?
+q_9_3,¿Reportas políticas inseguras que dificultan tu trabajo?
+q_10_0,Antes de enviar un mensaje a un LLM evalúo si contiene información confidencial.
+q_10_1,¿Has incluido documentos o archivos de tu organización en prompts a IA generativa sin autorización?
